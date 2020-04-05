@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href = "{{url_for('static', filename = 'bootstrap.css')}}" rel = "stylesheet">
+   <script src = "https://code.jquery.com/jquery.js"></script>
+  <script type = "text/javascript"
+         src = "{{ url_for('static', filename = 'bootstrap.js') }}" ></script>
+
+</head>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<body style="background-color:powderblue;">
+
+
+<img id="Map" src="{{url_for('static', filename = 'riskMap.jpeg')}}" alt="Map" style="display:none;" >
+
+<canvas id="myCanvas">
+</canvas>
+
+<script>
+window.onload = function() {
+    var canvas = document.getElementById("myCanvas");
+    canvas.width = window.screen.width
+    canvas.height = window.innerHeight - 65
+    var ctx = canvas.getContext("2d");
+    var img = document.getElementById("Map");
+    var width = window.innerWidth
+    var centre = ((width - (width * 0.65)) / 2) - 6
+    var widthScaler = (width * 0.65) / img.naturalWidth
+    ctx.font = '20px hancock';
+    ctx.fillstyle = 'red';
+    ctx.drawImage(img, centre, 0, width * 0.65, img.naturalHeight * widthScaler );
+    alaska = ctx.strokeText('3', 274, 90);
+    test = ctx.strokeText('3', 270, 90);
+    northwestTer = ctx.strokeText('3', 346, 98);
+
+    var mapWidth = 1536;
+    var mapHeight = 999;
+    territories = {
+    // Oceania
+    'Alaska': [112, 160],
+    'Eastern Australia': [1461, 864],
+    'Western Australia': [1324, 854],
+    'New Guinea': [1444, 725],
+    'Indonesia': [1313, 673],
+    // Asia
+    'Siam': [1228, 554],
+    'India': [1110, 557],
+    'China': [1266, 450],
+    'Middle East': [944, 544],
+    'Afghanistan': [1029, 401],
+    'Mongolia': [1263, 350],
+    'Irkutsk': [1240, 256],
+    'Ural': [1046, 230],
+    'Siberia': [1129, 228],
+    'Yakutsk': [1268, 166],
+    'Kamchatka': [1404, 179],
+    // Europe
+    'Ukraine': [905, 261],
+    'Scandinavia': [776, 221],
+    'Northern Europe': [766, 315],
+    'Southern Europe': [800, 381],
+    'Western Europe': [715, 385],
+    'Great Britain': [697, 305],
+    'Iceland': [660, 221],
+    // North America
+    'Alaska': [274, 90],
+    'Northwest Territory': [346, 98],
+    'Alberta': [355, 137],
+    'Western US': [361, 183],
+    'Eastern US': [427, 206],
+    'Ontario': [411, 145],
+    'Greenland': [543, 58],
+    'Quebec': [480, 146],
+    'Central America': [363, 244],
+    // South America
+    'Venezuela': [415, 320],
+    'Peru': [416, 372],
+    'Brazil': [465, 348],
+    'Argentina': [446, 429],
+    // Africa
+    'South Africa': [664, 445],
+    'Madagascar': [730, 446],
+    'Congo': [660, 374],
+    'East Africa': [699, 342],
+    'North Africa': [600, 304],
+    'Egypt': [640, 283],
+    };
+
+};
+
+function getCursorPosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    console.log("x: " + x + " y: " + y)
+};
+
+const canvas = document.getElementById("myCanvas")
+canvas.addEventListener('mousedown', function(e) {
+    getCursorPosition(canvas, e)
+});
+
+
+
+</script>
+
+
+</body>
+</html>
