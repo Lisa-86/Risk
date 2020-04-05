@@ -90,4 +90,3 @@ print("p1troops:", p1troops)
 print("p2troops:", p2troops)
 
 
-
