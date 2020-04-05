@@ -37,6 +37,9 @@
       <li class="nav-item">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
       </li>
+      <li class="nav-item">
+        <input id="cname" type="text" class="form-control" placeholder="" aria-label="Username" aria-describedby="basic-addon1">
+      </li>
     </ul>
   </div>
 </nav>
@@ -54,7 +57,7 @@
 window.onload = function() {
     var canvas = document.getElementById("myCanvas");
     canvas.width = window.screen.width
-    canvas.height = window.innerHeight - 65
+    canvas.height = window.innerHeight
     var ctx = canvas.getContext("2d");
     var img = document.getElementById("Map");
     var width = window.innerWidth
@@ -62,7 +65,7 @@ window.onload = function() {
     var widthScaler = (width * 0.65) / img.naturalWidth
     ctx.font = '20px hancock';
     ctx.fillstyle = 'red';
-    ctx.drawImage(img, centre, 0, width * 0.65, img.naturalHeight * widthScaler );
+    ctx.drawImage(img, 0, 0);
     alaska = ctx.strokeText('3', 274, 90);
     test = ctx.strokeText('3', 270, 90);
     northwestTer = ctx.strokeText('3', 346, 98);
@@ -122,11 +125,16 @@ window.onload = function() {
 
 };
 
+newpoints = {}
+
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
     console.log("x: " + x + " y: " + y)
+    textb = document.getElementById("cname")
+    newpoints[textb.value] = [x, y]
+    console.log(JSON.stringify(newpoints))
 };
 
 const canvas = document.getElementById("myCanvas")
