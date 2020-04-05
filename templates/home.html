@@ -1,71 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link href = "{{url_for('static', filename = 'bootstrap.css')}}" rel = "stylesheet">
-   <script src = "https://code.jquery.com/jquery.js"></script>
-  <script type = "text/javascript"
-         src = "{{ url_for('static', filename = 'bootstrap.js') }}" ></script>
+<link href = '{{url_for('static', filename = 'bootstrap.css')}}' rel = 'stylesheet'>
+   <script src = 'https://code.jquery.com/jquery.js'></script>
+  <script type = 'text/javascript'
+         src = '{{ url_for('static', filename = 'bootstrap.js') }}' ></script>
 
 </head>
 
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar" href="#">Navbar</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+<nav class='navbar navbar-expand-lg navbar-light bg-light'>
+  <a class='navbar' href='#'>Navbar</a>
+  <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
+    <span class='navbar-toggler-icon'></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+  <div class='collapse navbar-collapse' id='navbarSupportedContent'>
+    <ul class='navbar-nav mr-auto'>
+      <li class='nav-item active'>
+        <a class='nav-link' href='#'>Home <span class='sr-only'>(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
+      <li class='nav-item'>
+        <a class='nav-link' href='#'>Link</a>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <li class='nav-item dropdown'>
+        <a class='nav-link dropdown-toggle' href='#' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
           Dropdown
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+        <div class='dropdown-menu' aria-labelledby='navbarDropdown'>
+          <a class='dropdown-item' href='#'>Action</a>
+          <a class='dropdown-item' href='#'>Another action</a>
+          <div class='dropdown-divider'></div>
+          <a class='dropdown-item' href='#'>Something else here</a>
         </div>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+      <li class='nav-item'>
+        <a class='nav-link disabled' href='#' tabindex='-1' aria-disabled='true'>Disabled</a>
       </li>
     </ul>
   </div>
 </nav>
 
 
-<body style="background-color:powderblue;">
+<body style='background-color:powderblue;'>
 
 
-<img id="Map" src="{{url_for('static', filename = 'riskMap.jpeg')}}" alt="Map" style="display:none;" >
+<img id='Map' src='{{url_for('static', filename = 'riskMap.jpeg')}}' alt='Map' style='display:none;' >
 
-<canvas id="myCanvas">
+<canvas id='myCanvas'>
 </canvas>
 
 <script>
 window.onload = function() {
-    var canvas = document.getElementById("myCanvas");
+    var canvas = document.getElementById('myCanvas');
     canvas.width = window.screen.width
     canvas.height = window.innerHeight - 65
-    var ctx = canvas.getContext("2d");
-    var img = document.getElementById("Map");
+    var ctx = canvas.getContext('2d');
+    var img = document.getElementById('Map');
     var width = window.innerWidth
-    var centre = ((width - (width * 0.65)) / 2) - 6
+    var offset = ((width - (width * 0.65)) / 2) - 6
     var widthScaler = (width * 0.65) / img.naturalWidth
     ctx.font = '20px hancock';
-    ctx.fillstyle = 'red';
-    ctx.drawImage(img, centre, 0, width * 0.65, img.naturalHeight * widthScaler );
-    alaska = ctx.strokeText('3', 274, 90);
-    test = ctx.strokeText('3', 270, 90);
-    northwestTer = ctx.strokeText('3', 346, 98);
+    ctx.drawImage(img, offset, 0, width * 0.65, img.naturalHeight * widthScaler );
 
     var mapWidth = 1536;
     var mapHeight = 999;
@@ -97,28 +93,46 @@ window.onload = function() {
     'Great Britain': [697, 305],
     'Iceland': [660, 221],
     // North America
-    'Alaska': [274, 90],
-    'Northwest Territory': [346, 98],
-    'Alberta': [355, 137],
-    'Western US': [361, 183],
-    'Eastern US': [427, 206],
-    'Ontario': [411, 145],
-    'Greenland': [543, 58],
-    'Quebec': [480, 146],
-    'Central America': [363, 244],
+    'Alaska': [112,162],
+    'Northwest Territory': [261,167],
+    'Alberta': [258,250],
+    'Ontario': [352,261],
+    'Greenland': [603,94],
+    'Quebec': [495,266],
+    'Western United States': [271,330],
+    'Eastern United States': [390,377],
+    'Central America': [270,448],
     // South America
-    'Venezuela': [415, 320],
-    'Peru': [416, 372],
-    'Brazil': [465, 348],
-    'Argentina': [446, 429],
+    'Venezuela': [389,548],
+    'Brazil': [490,643],
+    'Peru': [377,686],
+    'Argentina': [424,790],
     // Africa
-    'South Africa': [664, 445],
-    'Madagascar': [730, 446],
-    'Congo': [660, 374],
-    'East Africa': [699, 342],
-    'North Africa': [600, 304],
-    'Egypt': [640, 283],
+    'North Africa': [708,554],
+    'Egypt':[828,506],
+    'East Africa': [880,625],
+    'Congo': [825,683],
+    'South Africa': [834,824],
+    'Madagascar':[950,826],
     };
+
+    for (i = 0; i < Object.keys(territories).length; i++){
+      keys = Object.keys(territories)
+      city = keys[i]
+
+      pointWidth = territories[city][0]
+      pointWScaler = pointWidth / img.naturalWidth
+      console.log(pointWScaler)
+      NewImgWidth = width * 0.65
+      finalWidth = offset + (pointWScaler * NewImgWidth)
+
+      pointHeight = territories[city][1]
+      pointHScaler = pointHeight / img.naturalHeight
+      NewImgHeight = img.naturalHeight * widthScaler
+      finalHeight = (pointHScaler * NewImgHeight)
+
+      ctx.strokeText('1', finalWidth, finalHeight);
+      };
 
 };
 
@@ -126,10 +140,10 @@ function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
-    console.log("x: " + x + " y: " + y)
+    console.log('x: ' + x + ' y: ' + y)
 };
 
-const canvas = document.getElementById("myCanvas")
+const canvas = document.getElementById('myCanvas')
 canvas.addEventListener('mousedown', function(e) {
     getCursorPosition(canvas, e)
 });
