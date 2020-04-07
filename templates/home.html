@@ -130,11 +130,9 @@ window.onload = function() {
     function troopsReceivedAction() {
          if (this.readyState == 4 && this.status == 200) {
              console.log("got the allocation: ", this.responseText);
-             var troopsAllocation = this.responseText;
+             troopsAllocation = JSON.parse(this.responseText);
 
-             response = JSON.parse(troopsAllocation)
-
-             for (i = 0; i < Object.keys(territories).length; i++){
+              for (i = 0; i < Object.keys(territories).length; i++){
               keys = Object.keys(territories)
               city = keys[i]
 
@@ -149,10 +147,13 @@ window.onload = function() {
               NewImgHeight = img.naturalHeight * widthScaler
               finalHeight = (pointHScaler * NewImgHeight)
 
-              for (i = 0; i < .length; i++){
-                ctx.strokeStyle = 'red';
+               if (troopsAllocation["player 1 territories"].indexOf(city) >= 0){
+                    ctx.strokeStyle = 'red';
+               }
+               else {
+                    ctx.strokeStyle = 'blue';
+               }
                 ctx.strokeText('1', finalWidth, finalHeight);
-                };
               };
          }
     };
