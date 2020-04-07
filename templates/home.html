@@ -60,7 +60,8 @@ window.onload = function() {
     var width = window.innerWidth
     var offset = ((width - (width * 0.65)) / 2) - 6
     var widthScaler = (width * 0.65) / img.naturalWidth
-    ctx.font = '20px hancock';
+    ctx.font = '18px hancock';
+    ctx.strokeStyle = 'red';
     ctx.drawImage(img, offset, 0, width * 0.65, img.naturalHeight * widthScaler );
 
     var mapWidth = 1536;
@@ -84,6 +85,7 @@ window.onload = function() {
     'Siberia': [1129, 228],
     'Yakutsk': [1268, 166],
     'Kamchatka': [1404, 179],
+    'Japan': [1404, 386],
     // Europe
     'Ukraine': [905, 261],
     'Scandinavia': [776, 221],
