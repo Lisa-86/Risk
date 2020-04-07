@@ -51,6 +51,15 @@
 </canvas>
 
 <script>
+
+function fetchTroops(responseSuccessF) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = responseSuccessF;
+    xhttp.open("GET", "/countries", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
 window.onload = function() {
     var canvas = document.getElementById('myCanvas');
     canvas.width = window.screen.width
@@ -118,23 +127,37 @@ window.onload = function() {
     'Madagascar':[950,826],
     };
 
-    for (i = 0; i < Object.keys(territories).length; i++){
-      keys = Object.keys(territories)
-      city = keys[i]
+    function troopsReceivedAction() {
+         if (this.readyState == 4 && this.status == 200) {
+             console.log("got the allocation: ", this.responseText);
+             var troopsAllocation = this.responseText;
 
-      pointWidth = territories[city][0]
-      pointWScaler = pointWidth / img.naturalWidth
-      console.log(pointWScaler)
-      NewImgWidth = width * 0.65
-      finalWidth = offset + (pointWScaler * NewImgWidth)
+             response = JSON.parse(troopsAllocation)
 
-      pointHeight = territories[city][1]
-      pointHScaler = pointHeight / img.naturalHeight
-      NewImgHeight = img.naturalHeight * widthScaler
-      finalHeight = (pointHScaler * NewImgHeight)
+             for (i = 0; i < Object.keys(territories).length; i++){
+              keys = Object.keys(territories)
+              city = keys[i]
 
-      ctx.strokeText('1', finalWidth, finalHeight);
-      };
+              pointWidth = territories[city][0]
+              pointWScaler = pointWidth / img.naturalWidth
+              console.log(pointWScaler)
+              NewImgWidth = width * 0.65
+              finalWidth = offset + (pointWScaler * NewImgWidth)
+
+              pointHeight = territories[city][1]
+              pointHScaler = pointHeight / img.naturalHeight
+              NewImgHeight = img.naturalHeight * widthScaler
+              finalHeight = (pointHScaler * NewImgHeight)
+
+              for (i = 0; i < .length; i++){
+                ctx.strokeStyle = 'red';
+                ctx.strokeText('1', finalWidth, finalHeight);
+                };
+              };
+         }
+    };
+
+    fetchTroops(troopsReceivedAction)
 
 };
 
@@ -150,9 +173,9 @@ canvas.addEventListener('mousedown', function(e) {
     getCursorPosition(canvas, e)
 });
 
-
-
 </script>
+
+
 
 
 </body>
