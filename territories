@@ -52,9 +52,7 @@ territories = {
     'Madagascar':[950,826],
     }
 
-ters = []
-for ter in territories:
-    ters.append(ter)
+ters = list(territories.items())
 
 def teralloc(ters):
     playerno = 2
@@ -67,4 +65,9 @@ def teralloc(ters):
         if ter not in p1ters:
             p2ters.append(ter)
 
+
+
     return p1ters, p2ters
+
+#p1ters, p2ters = teralloc(ters)
+

@@ -75,87 +75,39 @@ window.onload = function() {
 
     var mapWidth = 1536;
     var mapHeight = 999;
-    territories = {
-    // Oceania
-    'Alaska': [112, 160],
-    'Eastern Australia': [1461, 864],
-    'Western Australia': [1324, 854],
-    'New Guinea': [1444, 725],
-    'Indonesia': [1313, 673],
-    // Asia
-    'Siam': [1228, 554],
-    'India': [1110, 557],
-    'China': [1266, 450],
-    'Middle East': [944, 544],
-    'Afghanistan': [1029, 401],
-    'Mongolia': [1263, 350],
-    'Irkutsk': [1240, 256],
-    'Ural': [1046, 230],
-    'Siberia': [1129, 228],
-    'Yakutsk': [1268, 166],
-    'Kamchatka': [1404, 179],
-    'Japan': [1404, 386],
-    // Europe
-    'Ukraine': [905, 261],
-    'Scandinavia': [776, 221],
-    'Northern Europe': [766, 315],
-    'Southern Europe': [800, 381],
-    'Western Europe': [715, 385],
-    'Great Britain': [697, 305],
-    'Iceland': [660, 221],
-    // North America
-    'Alaska': [112,162],
-    'Northwest Territory': [261,167],
-    'Alberta': [258,250],
-    'Ontario': [352,261],
-    'Greenland': [603,94],
-    'Quebec': [495,266],
-    'Western United States': [271,330],
-    'Eastern United States': [390,377],
-    'Central America': [270,448],
-    // South America
-    'Venezuela': [389,548],
-    'Brazil': [490,643],
-    'Peru': [377,686],
-    'Argentina': [424,790],
-    // Africa
-    'North Africa': [708,554],
-    'Egypt':[828,506],
-    'East Africa': [880,625],
-    'Congo': [825,683],
-    'South Africa': [834,824],
-    'Madagascar':[950,826],
-    };
 
     function troopsReceivedAction() {
          if (this.readyState == 4 && this.status == 200) {
-             console.log("got the allocation: ", this.responseText);
+             //console.log("got the allocation: ", this.responseText);
              troopsAllocation = JSON.parse(this.responseText);
 
-              for (i = 0; i < Object.keys(territories).length; i++){
-              keys = Object.keys(territories)
-              city = keys[i]
+              p1ters = troopsAllocation["player 1 territories"]
+              p2ters = troopsAllocation["player 2 territories"]
 
-              pointWidth = territories[city][0]
-              pointWScaler = pointWidth / img.naturalWidth
-              console.log(pointWScaler)
-              NewImgWidth = width * 0.65
-              finalWidth = offset + (pointWScaler * NewImgWidth)
+              territories = p1ters.concat(p2ters)
 
-              pointHeight = territories[city][1]
-              pointHScaler = pointHeight / img.naturalHeight
-              NewImgHeight = img.naturalHeight * widthScaler
-              finalHeight = (pointHScaler * NewImgHeight)
+              for (i = 0; i < territories.length; i++){
+                  city = territories[i][0]
 
-               if (troopsAllocation["player 1 territories"].indexOf(city) >= 0){
-                    ctx.strokeStyle = 'red';
-               }
-               else {
-                    ctx.strokeStyle = 'blue';
-               }
-                ctx.strokeText('1', finalWidth, finalHeight);
+                  pointWidth = territories[i][1][0]
+                  pointWScaler = pointWidth / img.naturalWidth
+                  NewImgWidth = width * 0.65
+                  finalWidth = offset + (pointWScaler * NewImgWidth)
+
+                  pointHeight = territories[i][1][1]
+                  pointHScaler = pointHeight / img.naturalHeight
+                  NewImgHeight = img.naturalHeight * widthScaler
+                  finalHeight = (pointHScaler * NewImgHeight)
+
+                   if (p1ters.indexOf(territories[i]) >= 0){
+                        ctx.strokeStyle = 'red';
+                   }
+                   else {
+                        ctx.strokeStyle = 'blue';
+                   }
+                    ctx.strokeText('1', finalWidth, finalHeight);
               };
-         }
+         };
     };
 
     fetchTroops(troopsReceivedAction)
@@ -166,7 +118,7 @@ function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
-    console.log('x: ' + x + ' y: ' + y)
+    //console.log('x: ' + x + ' y: ' + y)
 };
 
 const canvas = document.getElementById('myCanvas')
