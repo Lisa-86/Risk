@@ -52,6 +52,18 @@ territories = {
     'Madagascar':[950,826],
     }
 
+imgnaturalWidth = 1536
+imgnaturalHeight = 999
+
+for ter in territories:
+    pointWidth = territories[ter][0]
+    pointWScaler = pointWidth / imgnaturalWidth
+    territories[ter][0] = pointWScaler
+
+    pointHeight = territories[ter][1]
+    pointHScaler = pointHeight / imgnaturalHeight
+    territories[ter][1] = pointHScaler
+
 ters = list(territories.items())
 
 def teralloc(ters):
@@ -69,5 +81,6 @@ def teralloc(ters):
 
     return p1ters, p2ters
 
-#p1ters, p2ters = teralloc(ters)
+p1ters, p2ters = teralloc(ters)
+
 

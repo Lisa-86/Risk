@@ -1,4 +1,3 @@
-
 function fetchTroops(responseSuccessF) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = responseSuccessF;
@@ -17,12 +16,8 @@ function drawMap(){
     var offset = ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
     var widthScaler = (width * 0.65) / img.naturalWidth
     ctx.font = '18px hancock';
-    ctx.strokeStyle = 'red';
     ctx.drawImage(img, offset, 0, width * 0.65, img.naturalHeight * widthScaler );
-
-    var mapWidth = 1536;
-    var mapHeight = 999;
-}
+};
 
 function troopsReceivedAction() {
      if (this.readyState == 4 && this.status == 200) {
@@ -41,16 +36,14 @@ function troopsReceivedAction() {
               city = territories[i][0]
 
               pointWidth = territories[i][1][0]
-              pointWScaler = pointWidth / img.naturalWidth
               NewImgWidth = window.innerWidth * 0.65
               var offset = ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
-              finalWidth = offset + (pointWScaler * NewImgWidth)
+              finalWidth = offset + (pointWidth * NewImgWidth)
 
               pointHeight = territories[i][1][1]
-              pointHScaler = pointHeight / img.naturalHeight
               var widthScaler = (window.innerWidth * 0.65) / img.naturalWidth
               NewImgHeight = img.naturalHeight * widthScaler
-              finalHeight = (pointHScaler * NewImgHeight)
+              finalHeight = (pointHeight * NewImgHeight)
 
                if (p1ters.indexOf(territories[i]) >= 0){
                     ctx.strokeStyle = 'red';
@@ -58,7 +51,7 @@ function troopsReceivedAction() {
                else {
                     ctx.strokeStyle = 'blue';
                }
-                ctx.strokeText('1', finalWidth, finalHeight);
+                ctx.strokeText('3', finalWidth, finalHeight);
 
           };
      };
@@ -74,14 +67,31 @@ window.onload = function() {
     // drawTroops
 };
 
+/*
+window.onresize = function() {
+    // draw pure map without troops
+    drawMap()
+    // fetch and draw (callback)
+    fetchTroops(troopsReceivedAction)
+
+    // redraw(updated_troops)
+    // drawTroops
+};
+*/
+
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
     //console.log('x: ' + x + ' y: ' + y)
+
+    spot = [x,y]
+    console.log("spot", spot)
+
 };
 
 const canvas = document.getElementById('myCanvas')
 canvas.addEventListener('mousedown', function(e) {
     getCursorPosition(canvas, e)
 });
+
