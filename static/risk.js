@@ -35,6 +35,7 @@ function troopsReceivedAction() {
           p2ters = troopsAllocation["player 2 territories"]
 
           territories = p1ters.concat(p2ters)
+          risk['territories'] = territories
 
           for (i = 0; i < territories.length; i++){
               city = territories[i][0]
@@ -69,6 +70,7 @@ window.onload = function() {
 
     // redraw(updated_troops)
     // drawTroops
+    risk = {}
 };
 
 /*
@@ -85,22 +87,41 @@ window.onresize = function() {
 
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
+    const click_x = event.clientX - rect.left
+    const click_y = event.clientY - rect.top
     //console.log('x: ' + x + ' y: ' + y)
-
-    var spot = [x,y]
     // subtract the offset from x
     // normalise with respect to the image
     var disp_img_width = window.innerWidth * 0.65
     var img = document.getElementById('Map');
     var widthScaler = (window.innerWidth * 0.65) / img.naturalWidth
     //
-    var norm_x =  (x - getOffsetX()) / disp_img_width
+    var norm_click_x =  (click_x - getOffsetX()) / disp_img_width
 
     var disp_img_height = img.naturalHeight * widthScaler
-    var norm_y = y / disp_img_height
-    console.log("norm new", norm_x, norm_y)
+    var norm_click_y = click_y / disp_img_height
+    // console.log("norm new", norm_x, norm_y)
+
+    // look up where it belongs
+    console.log()
+    var territories = risk['territories']
+    for (i=0 ; i<territories.length ; i++){
+        var territory = territories[i]
+//        console.log('terr', territory[1])
+        var loc = territory[1]
+        // consider that troops are drawn from the bottom left corner
+        var x = loc[0] + 0.0025
+        var y = loc[1] - 0.005
+
+        var tolerance = 0.02
+
+        if (norm_click_x > x - tolerance && norm_click_x < x + tolerance &&
+            norm_click_y > y - tolerance && norm_click_y < y + tolerance){
+            console.log('clicked', territory[0])
+        }
+
+    }
+
 
 };
 
