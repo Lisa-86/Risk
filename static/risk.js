@@ -6,6 +6,10 @@ function fetchTroops(responseSuccessF) {
     xhttp.send("Your JSON Data Here");
 }
 
+function getOffsetX(){
+    return ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
+}
+
 function drawMap(){
     var canvas = document.getElementById('myCanvas');
     canvas.width = window.screen.width
@@ -13,10 +17,10 @@ function drawMap(){
     var ctx = canvas.getContext('2d');
     var img = document.getElementById('Map');
     var width = window.innerWidth
-    var offset = ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
+    var offsetX = getOffsetX()
     var widthScaler = (width * 0.65) / img.naturalWidth
     ctx.font = '18px hancock';
-    ctx.drawImage(img, offset, 0, width * 0.65, img.naturalHeight * widthScaler );
+    ctx.drawImage(img, offsetX, 0, width * 0.65, img.naturalHeight * widthScaler );
 };
 
 function troopsReceivedAction() {
@@ -85,8 +89,18 @@ function getCursorPosition(canvas, event) {
     const y = event.clientY - rect.top
     //console.log('x: ' + x + ' y: ' + y)
 
-    spot = [x,y]
-    console.log("spot", spot)
+    var spot = [x,y]
+    // subtract the offset from x
+    // normalise with respect to the image
+    var disp_img_width = window.innerWidth * 0.65
+    var img = document.getElementById('Map');
+    var widthScaler = (window.innerWidth * 0.65) / img.naturalWidth
+    //
+    var norm_x =  (x - getOffsetX()) / disp_img_width
+
+    var disp_img_height = img.naturalHeight * widthScaler
+    var norm_y = y / disp_img_height
+    console.log("norm new", norm_x, norm_y)
 
 };
 
