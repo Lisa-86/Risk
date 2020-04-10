@@ -31,7 +31,6 @@ function troopsReceivedAction() {
           //console.log("got the allocation: ", this.responseText);
           var territories = JSON.parse(this.responseText);
           risk['territories'] = territories
-          console.log(territories)
 
           for (i = 0; i < Object.keys(territories).length; i++){
               var city = Object.keys(territories)[i]
@@ -47,7 +46,6 @@ function troopsReceivedAction() {
               NewImgHeight = img.naturalHeight * widthScaler
               finalHeight = (pointHeight * NewImgHeight)
 
-               console.log(territory['playerNo'])
                if (territory['playerNo'] == 1){
                     ctx.strokeStyle = 'red';
                }
@@ -99,12 +97,12 @@ function getCursorPosition(canvas, event) {
     // console.log("norm new", norm_x, norm_y)
 
     // look up where it belongs
-    console.log()
     var territories = risk['territories']
-    for (i=0 ; i<territories.length ; i++){
-        var territory = territories[i]
+    for (i=0 ; i<Object.keys(territories).length ; i++){
+        var name = Object.keys(territories)[i]
+        var territory = territories[name]
 //        console.log('terr', territory[1])
-        var loc = territory[1]
+        var loc = territory['loc']
         // consider that troops are drawn from the bottom left corner
         var x = loc[0] + 0.0025
         var y = loc[1] - 0.005
@@ -113,7 +111,7 @@ function getCursorPosition(canvas, event) {
 
         if (norm_click_x > x - tolerance && norm_click_x < x + tolerance &&
             norm_click_y > y - tolerance && norm_click_y < y + tolerance){
-            console.log('clicked', territory[0])
+            console.log('clicked', name)
         }
 
     }
