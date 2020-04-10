@@ -37,6 +37,7 @@ function troopsReceivedAction() {
           territories = p1ters.concat(p2ters)
           risk['territories'] = territories
 
+
           for (i = 0; i < territories.length; i++){
               city = territories[i][0]
 
@@ -67,13 +68,11 @@ window.onload = function() {
     drawMap()
     // fetch and draw (callback)
     fetchTroops(troopsReceivedAction)
-
-    // redraw(updated_troops)
-    // drawTroops
+    // our current data on state of play
     risk = {}
 };
 
-/*
+
 window.onresize = function() {
     // draw pure map without troops
     drawMap()
@@ -83,7 +82,7 @@ window.onresize = function() {
     // redraw(updated_troops)
     // drawTroops
 };
-*/
+
 
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()

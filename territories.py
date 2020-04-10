@@ -1,55 +1,57 @@
 import random
 
+# territories { 'territory': {'location': [x, y], 'playerno': playerNo, 'troopno': troopNo}}
+
 territories = {
     # Oceania
-    'Alaska': [112, 160],
-    'Eastern Australia': [1461, 864],
-    'Western Australia': [1324, 854],
-    'New Guinea': [1444, 725],
-    'Indonesia': [1313, 673],
+    'Alaska': {'loc' : [112, 160]},
+    'Eastern Australia': {'loc' : [1461, 864]},
+    'Western Australia': {'loc' : [1324, 854]},
+    'New Guinea': {'loc' : [1444, 725]},
+    'Indonesia': {'loc' : [1313, 673]},
     # Asia
-    'Siam': [1228, 554],
-    'India': [1110, 557],
-    'China': [1266, 450],
-    'Middle East': [944, 544],
-    'Afghanistan': [1029, 401],
-    'Mongolia': [1263, 350],
-    'Irkutsk': [1240, 256],
-    'Ural': [1046, 230],
-    'Siberia': [1129, 228],
-    'Yakutsk': [1268, 166],
-    'Kamchatka': [1404, 179],
-    'Japan': [1404, 386],
+    'Siam': {'loc' : [1228, 554]},
+    'India': {'loc' : [1110, 557]},
+    'China': {'loc' : [1266, 450]},
+    'Middle East': {'loc' : [944, 544]},
+    'Afghanistan': {'loc' : [1029, 401]},
+    'Mongolia': {'loc' : [1263, 350]},
+    'Irkutsk': {'loc' : [1240, 256]},
+    'Ural': {'loc' : [1046, 230]},
+    'Siberia': {'loc' : [1129, 228]},
+    'Yakutsk': {'loc' : [1268, 166]},
+    'Kamchatka': {'loc' : [1404, 179]},
+    'Japan': {'loc' : [1404, 386]},
     # Europe
-    'Ukraine': [905, 261],
-    'Scandinavia': [776, 221],
-    'Northern Europe': [766, 315],
-    'Southern Europe': [800, 381],
-    'Western Europe': [715, 385],
-    'Great Britain': [697, 305],
-    'Iceland': [660, 221],
+    'Ukraine': {'loc' : [905, 261]},
+    'Scandinavia': {'loc' : [776, 221]},
+    'Northern Europe': {'loc' : [766, 315]},
+    'Southern Europe': {'loc' : [800, 381]},
+    'Western Europe': {'loc' : [715, 385]},
+    'Great Britain': {'loc' : [697, 305]},
+    'Iceland': {'loc' : [660, 221]},
     # North America
-    'Alaska': [112,162],
-    'Northwest Territory': [261,167],
-    'Alberta': [258,250],
-    'Ontario': [352,261],
-    'Greenland': [603,94],
-    'Quebec': [495,266],
-    'Western United States': [271,330],
-    'Eastern United States': [390,377],
-    'Central America': [270,448],
+    'Alaska': {'loc' : [112,162]},
+    'Northwest Territory': {'loc' : [261,167]},
+    'Alberta': {'loc' : [258,250]},
+    'Ontario': {'loc' : [352,261]},
+    'Greenland': {'loc' : [603,94]},
+    'Quebec': {'loc' : [495,266]},
+    'Western United States': {'loc' : [271,330]},
+    'Eastern United States': {'loc' : [390,377]},
+    'Central America': {'loc' : [270,448]},
     # South America
-    'Venezuela': [389,548],
-    'Brazil': [490,643],
-    'Peru': [377,686],
-    'Argentina': [424,790],
+    'Venezuela': {'loc' : [389,548]},
+    'Brazil': {'loc' : [490,643]},
+    'Peru': {'loc' : [377,686]},
+    'Argentina': {'loc' : [424,790]},
     # Africa
-    'North Africa': [708,554],
-    'Egypt':[828,506],
-    'East Africa': [880,625],
-    'Congo': [825,683],
-    'South Africa': [834,824],
-    'Madagascar':[950,826],
+    'North Africa': {'loc' : [708,554]},
+    'Egypt':{'loc' : [828,506]},
+    'East Africa': {'loc' : [880,625]},
+    'Congo': {'loc' : [825,683]},
+    'South Africa': {'loc' : [834,824]},
+    'Madagascar':{'loc' : [950,826]},
     }
 
 imgnaturalWidth = 1536
@@ -64,6 +66,8 @@ for ter in territories:
     pointHScaler = pointHeight / imgnaturalHeight
     territories[ter][1] = pointHScaler
 
+print(territories)
+
 ters = list(territories.items())
 
 def teralloc(ters):
@@ -76,11 +80,11 @@ def teralloc(ters):
     for ter in ters:
         if ter not in p1ters:
             p2ters.append(ter)
-
-
-
+            
     return p1ters, p2ters
 
 p1ters, p2ters = teralloc(ters)
 
-
+for ter in territories:
+    if ter in p1ters:
+        territories[ter]
