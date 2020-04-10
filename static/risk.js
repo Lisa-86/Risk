@@ -58,6 +58,37 @@ function troopsReceivedAction() {
      };
 };
 
+function drawTroops(){
+    var territories = risk['territories']
+    var img = document.getElementById('Map');
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+
+    for (i = 0; i < Object.keys(territories).length; i++){
+      var city = Object.keys(territories)[i]
+      var territory = territories[city]
+
+      pointWidth = territory['loc'][0]
+      NewImgWidth = window.innerWidth * 0.65
+      var offset = ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
+      finalWidth = offset + (pointWidth * NewImgWidth)
+
+      pointHeight = territory['loc'][1]
+      var widthScaler = (window.innerWidth * 0.65) / img.naturalWidth
+      NewImgHeight = img.naturalHeight * widthScaler
+      finalHeight = (pointHeight * NewImgHeight)
+
+       if (territory['playerNo'] == 1){
+            ctx.strokeStyle = 'red';
+       }
+       else {
+            ctx.strokeStyle = 'blue';
+       }
+        ctx.strokeText(territory['troopNo'], finalWidth, finalHeight);
+
+    };
+}
+
 window.onload = function() {
     // draw pure map without troops
     drawMap()
@@ -69,13 +100,8 @@ window.onload = function() {
 
 
 window.onresize = function() {
-    // draw pure map without troops
     drawMap()
-    // fetch and draw (callback)
-    fetchTroops(troopsReceivedAction)
-
-    // redraw(updated_troops)
-    // drawTroops
+    drawTroops()
 };
 
 
