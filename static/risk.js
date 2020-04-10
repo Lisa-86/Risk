@@ -25,39 +25,36 @@ function drawMap(){
 
 function troopsReceivedAction() {
      if (this.readyState == 4 && this.status == 200) {
-        var img = document.getElementById('Map');
-        var canvas = document.getElementById('myCanvas');
-        var ctx = canvas.getContext('2d');
-         //console.log("got the allocation: ", this.responseText);
-         troopsAllocation = JSON.parse(this.responseText);
-
-          p1ters = troopsAllocation["player 1 territories"]
-          p2ters = troopsAllocation["player 2 territories"]
-
-          territories = p1ters.concat(p2ters)
+          var img = document.getElementById('Map');
+          var canvas = document.getElementById('myCanvas');
+          var ctx = canvas.getContext('2d');
+          //console.log("got the allocation: ", this.responseText);
+          var territories = JSON.parse(this.responseText);
           risk['territories'] = territories
+          console.log(territories)
 
+          for (i = 0; i < Object.keys(territories).length; i++){
+              var city = Object.keys(territories)[i]
+              var territory = territories[city]
 
-          for (i = 0; i < territories.length; i++){
-              city = territories[i][0]
-
-              pointWidth = territories[i][1][0]
+              pointWidth = territory['loc'][0]
               NewImgWidth = window.innerWidth * 0.65
               var offset = ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
               finalWidth = offset + (pointWidth * NewImgWidth)
 
-              pointHeight = territories[i][1][1]
+              pointHeight = territory['loc'][1]
               var widthScaler = (window.innerWidth * 0.65) / img.naturalWidth
               NewImgHeight = img.naturalHeight * widthScaler
               finalHeight = (pointHeight * NewImgHeight)
 
-               if (p1ters.indexOf(territories[i]) >= 0){
+               console.log(territory['playerNo'])
+               if (territory['playerNo'] == 1){
                     ctx.strokeStyle = 'red';
                }
                else {
                     ctx.strokeStyle = 'blue';
                }
-                ctx.strokeText('3', finalWidth, finalHeight);
+                ctx.strokeText(territory['troopNo'], finalWidth, finalHeight);
 
           };
      };

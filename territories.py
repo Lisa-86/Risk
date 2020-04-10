@@ -69,23 +69,28 @@ for ter in territories:
 
 print(territories)
 
-ters = list(territories.items())
 
-def teralloc(ters):
+
+def teralloc(territories, troopNo=3):
     playerno = 2
-    troopno = int(len(ters) / playerno)
+    ter_no = int(len(territories) / playerno)
 
-    p1ters = random.sample(ters, troopno)
-    p2ters = []
+    # just the territories
+    ters = list(territories)
+
+    p1ters = random.sample(ters, ter_no)
 
     for ter in ters:
-        if ter not in p1ters:
-            p2ters.append(ter)
-            
-    return p1ters, p2ters
+        territories[ter]['troopNo'] = troopNo
+        if ter in p1ters:
+            territories[ter]['playerNo'] = 1
+        else:
+            territories[ter]['playerNo'] = 2
 
-p1ters, p2ters = teralloc(ters)
+    return territories
 
-for ter in territories:
-    if ter in p1ters:
-        territories[ter]
+# p1ters, p2ters = teralloc(ters)
+#
+# for ter in territories:
+#     if ter in p1ters:
+#         territories[ter]
