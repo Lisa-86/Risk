@@ -57,14 +57,15 @@ territories = {
 imgnaturalWidth = 1536
 imgnaturalHeight = 999
 
+# replacing absolute location with relative to the natural image size (normalised to 0-1 range)
 for ter in territories:
-    pointWidth = territories[ter][0]
+    pointWidth = territories[ter]['loc'][0]
     pointWScaler = pointWidth / imgnaturalWidth
-    territories[ter][0] = pointWScaler
+    territories[ter]['loc'][0] = pointWScaler
 
-    pointHeight = territories[ter][1]
+    pointHeight = territories[ter]['loc'][1]
     pointHScaler = pointHeight / imgnaturalHeight
-    territories[ter][1] = pointHScaler
+    territories[ter]['loc'][1] = pointHScaler
 
 print(territories)
 
