@@ -6,21 +6,17 @@ function fetchTroops(responseSuccessF) {
   xhttp.send("Your JSON Data Here");
 }
 
-function getOffsetX() {
-  return ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
-}
-
 function drawMap() {
   var canvas = document.getElementById('myCanvas');
-  canvas.width = window.screen.width
+  var mapcol = $('#mapcol')
+  var width = mapcol.width()
+  canvas.width = width
   canvas.height = window.innerHeight - 65
   var ctx = canvas.getContext('2d');
   var img = document.getElementById('Map');
-  var width = window.innerWidth
-  var offsetX = getOffsetX()
-  var widthScaler = (width * 0.65) / img.naturalWidth
+  var widthScaler = width / img.naturalWidth
   ctx.font = '18px hancock';
-  ctx.drawImage(img, offsetX, 0, width * 0.65, img.naturalHeight * widthScaler);
+  ctx.drawImage(img, 0, 0, width, img.naturalHeight * widthScaler);
 };
 
 function troopsReceivedAction() {
@@ -37,12 +33,11 @@ function troopsReceivedAction() {
       var territory = territories[city]
 
       pointWidth = territory['loc'][0]
-      NewImgWidth = window.innerWidth * 0.65
-      var offset = ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
-      finalWidth = offset + (pointWidth * NewImgWidth)
+      var mapcol = $('#mapcol')
+      var finalWidth = pointWidth * mapcol.width()
 
       pointHeight = territory['loc'][1]
-      var widthScaler = (window.innerWidth * 0.65) / img.naturalWidth
+      var widthScaler = mapcol.width() / img.naturalWidth
       NewImgHeight = img.naturalHeight * widthScaler
       finalHeight = (pointHeight * NewImgHeight)
 
@@ -67,15 +62,15 @@ function drawTroops() {
     var city = Object.keys(territories)[i]
     var territory = territories[city]
 
-    pointWidth = territory['loc'][0]
-    NewImgWidth = window.innerWidth * 0.65
-    var offset = ((window.innerWidth - (window.innerWidth * 0.65)) / 2) - 6
-    finalWidth = offset + (pointWidth * NewImgWidth)
+      pointWidth = territory['loc'][0]
+      mapcol = document.getElementById('mapcol')
+      var finalWidth = pointWidth * mapcol.clientWidth
 
-    pointHeight = territory['loc'][1]
-    var widthScaler = (window.innerWidth * 0.65) / img.naturalWidth
-    NewImgHeight = img.naturalHeight * widthScaler
-    finalHeight = (pointHeight * NewImgHeight)
+      pointHeight = territory['loc'][1]
+      var widthScaler = mapcol.clientWidth / img.naturalWidth
+      NewImgHeight = img.naturalHeight * widthScaler
+      finalHeight = (pointHeight * NewImgHeight)
+
 
     if (territory['playerNo'] == 1) {
       ctx.strokeStyle = 'red';

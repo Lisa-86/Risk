@@ -44,10 +44,26 @@
 
 <body style='background-color:powderblue;'>
 
+<div class="container">
+  <div class="row">
+    <div class="col-md-1">
+      Red Player
+    </div>
 
-<img id='Map' src='{{url_for('static', filename = 'riskMap.jpeg')}}' alt='Map' style='display:none;' >
+    <div class="col-md-10", id='mapcol'>
+        <img id='Map' src='{{url_for('static', filename = 'riskMap.jpeg')}}' alt='Map' style='display:none;' >
 
-<canvas id='myCanvas'></canvas>
+        <canvas id='myCanvas'></canvas>
+    </div>
+
+    <div class="col-md-1">
+      Blue Player
+    </div>
+  </div>
+</div>
+
+
+
 
 <script type = 'text/javascript' src = '{{ url_for('static', filename = 'risk.js') }}'></script>
 
