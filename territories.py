@@ -53,6 +53,7 @@ territories = {
     'Madagascar':{'loc' : [950,826], 'neighbours': ['South Africa', 'East Africa']},
     }
 
+# This checks that all the territories are correctly included
 for ter in territories:
     for n in territories[ter]['neighbours']:
         if ter not in territories[n]['neighbours']:
