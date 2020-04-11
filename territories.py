@@ -1,27 +1,26 @@
 import random
 
-# territories { 'territory': {'location': [x, y], 'playerno': playerNo, 'troopno': troopNo}}
+# territories { 'territory': {'location': [x, y], 'neighbours': [a, b, c], 'playerno': playerNo, 'troopno': troopNo}}
 
 territories = {
     # Oceania
-    'Alaska': {'loc' : [112, 160]},
-    'Eastern Australia': {'loc' : [1461, 864]},
-    'Western Australia': {'loc' : [1324, 854]},
-    'New Guinea': {'loc' : [1444, 725]},
-    'Indonesia': {'loc' : [1313, 673]},
+    'Eastern Australia': {'loc' : [1461, 864], 'neighbours': ['Western Australia', 'New Guinea']},
+    'Western Australia': {'loc' : [1324, 854], 'neighbours': ['Eastern Australia', 'New Guinea', 'Indonesia']},
+    'New Guinea': {'loc' : [1444, 725], 'neighbours': ['Eastern Australia', 'Western Australia', 'Indonesia']},
+    'Indonesia': {'loc' : [1313, 673], 'neighbours': ['Western Australia', 'New Guinea', 'Siam']},
     # Asia
-    'Siam': {'loc' : [1228, 554]},
-    'India': {'loc' : [1110, 557]},
-    'China': {'loc' : [1266, 450]},
-    'Middle East': {'loc' : [944, 544]},
-    'Afghanistan': {'loc' : [1029, 401]},
-    'Mongolia': {'loc' : [1263, 350]},
-    'Irkutsk': {'loc' : [1240, 256]},
-    'Ural': {'loc' : [1046, 230]},
-    'Siberia': {'loc' : [1129, 228]},
-    'Yakutsk': {'loc' : [1268, 166]},
-    'Kamchatka': {'loc' : [1404, 179]},
-    'Japan': {'loc' : [1404, 386]},
+    'Siam': {'loc' : [1228, 554], 'neighbours': ['Indonesia', 'India', 'China']},
+    'India': {'loc' : [1110, 557], 'neighbours': ['Siam', 'China', 'Afghanistan', 'Middle East']},
+    'China': {'loc' : [1266, 450], 'neighbours': ['Siam', 'India','Afghanistan', 'Ural', 'Siberia', 'Mongolia']},
+    'Middle East': {'loc' : [944, 544], 'neighbours': ['India', 'Afghanistan', 'Ukraine', 'Southern Europe', 'Egypt']},
+    'Afghanistan': {'loc' : [1029, 401], 'neighbours': ['Ukraine', 'Middle East', 'India', 'China', 'Ural']},
+    'Mongolia': {'loc' : [1263, 350], 'neighbours': ['China', 'Siberia', 'Irkutsk', 'Kamchatka', 'Japan']},
+    'Irkutsk': {'loc' : [1240, 256], 'neighbours': ['Mongolia', 'Siberia', 'Yakutsk', 'Kamchatka']},
+    'Ural': {'loc' : [1046, 230], 'neighbours': ['Siberia', 'China', 'Afghanistan', 'Ukraine']},
+    'Siberia': {'loc' : [1129, 228], 'neighbours': ['Yakutsk', 'Irkutsk', 'Mongolia', 'China', 'Ural']},
+    'Yakutsk': {'loc' : [1268, 166], 'neighbours': ['Kamchatka', 'Irkutsk', 'Siberia']},
+    'Kamchatka': {'loc' : [1404, 179], 'neighbours': ['Yakutsk', 'Irkutsk', 'Mongolia', 'Japan', 'Alaska']},
+    'Japan': {'loc' : [1404, 386], 'neighbours': ['Mongolia', 'Kamchatka']},
     # Europe
     'Ukraine': {'loc' : [905, 261]},
     'Scandinavia': {'loc' : [776, 221]},
