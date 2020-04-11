@@ -33,7 +33,7 @@ territories = {
     'Alaska': {'loc' : [112,162], 'neighbours': ['Northwest Territory', 'Alberta', 'Kamchatka']},
     'Northwest Territory': {'loc' : [261,167], 'neighbours': ['Greenland', 'Ontario', 'Alberta', 'Alaska']},
     'Alberta': {'loc' : [258,250], 'neighbours': ['Western United States', 'Ontario', 'Northwest Territory', 'Alaska']},
-    'Ontario': {'loc' : [352,261], 'neighbours': ['Quebec', 'Eastern United States', 'Western United States', 'Alberta', 'Northwest Territory']},
+    'Ontario': {'loc' : [352,261], 'neighbours': ['Quebec', 'Eastern United States', 'Western United States', 'Alberta', 'Northwest Territory', 'Greenland']},
     'Greenland': {'loc' : [603,94], 'neighbours': ['Quebec', 'Iceland', 'Ontario', 'Northwest Territory']},
     'Quebec': {'loc' : [495,266], 'neighbours': ['Greenland', 'Eastern United States', 'Ontario']},
     'Western United States': {'loc' : [271,330], 'neighbours': ['Central America', 'Eastern United States', 'Ontario', 'Alberta']},
@@ -45,13 +45,20 @@ territories = {
     'Peru': {'loc' : [377,686], 'neighbours': ['Argentina', 'Brazil', 'Venezuela']},
     'Argentina': {'loc' : [424,790], 'neighbours': ['Brazil', 'Peru']},
     # Africa
-    'North Africa': {'loc' : [708,554], 'neighbours': ['Congo', 'North Africa', 'Egypt', 'Brazil', 'Southern Europe', 'Western Europe']},
+    'North Africa': {'loc' : [708,554], 'neighbours': ['Congo', 'East Africa', 'Egypt', 'Brazil', 'Southern Europe', 'Western Europe']},
     'Egypt':{'loc' : [828,506], 'neighbours': ['East Africa', 'North Africa', 'Southern Europe', 'Middle East']},
     'East Africa': {'loc' : [880,625], 'neighbours': ['Madagascar', 'South Africa', 'Congo', 'North Africa', 'Egypt']},
     'Congo': {'loc' : [825,683], 'neighbours': ['South Africa', 'East Africa', 'North Africa']},
     'South Africa': {'loc' : [834,824], 'neighbours': ['Madagascar', 'Congo', 'East Africa']},
     'Madagascar':{'loc' : [950,826], 'neighbours': ['South Africa', 'East Africa']},
     }
+
+for ter in territories:
+    for n in territories[ter]['neighbours']:
+        if ter not in territories[n]['neighbours']:
+            print("PROBLEMU")
+            raise Exception (ter, n)
+
 
 imgnaturalWidth = 1536
 imgnaturalHeight = 999
