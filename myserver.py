@@ -2,6 +2,7 @@ from flask import Flask, render_template, session
 from flask_restful import Resource, Api
 import random
 from territories import teralloc, territories
+from risk import reinforcements
 
 app = Flask(__name__)
 api = Api(app)
@@ -30,9 +31,14 @@ class PlayerTurn(Resource):
         risk_data['whichPlayer'] = random.randint(1, 2) # only between two player for now
         return risk_data['whichPlayer']
 
+class Reinforce(Resource):
+    def get(self):
+        reinforceNo = reinforcements(risk_data['territories'], risk_data['whichPlayer'])
+        return reinforceNo
 
-api.add_resource(TroopResource, '/countries')
+api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(PlayerTurn, '/REST/player')
+api.add_resource(Reinforce, '/REST/reinforce')
 
 if __name__ == '__main__':
     app.run()

@@ -2,7 +2,7 @@ import random
 from territories import territories, teralloc
 
 
-def Reinforcements(territories, playerNo):
+def reinforcements(territories, playerNo):
     # Will calculate how many troops a player receives at the beginning of their turn (only based on ters held)
     count = 0
     for ter in territories:

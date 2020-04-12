@@ -16,7 +16,7 @@ function reactToPlayerChoice(){
 function fetchTroops(responseSuccessF) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = responseSuccessF;
-  xhttp.open("GET", "/countries", true);
+  xhttp.open("GET", "/REST/countries", true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }
@@ -24,14 +24,13 @@ function fetchTroops(responseSuccessF) {
 function drawMap() {
   var canvas = document.getElementById('myCanvas');
   var mapcol = $('#mapcol')
-  var width = mapcol.width()
-  canvas.width = width
+  canvas.width = mapcol.width()
   canvas.height = window.innerHeight - 65
   var ctx = canvas.getContext('2d');
   var img = document.getElementById('Map');
-  var widthScaler = width / img.naturalWidth
+  var widthScaler = mapcol.width() / img.naturalWidth
   ctx.font = '18px hancock';
-  ctx.drawImage(img, 0, 0, width, img.naturalHeight * widthScaler * 0.9);
+  ctx.drawImage(img, 0, 0, mapcol.width(), img.naturalHeight * widthScaler);
 };
 
 function troopsReceivedAction() {
@@ -52,7 +51,7 @@ function troopsReceivedAction() {
       var finalWidth = pointWidth * mapcol.width()
 
       pointHeight = territory['loc'][1]
-      var widthScaler = mapcol.width() * 0.9 / img.naturalWidth
+      var widthScaler = mapcol.width() / img.naturalWidth
       NewImgHeight = img.naturalHeight * widthScaler
       finalHeight = (pointHeight * NewImgHeight)
 
@@ -78,11 +77,11 @@ function drawTroops() {
     var territory = territories[city]
 
       pointWidth = territory['loc'][0]
-      mapcol = document.getElementById('mapcol')
-      var finalWidth = pointWidth * mapcol.clientWidth
+      var mapcol = $('#mapcol')
+      var finalWidth = pointWidth * mapcol.width()
 
       pointHeight = territory['loc'][1]
-      var widthScaler = mapcol.clientWidth / img.naturalWidth
+      var widthScaler = mapcol.width() / img.naturalWidth
       NewImgHeight = img.naturalHeight * widthScaler
       finalHeight = (pointHeight * NewImgHeight)
 
@@ -121,14 +120,11 @@ function getCursorPosition(canvas, event) {
   const click_x = event.clientX - rect.left
   const click_y = event.clientY - rect.top
   //console.log('x: ' + x + ' y: ' + y)
-  // subtract the offset from x
   // normalise with respect to the image
-  var disp_img_width = window.innerWidth * 0.65
+  var mapcol = $('#mapcol')
   var img = document.getElementById('Map');
-  var widthScaler = (window.innerWidth * 0.65) / img.naturalWidth
-  //
-  var norm_click_x = (click_x - getOffsetX()) / disp_img_width
-
+  var widthScaler = mapcol.width() / img.naturalWidth
+  var norm_click_x = click_x / mapcol.width()
   var disp_img_height = img.naturalHeight * widthScaler
   var norm_click_y = click_y / disp_img_height
   // console.log("norm new", norm_x, norm_y)
@@ -138,7 +134,6 @@ function getCursorPosition(canvas, event) {
   for (i = 0; i < Object.keys(territories).length; i++) {
     var name = Object.keys(territories)[i]
     var territory = territories[name]
-    //        console.log('terr', territory[1])
     var loc = territory['loc']
     // consider that troops are drawn from the bottom left corner
     var x = loc[0] + 0.0025
