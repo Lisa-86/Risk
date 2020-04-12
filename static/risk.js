@@ -6,6 +6,20 @@ function askWhoseTurn(responseSuccessF) {
   xhttp.send("Your JSON Data Here");
 }
 
+function howManyReinforcements(responseSuccessF) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = responseSuccessF;
+  xhttp.open("GET", "/REST/reinforce", true);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send("Your JSON Data Here");
+}
+
+function updateTroops(){
+    if (this.readyState == 4 && this.status == 200) {
+        console.log('Has ' + this.responseText + ' many  more troops')
+    }
+}
+
 function reactToPlayerChoice(){
     if (this.readyState == 4 && this.status == 200) {
         console.log('Next Player Turn:  ' + this.responseText)
@@ -106,6 +120,7 @@ window.onload = function() {
   fetchTroops(troopsReceivedAction)
 
   askWhoseTurn(reactToPlayerChoice)
+  howManyReinforcements(updateTroops)
 };
 
 
