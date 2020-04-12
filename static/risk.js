@@ -1,3 +1,18 @@
+function askWhoseTurn(responseSuccessF) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = responseSuccessF;
+  xhttp.open("GET", "/REST/player", true);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send("Your JSON Data Here");
+}
+
+function reactToPlayerChoice(){
+    if (this.readyState == 4 && this.status == 200) {
+        console.log('Next Player Turn:  ' + this.responseText)
+        risk['currentPlayer'] = Number(this.responseText)
+    }
+}
+
 function fetchTroops(responseSuccessF) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = responseSuccessF;
@@ -83,12 +98,15 @@ function drawTroops() {
 }
 
 window.onload = function() {
+  // our global data on state of play
+  risk = {}
+
   // draw pure map without troops
   drawMap()
   // fetch and draw (callback)
   fetchTroops(troopsReceivedAction)
-  // our current data on state of play
-  risk = {}
+
+  askWhoseTurn(reactToPlayerChoice)
 };
 
 
