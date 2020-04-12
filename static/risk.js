@@ -16,7 +16,7 @@ function drawMap() {
   var img = document.getElementById('Map');
   var widthScaler = width / img.naturalWidth
   ctx.font = '18px hancock';
-  ctx.drawImage(img, 0, 0, width, img.naturalHeight * widthScaler);
+  ctx.drawImage(img, 0, 0, width, img.naturalHeight * widthScaler * 0.9);
 };
 
 function troopsReceivedAction() {
@@ -37,7 +37,7 @@ function troopsReceivedAction() {
       var finalWidth = pointWidth * mapcol.width()
 
       pointHeight = territory['loc'][1]
-      var widthScaler = mapcol.width() / img.naturalWidth
+      var widthScaler = mapcol.width() * 0.9 / img.naturalWidth
       NewImgHeight = img.naturalHeight * widthScaler
       finalHeight = (pointHeight * NewImgHeight)
 

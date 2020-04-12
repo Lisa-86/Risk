@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 from flask_restful import Resource, Api
-
 from territories import teralloc, territories
 
 app = Flask(__name__)
