@@ -74,7 +74,7 @@ for ter in territories:
     pointHScaler = pointHeight / imgnaturalHeight
     territories[ter]['loc'][1] = pointHScaler
 
-print(territories)
+#print("this is ters", territories)
 
 
 
@@ -96,8 +96,10 @@ def teralloc(territories, troopNo=3):
 
     return territories
 
-# p1ters, p2ters = teralloc(ters)
+#test = teralloc(territories)
 #
 # for ter in territories:
 #     if ter in p1ters:
 #         territories[ter]
+
+
