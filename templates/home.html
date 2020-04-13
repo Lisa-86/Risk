@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <link href = '{{url_for('static', filename = 'bootstrap.css')}}' rel = 'stylesheet'>
    <script src = 'https://code.jquery.com/jquery.js'></script>
   <script type = 'text/javascript'
          src = '{{ url_for('static', filename = 'bootstrap.js') }}' ></script>
-
 </head>
 
+
+<body style='background-color:gainsboro; font-family:courier new;'>
 
 <nav class='navbar navbar-expand-lg navbar-light bg-light'>
   <a class='navbar' href='#'>Navbar</a>
@@ -41,15 +43,12 @@
   </div>
 </nav>
 
-
-<body style='background-color:powderblue;'>
-
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-2", style = "font-family:courier new;">
-      <p>
-        Red Player:
-
+    <div class="col-md-2">
+        <strong>
+            Red Player:
+        </strong>
         <div id='statstable'>
             <table>
                 <tr>
@@ -61,26 +60,21 @@
                     <td id='redTerNo'> </td>
             </table>
         </div>
-
-      </p>
-      <div id="redcon" >
-
-      </div>
-
+        <div id="redcon" >
+        </div>
     </div>
 
     <div class="col-md-8", id='mapcol'>
         <img id='Map' src='{{url_for('static', filename = 'riskMap.jpeg')}}' alt='Map' style='display:none;' >
-
         <canvas id='myCanvas'></canvas>
     </div>
 
-    <div class="col-md-2", style = "font-family:courier new;">
-      <p>
+    <div class="col-md-2">
+        <strong>
         Blue Player:
-      </p>
-      <div id="bluecon">
-      </div>
+        </strong>
+        <div id="bluecon">
+        </div>
     </div>
   </div>
 </div>
