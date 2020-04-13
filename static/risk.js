@@ -24,6 +24,17 @@ function reactToPlayerChoice(){
     if (this.readyState == 4 && this.status == 200) {
         console.log('Next Player Turn:  ' + this.responseText)
         risk['currentPlayer'] = Number(this.responseText)
+        redcon = document.getElementById('redcon')
+        bluecon = document.getElementById('bluecon')
+        if (risk['currentPlayer'] == 1){
+            redcon.innerText = 'It is your turn. Please proceed.'
+            bluecon.innerText = 'Your orders are to wait for your next turn.'
+        }
+        else {
+            redcon.innerText = 'Your orders are to wait for your next turn.'
+            bluecon.innerText = 'It is your turn. Please proceed.'
+        }
+
     }
 }
 
@@ -109,6 +120,8 @@ function drawTroops() {
 
   };
 }
+
+
 
 window.onload = function() {
   // our global data on state of play
