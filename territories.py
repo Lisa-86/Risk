@@ -1,6 +1,6 @@
 import random
 
-# territories { 'territory': {'location': [x, y], 'neighbours': [a, b, c], 'playerno': playerNo, 'troopno': troopNo}}
+# territories { 'territory': {'location': [x, y], 'neighbours': [a, b, c], 'playerNo': playerNo, 'troopno': troopNo}}
 
 territories = {
     # Oceania

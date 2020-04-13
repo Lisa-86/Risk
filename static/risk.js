@@ -35,6 +35,12 @@ function reactToPlayerChoice(){
             bluecon.innerText = 'It is your turn. Please proceed.'
         }
 
+        howManyReinforcements(updateTroops)
+        redTroopNo = document.getElementById('redTroopNo')
+        redTroopNo.innerText = '63'
+        redTerNo = document.getElementById('redTerNo')
+        terCount = getTerNo(1)
+        redTerNo.innerText = terCount
     }
 }
 
@@ -88,6 +94,9 @@ function troopsReceivedAction() {
       ctx.strokeText(territory['troopNo'], finalWidth, finalHeight);
 
     };
+
+    // troops drawn, now ask whose it is
+    askWhoseTurn(reactToPlayerChoice)
   };
 };
 
@@ -121,7 +130,17 @@ function drawTroops() {
   };
 }
 
-
+function getTerNo(playerNo){
+    var territories = risk['territories']
+    var count = 0
+    for (i = 0; i < Object.keys(territories).length; i++){
+        var ter = Object.keys(territories)[i]
+        if (territories[ter]['playerNo'] == playerNo){
+            count += 1
+        }
+    }
+    return count
+}
 
 window.onload = function() {
   // our global data on state of play
@@ -131,9 +150,6 @@ window.onload = function() {
   drawMap()
   // fetch and draw (callback)
   fetchTroops(troopsReceivedAction)
-
-  askWhoseTurn(reactToPlayerChoice)
-  howManyReinforcements(updateTroops)
 };
 
 

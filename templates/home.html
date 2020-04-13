@@ -44,11 +44,24 @@
 
 <body style='background-color:powderblue;'>
 
-<div class="container">
+<div class="container-fluid">
   <div class="row">
-    <div class="col-md-1", style = "font-family:courier new;">
+    <div class="col-md-2", style = "font-family:courier new;">
       <p>
         Red Player:
+
+        <div id='statstable'>
+            <table>
+                <tr>
+                    <th> No of troops </th>
+                    <th> No of territories </th>
+                </tr>
+                <tr>
+                    <td id="redTroopNo"> </td>
+                    <td id='redTerNo'> </td>
+            </table>
+        </div>
+
       </p>
       <div id="redcon" >
 
@@ -56,13 +69,13 @@
 
     </div>
 
-    <div class="col-md-10", id='mapcol'>
+    <div class="col-md-8", id='mapcol'>
         <img id='Map' src='{{url_for('static', filename = 'riskMap.jpeg')}}' alt='Map' style='display:none;' >
 
         <canvas id='myCanvas'></canvas>
     </div>
 
-    <div class="col-md-1", style = "font-family:courier new;">
+    <div class="col-md-2", style = "font-family:courier new;">
       <p>
         Blue Player:
       </p>

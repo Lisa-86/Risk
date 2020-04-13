@@ -13,7 +13,7 @@ def reinforcements(territories, playerNo):
         return 3
     else:
         reinforcements = count // 3
-        return reinforcements
+        return count, reinforcements
 
 
 
