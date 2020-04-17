@@ -1,3 +1,5 @@
+// risk = {'territories': {'location': [x, y], 'neighbours': [a, b, c], 'playerNo': playerNo, 'troopno': troopNo}, 'currentPlayer': currentPlayer, 'reinNo': reinNo}
+
 function askWhoseTurn(responseSuccessF) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = responseSuccessF;
@@ -17,6 +19,17 @@ function howManyReinforcements(responseSuccessF) {
 function updateTroops(){
     if (this.readyState == 4 && this.status == 200) {
         console.log('Has ' + this.responseText + ' many  more troops')
+        var redren = document.getElementById('redreinforceno')
+        var blueren = document.getElementById('bluereinforceno')
+        var reinNo = Number(this.responseText)
+        risk["reinNo"] = reinNo
+
+        if (risk['currentPlayer'] == 1){
+            redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
+        }
+        else {
+            blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
+        }
     }
 }
 
@@ -24,6 +37,7 @@ function reactToPlayerChoice(){
     if (this.readyState == 4 && this.status == 200) {
         console.log('Next Player Turn:  ' + this.responseText)
         risk['currentPlayer'] = Number(this.responseText)
+        howManyReinforcements(updateTroops)
         redcon = document.getElementById('redcon')
         bluecon = document.getElementById('bluecon')
         if (risk['currentPlayer'] == 1){
@@ -35,7 +49,7 @@ function reactToPlayerChoice(){
             bluecon.innerText = 'It is your turn. Please proceed.'
         }
 
-        howManyReinforcements(updateTroops)
+
         redTroopNo = document.getElementById('redTroopNo')
         redTroopNo.innerText = '63'
         redTerNo = document.getElementById('redTerNo')
@@ -186,10 +200,14 @@ function getCursorPosition(canvas, event) {
     var tolerance = 0.02
 
     if (norm_click_x > x - tolerance && norm_click_x < x + tolerance &&
-      norm_click_y > y - tolerance && norm_click_y < y + tolerance) {
-      console.log('clicked', name)
+    norm_click_y > y - tolerance && norm_click_y < y + tolerance) {
+        console.log('clicked', name, risk['territories'][name]['playerNo'], 'currentPlayer', risk['currentPlayer'])
+        if (risk['reinNo'] > 0 && risk['currentPlayer'] == risk['territories'][name]['playerNo']){
+            risk['reinNo'] -= 1
+            risk['territories'][name]['troopNo'] += 1
+            console.log("update", risk['reinNo'], "troopNo", risk['territories'][name]['troopNo'])
+      }
     }
-
   }
 
 
