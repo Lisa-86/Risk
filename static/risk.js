@@ -8,6 +8,14 @@ function askWhoseTurn(responseSuccessF) {
   xhttp.send("Your JSON Data Here");
 }
 
+function updateServerDeployment(country) {
+  var xhttp = new XMLHttpRequest();
+//  xhttp.onreadystatechange = responseSuccessF;
+  xhttp.open("PUT", "/REST/deployment/" + country, true);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send("Your JSON Data Here");
+}
+
 function howManyReinforcements(responseSuccessF) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = responseSuccessF;
@@ -16,20 +24,24 @@ function howManyReinforcements(responseSuccessF) {
   xhttp.send("Your JSON Data Here");
 }
 
+function drawReinNo(){
+    var reinNo = risk['reinNo']
+    var redren = document.getElementById('redreinforceno')
+    var blueren = document.getElementById('bluereinforceno')
+
+    if (risk['currentPlayer'] == 1 ){
+        redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
+    }
+    else {
+        blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
+    }
+}
+
 function updateTroops(){
     if (this.readyState == 4 && this.status == 200) {
         console.log('Has ' + this.responseText + ' many  more troops')
-        var redren = document.getElementById('redreinforceno')
-        var blueren = document.getElementById('bluereinforceno')
-        var reinNo = Number(this.responseText)
-        risk["reinNo"] = reinNo
-
-        if (risk['currentPlayer'] == 1){
-            redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
-        }
-        else {
-            blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
-        }
+        risk['reinNo'] = Number(this.responseText)
+        drawReinNo()
     }
 }
 
@@ -48,7 +60,6 @@ function reactToPlayerChoice(){
             redcon.innerText = 'Your orders are to wait for your next turn.'
             bluecon.innerText = 'It is your turn. Please proceed.'
         }
-
 
         redTroopNo = document.getElementById('redTroopNo')
         redTroopNo.innerText = '63'
@@ -170,6 +181,7 @@ window.onload = function() {
 window.onresize = function() {
   drawMap()
   drawTroops()
+  drawReinNo()
 };
 
 
@@ -206,6 +218,11 @@ function getCursorPosition(canvas, event) {
             risk['reinNo'] -= 1
             risk['territories'][name]['troopNo'] += 1
             console.log("update", risk['reinNo'], "troopNo", risk['territories'][name]['troopNo'])
+
+            updateServerDeployment(name)
+            drawMap()
+            drawTroops()
+            drawReinNo()
       }
     }
   }
