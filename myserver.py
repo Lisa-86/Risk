@@ -36,9 +36,16 @@ class Reinforce(Resource):
         reinforceNo = reinforcements(risk_data['territories'], risk_data['whichPlayer'])
         return reinforceNo
 
+class Deployment(Resource):
+    def put(self, country):
+        risk_data['territories'][country]['troopNo'] += 1
+        print(country)
+        return
+
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(PlayerTurn, '/REST/player')
 api.add_resource(Reinforce, '/REST/reinforce')
+api.add_resource(Deployment, '/REST/deployment/<string:country>')
 
 if __name__ == '__main__':
     app.run()
