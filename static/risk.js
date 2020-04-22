@@ -29,6 +29,8 @@ function drawInstruction(){
     var reinNo = risk['reinNo']
     var redren = document.getElementById('redreinforceno')
     var blueren = document.getElementById('bluereinforceno')
+    var redops = document.getElementById('redops')
+    var blueops = document.getElementById('blueops')
 
     if (reinNo > 0){
         if (risk['currentPlayer'] == 1 ){
@@ -42,9 +44,11 @@ function drawInstruction(){
     if (reinNo == 0){
         if (risk['currentPlayer'] == 1 ){
             redren.innerHTML = 'Please choose which territory you want to launch an attack from'
+            redops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: '
         }
         else {
             blueren.innerHTML = 'Please choose which territory you want to launch an attack from'
+            bluedops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: '
         }
     }
 }
@@ -65,12 +69,12 @@ function reactToPlayerChoice(){
         redcon = document.getElementById('redcon')
         bluecon = document.getElementById('bluecon')
         if (risk['currentPlayer'] == 1){
-            redcon.innerText = 'It is your turn. Please proceed.'
+            redcon.innerText = 'It is your turn.'
             bluecon.innerText = 'Your orders are to wait for your next turn.'
         }
         else {
             redcon.innerText = 'Your orders are to wait for your next turn.'
-            bluecon.innerText = 'It is your turn. Please proceed.'
+            bluecon.innerText = 'It is your turn.'
         }
 
         redTroopNo = document.getElementById('redTroopNo')
@@ -169,14 +173,15 @@ function drawTroops() {
 
     if (territory['playerNo'] == 1) {
       ctx.strokeStyle = 'red';
-      if (risk['selOppTer'] == city){
-        ctx.stroke();
-      }
-    } else {
-      ctx.strokeStyle = 'blue';
       if (risk['selOwnTer'] == city){
         ctx.stroke();
       }
+    }
+    else {
+        ctx.strokeStyle = 'blue';
+        if (risk['selOppTer'] == city){
+            ctx.stroke();
+        }
     }
 
     ctx.strokeText(territory['troopNo'], finalWidth, finalHeight);
