@@ -1,4 +1,5 @@
-// risk = {'territories': {'location': [x, y], 'neighbours': [a, b, c], 'playerNo': playerNo, 'troopno': troopNo}, 'currentPlayer': currentPlayer, 'reinNo': reinNo}
+// risk = {'territories': ter: {'location': [x, y], 'neighbours': [a, b, c], 'playerNo': playerNo, 'troopno': troopNo},
+//          'currentPlayer': currentPlayer, 'reinNo': reinNo, 'selOwnTer':'ter', 'selOppTer':ter, 'tolerance':tolerance}
 
 function askWhoseTurn(responseSuccessF) {
   var xhttp = new XMLHttpRequest();
@@ -24,16 +25,27 @@ function howManyReinforcements(responseSuccessF) {
   xhttp.send("Your JSON Data Here");
 }
 
-function drawReinNo(){
+function drawInstruction(){
     var reinNo = risk['reinNo']
     var redren = document.getElementById('redreinforceno')
     var blueren = document.getElementById('bluereinforceno')
 
-    if (risk['currentPlayer'] == 1 ){
-        redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
+    if (reinNo > 0){
+        if (risk['currentPlayer'] == 1 ){
+            redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
+        }
+        else {
+            blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
+        }
     }
-    else {
-        blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
+
+    if (reinNo == 0){
+        if (risk['currentPlayer'] == 1 ){
+            redren.innerHTML = 'Please choose which territory you want to launch an attack from'
+        }
+        else {
+            blueren.innerHTML = 'Please choose which territory you want to launch an attack from'
+        }
     }
 }
 
@@ -41,7 +53,7 @@ function updateTroops(){
     if (this.readyState == 4 && this.status == 200) {
         console.log('Has ' + this.responseText + ' many  more troops')
         risk['reinNo'] = Number(this.responseText)
-        drawReinNo()
+        drawInstruction()
     }
 }
 
@@ -145,11 +157,28 @@ function drawTroops() {
       finalHeight = (pointHeight * NewImgHeight)
 
 
+    ctx.beginPath();
+    var tolx = risk['tolerance'] * mapcol.width()
+    var toly = risk['tolerance'] * NewImgHeight
+    var fx = risk['factorX'] * mapcol.width()
+    var fy = risk['factorY'] * NewImgHeight
+    ctx.rect(finalWidth + fx - tolx,
+             finalHeight + fy - toly,
+             tolx * 2,
+             toly * 2);
+
     if (territory['playerNo'] == 1) {
       ctx.strokeStyle = 'red';
+      if (risk['selOppTer'] == city){
+        ctx.stroke();
+      }
     } else {
       ctx.strokeStyle = 'blue';
+      if (risk['selOwnTer'] == city){
+        ctx.stroke();
+      }
     }
+
     ctx.strokeText(territory['troopNo'], finalWidth, finalHeight);
 
   };
@@ -170,6 +199,10 @@ function getTerNo(playerNo){
 window.onload = function() {
   // our global data on state of play
   risk = {}
+  // defines the clickable square around the number
+  risk['tolerance'] = 0.02
+  risk['factorX'] = 0.015
+  risk['factorY'] = -0.015
 
   // draw pure map without troops
   drawMap()
@@ -181,7 +214,7 @@ window.onload = function() {
 window.onresize = function() {
   drawMap()
   drawTroops()
-  drawReinNo()
+  drawInstruction()
 };
 
 
@@ -206,13 +239,21 @@ function getCursorPosition(canvas, event) {
     var territory = territories[name]
     var loc = territory['loc']
     // consider that troops are drawn from the bottom left corner
-    var x = loc[0] + 0.0025
-    var y = loc[1] - 0.005
-
-    var tolerance = 0.02
+    // ie centre the position of the territory to the centre of the number
+    var x = loc[0] + risk['factorX']
+    var y = loc[1] + risk['factorY']
+    var tolerance = risk['tolerance']
 
     if (norm_click_x > x - tolerance && norm_click_x < x + tolerance &&
     norm_click_y > y - tolerance && norm_click_y < y + tolerance) {
+
+        if (risk['currentPlayer'] == risk['territories'][name]['playerNo']){
+            risk['selOwnTer'] = name
+        }
+        else {
+            risk['selOppTer'] = name
+        }
+
         console.log('clicked', name, risk['territories'][name]['playerNo'], 'currentPlayer', risk['currentPlayer'])
         if (risk['reinNo'] > 0 && risk['currentPlayer'] == risk['territories'][name]['playerNo']){
             risk['reinNo'] -= 1
@@ -222,7 +263,7 @@ function getCursorPosition(canvas, event) {
             updateServerDeployment(name)
             drawMap()
             drawTroops()
-            drawReinNo()
+            drawInstruction()
       }
     }
   }

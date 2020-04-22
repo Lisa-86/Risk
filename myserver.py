@@ -6,7 +6,8 @@ from risk import reinforcements
 
 app = Flask(__name__)
 api = Api(app)
-risk_data = {}
+
+risk_data = {} # keys: whichPlayer, territories
 
 @app.route('/')
 def run_risk():
@@ -33,12 +34,17 @@ class PlayerTurn(Resource):
 
 class Reinforce(Resource):
     def get(self):
-        reinforceNo = reinforcements(risk_data['territories'], risk_data['whichPlayer'])
-        return reinforceNo
+        if 'reinNo' in risk_data:
+            # return the reinforcment number for the current player
+            return risk_data['reinNo']
+        risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['whichPlayer'])
+        return risk_data['reinNo']
 
 class Deployment(Resource):
     def put(self, country):
         risk_data['territories'][country]['troopNo'] += 1
+        # update the number of available reinforcment troops
+        risk_data['reinNo'] -= 1
         print(country)
         return
 
