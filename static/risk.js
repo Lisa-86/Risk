@@ -259,12 +259,12 @@ function getCursorPosition(canvas, event) {
             risk['reinNo'] -= 1
             risk['territories'][name]['troopNo'] += 1
             console.log("update", risk['reinNo'], "troopNo", risk['territories'][name]['troopNo'])
+        }
 
-            updateServerDeployment(name)
-            drawMap()
-            drawTroops()
-            drawInstruction()
-      }
+      updateServerDeployment(name)
+      drawMap()
+      drawTroops()
+      drawInstruction()
     }
   }
 
