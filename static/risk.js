@@ -70,12 +70,16 @@ function neighAttackOps(ter){
     var neighbours = risk['territories'][ter]['neighbours']
     console.log('neighbours', neighbours)
 
+    var attackable = []
     for (var i = 0; i < neighbours.length; i++){
         var name = neighbours[i]
         if (risk['territories'][name]['playerNo'] != risk['currentPlayer']){
             console.log("you can attack", name)
+            attackable.push(name)
         }
     }
+
+    return attackable
 }
 
 function updateTroops(){
