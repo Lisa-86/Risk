@@ -53,10 +53,10 @@ function drawInstruction(){
         }
     }
 
-    if (reinNo == 0){
+    if (reinNo == 0 && risk['selOwnTer'] != undefined){
         if (risk['currentPlayer'] == 1 ){
             redren.innerHTML = 'Please choose which territory you want to launch an attack from'
-            redops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: '
+            redops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(risk['selOwnTer'])
         }
         else {
             blueren.innerHTML = 'Please choose which territory you want to launch an attack from'
@@ -66,9 +66,12 @@ function drawInstruction(){
 }
 
 function neighAttackOps(ter){
+    console.log('ter', ter)
     var neighbours = risk['territories'][ter]['neighbours']
-    for (i = 0; i < neighbours.length; i++){
-        name = neighbours[i]
+    console.log('neighbours', neighbours)
+
+    for (var i = 0; i < neighbours.length; i++){
+        var name = neighbours[i]
         if (risk['territories'][name]['playerNo'] != risk['currentPlayer']){
             console.log("you can attack", name)
         }
@@ -245,6 +248,7 @@ window.onload = function() {
 
 
 window.onresize = function() {
+  console.log('resize window')
   drawMap()
   drawTroops()
   drawInstruction()
@@ -288,13 +292,14 @@ function getCursorPosition(canvas, event) {
         }
 
         console.log('clicked', name, risk['territories'][name]['playerNo'], 'currentPlayer', risk['currentPlayer'])
+        console.log('reinNo', risk['reinNo'])
         if (risk['reinNo'] > 0 && risk['currentPlayer'] == risk['territories'][name]['playerNo']){
             risk['reinNo'] -= 1
             risk['territories'][name]['troopNo'] += 1
             console.log("update", risk['reinNo'], "troopNo", risk['territories'][name]['troopNo'])
+            updateServerDeployment(name)
         }
 
-      updateServerDeployment(name)
       drawMap()
       drawTroops()
       drawInstruction()
