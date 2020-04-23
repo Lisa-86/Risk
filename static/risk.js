@@ -31,6 +31,18 @@ function drawInstruction(){
     var blueren = document.getElementById('bluereinforceno')
     var redops = document.getElementById('redops')
     var blueops = document.getElementById('blueops')
+    var redTroopNo = document.getElementById('redTroopNo')
+    var redTerNo = document.getElementById('redTerNo')
+    var blueTroopNo = document.getElementById('blueTroopNo')
+    var blueTerNo = document.getElementById('blueTerNo')
+
+    redTroopNo.innerHTML = calcTroopNo(1)
+    terCount = getTerNo(1)
+    redTerNo.innerHTML = terCount
+
+    blueTroopNo.innerHTML = calcTroopNo(2)
+    blueTerCount = getTerNo(2)
+    blueTerNo.innerHTML = blueTerCount
 
     if (reinNo > 0){
         if (risk['currentPlayer'] == 1 ){
@@ -48,7 +60,17 @@ function drawInstruction(){
         }
         else {
             blueren.innerHTML = 'Please choose which territory you want to launch an attack from'
-            bluedops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: '
+            blueops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(risk['selOwnTer'])
+        }
+    }
+}
+
+function neighAttackOps(ter){
+    var neighbours = risk['territories'][ter]['neighbours']
+    for (i = 0; i < neighbours.length; i++){
+        name = neighbours[i]
+        if (risk['territories'][name]['playerNo'] != risk['currentPlayer']){
+            console.log("you can attack", name)
         }
     }
 }
@@ -59,6 +81,18 @@ function updateTroops(){
         risk['reinNo'] = Number(this.responseText)
         drawInstruction()
     }
+}
+
+function calcTroopNo(playerNo){
+    var troopNo = 0
+    var territories = risk['territories']
+    for (i = 0; i < Object.keys(territories).length; i++){
+        name = Object.keys(territories)[i]
+        if (risk['territories'][name]['playerNo'] == playerNo){
+            troopNo += risk['territories'][name]['troopNo']
+        }
+    }
+    return troopNo
 }
 
 function reactToPlayerChoice(){
@@ -76,12 +110,6 @@ function reactToPlayerChoice(){
             redcon.innerText = 'Your orders are to wait for your next turn.'
             bluecon.innerText = 'It is your turn.'
         }
-
-        redTroopNo = document.getElementById('redTroopNo')
-        redTroopNo.innerText = '63'
-        redTerNo = document.getElementById('redTerNo')
-        terCount = getTerNo(1)
-        redTerNo.innerText = terCount
     }
 }
 
