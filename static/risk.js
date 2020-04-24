@@ -176,6 +176,27 @@ function troopsReceivedAction() {
   };
 };
 
+function getTerBoundary(x, y){
+    // x, y of the territory
+    // This function adjust x,y to the middle of the troop number drawn on the map
+    // and then calculates a box around it giving a rectangle area
+    var mapcol = $('#mapcol')
+    var img = document.getElementById('Map');
+    var widthScaler = mapcol.width() / img.naturalWidth
+    var NewImgHeight = img.naturalHeight * widthScaler
+
+    var finalWidth = x * mapcol.width()
+    var finalHeight = y * NewImgHeight
+
+    var tolx = risk['tolerance'] * mapcol.width()
+    var toly = risk['tolerance'] * NewImgHeight
+    var fx = risk['factorX'] * mapcol.width()
+    var fy = risk['factorY'] * NewImgHeight
+
+    // return top-left x, top-left y, width, height
+    return [finalWidth + fx - tolx, finalHeight + fy - toly, tolx * 2, toly * 2]
+}
+
 function drawTroops() {
   var territories = risk['territories']
   var img = document.getElementById('Map');
@@ -186,41 +207,33 @@ function drawTroops() {
     var city = Object.keys(territories)[i]
     var territory = territories[city]
 
-      pointWidth = territory['loc'][0]
-      var mapcol = $('#mapcol')
-      var finalWidth = pointWidth * mapcol.width()
+    var mapcol = $('#mapcol')
+    var terx = territory['loc'][0]
+    var finalWidth = terx * mapcol.width()
 
-      pointHeight = territory['loc'][1]
-      var widthScaler = mapcol.width() / img.naturalWidth
-      NewImgHeight = img.naturalHeight * widthScaler
-      finalHeight = (pointHeight * NewImgHeight)
+    var widthScaler = mapcol.width() / img.naturalWidth
+    var NewImgHeight = img.naturalHeight * widthScaler
+    var tery = territory['loc'][1]
+    var finalHeight = tery * NewImgHeight
 
-
+    box = getTerBoundary(terx, tery)
     ctx.beginPath();
-    var tolx = risk['tolerance'] * mapcol.width()
-    var toly = risk['tolerance'] * NewImgHeight
-    var fx = risk['factorX'] * mapcol.width()
-    var fy = risk['factorY'] * NewImgHeight
-    ctx.rect(finalWidth + fx - tolx,
-             finalHeight + fy - toly,
-             tolx * 2,
-             toly * 2);
+    ctx.rect(box[0], box[1], box[2], box[3]);
 
-    if (territory['playerNo'] == 1) {
-      ctx.strokeStyle = 'red';
-      if (risk['selOwnTer'] == city){
-        ctx.stroke();
-      }
+    if (territory['playerNo'] == 1){
+        ctx.strokeStyle = 'red';
+        if (risk['selOwnTer'] == city || risk['selOppTer'] == city){
+            ctx.stroke();
+        }
     }
     else {
         ctx.strokeStyle = 'blue';
-        if (risk['selOppTer'] == city){
+        if (risk['selOwnTer'] == city || risk['selOppTer'] == city){
             ctx.stroke();
         }
     }
 
     ctx.strokeText(territory['troopNo'], finalWidth, finalHeight);
-
   };
 }
 
@@ -240,6 +253,7 @@ window.onload = function() {
   // our global data on state of play
   risk = {}
   // defines the clickable square around the number
+  // these values are relative to the map size
   risk['tolerance'] = 0.02
   risk['factorX'] = 0.015
   risk['factorY'] = -0.015
@@ -268,9 +282,7 @@ function getCursorPosition(canvas, event) {
   var mapcol = $('#mapcol')
   var img = document.getElementById('Map');
   var widthScaler = mapcol.width() / img.naturalWidth
-  var norm_click_x = click_x / mapcol.width()
   var disp_img_height = img.naturalHeight * widthScaler
-  var norm_click_y = click_y / disp_img_height
   // console.log("norm new", norm_x, norm_y)
 
   // look up where it belongs
@@ -279,14 +291,13 @@ function getCursorPosition(canvas, event) {
     var name = Object.keys(territories)[i]
     var territory = territories[name]
     var loc = territory['loc']
+
     // consider that troops are drawn from the bottom left corner
     // ie centre the position of the territory to the centre of the number
-    var x = loc[0] + risk['factorX']
-    var y = loc[1] + risk['factorY']
-    var tolerance = risk['tolerance']
+    var box = getTerBoundary(loc[0], loc[1])
 
-    if (norm_click_x > x - tolerance && norm_click_x < x + tolerance &&
-    norm_click_y > y - tolerance && norm_click_y < y + tolerance) {
+    if (click_x > box[0] && click_x < box[0] + box[2] &&
+        click_y > box[1] && click_y < box[1] + box[3]) {
 
         if (risk['currentPlayer'] == risk['territories'][name]['playerNo']){
             risk['selOwnTer'] = name
