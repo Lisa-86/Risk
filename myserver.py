@@ -2,7 +2,7 @@ from flask import Flask, render_template, session
 from flask_restful import Resource, Api
 import random
 from territories import teralloc, territories
-from risk import reinforcements
+from risk import reinforcements, diceroll
 
 app = Flask(__name__)
 api = Api(app)
@@ -48,10 +48,21 @@ class Deployment(Resource):
         print(country)
         return
 
+class Diceroll(Resource):
+    def put(self, terFrom, terTo):
+        attTroops = risk_data['territories'][terFrom]['troopNo']
+        defTroops = risk_data['territories'][terTo]['troopNo']
+        outcomeAtt, outcomeDef = diceroll(attTroops,defTroops)
+        risk_data['territories'][terFrom]['troopNo'] = outcomeAtt
+        risk_data['territories'][terTo]['troopNo'] = outcomeDef
+        return [outcomeAtt, outcomeDef]
+
+
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(PlayerTurn, '/REST/player')
 api.add_resource(Reinforce, '/REST/reinforce')
 api.add_resource(Deployment, '/REST/deployment/<string:country>')
+api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')
 
 if __name__ == '__main__':
     app.run()
