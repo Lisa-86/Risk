@@ -7,7 +7,7 @@ from risk import reinforcements, diceroll
 app = Flask(__name__)
 api = Api(app)
 
-risk_data = {} # keys: whichPlayer, territories
+risk_data = {} # keys: currentPlayer, territories
 
 @app.route('/')
 def run_risk():
@@ -26,18 +26,18 @@ class TroopResource(Resource):
 
 class PlayerTurn(Resource):
     def get(self):
-        if 'whichPlayer' in risk_data:
-            return risk_data['whichPlayer']
+        if 'currentPlayer' in risk_data:
+            return risk_data['currentPlayer']
         # decide who goes first
-        risk_data['whichPlayer'] = random.randint(1, 2) # only between two player for now
-        return risk_data['whichPlayer']
+        risk_data['currentPlayer'] = random.randint(1, 2) # only between two player for now
+        return risk_data['currentPlayer']
 
 class Reinforce(Resource):
     def get(self):
         if 'reinNo' in risk_data:
             # return the reinforcment number for the current player
             return risk_data['reinNo']
-        risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['whichPlayer'])
+        risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
         return risk_data['reinNo']
 
 class Deployment(Resource):
@@ -55,6 +55,8 @@ class Diceroll(Resource):
         outcomeAtt, outcomeDef = diceroll(attTroops,defTroops)
         risk_data['territories'][terFrom]['troopNo'] = outcomeAtt
         risk_data['territories'][terTo]['troopNo'] = outcomeDef
+        if (outcomeDef == 0):
+            risk_data['territories'][terTo]['playerNo'] = risk_data['currentPlayer']
         return [outcomeAtt, outcomeDef]
 
 

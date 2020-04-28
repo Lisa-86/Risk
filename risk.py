@@ -21,7 +21,7 @@ def diceroll(p1troops, p2troops):
     player_1 = []
     player_2 = []
 
-    if p1troops < 1:
+    if p1troops < 2:
         raise ValueError
     if p1troops == 1:
         p1dice = 1
@@ -94,12 +94,7 @@ def diceroll(p1troops, p2troops):
 
         return p1troops, p2troops
 
-
-p1troops, p2troops = diceroll(1, 4)
-if p1troops == 0:
-    print("not enough troops to attack")
-
-#print("p1troops:", p1troops)
-#print("p2troops:", p2troops)
+#if p1troops == 0:
+#    print("not enough troops to attack")
 
 

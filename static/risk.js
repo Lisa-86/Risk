@@ -1,4 +1,4 @@
-// risk = {'territories': ter: {'location': [x, y], 'neighbours': [a, b, c], 'playerNo': playerNo, 'troopno': troopNo},
+// risk = {'territories': ter: {'location': [x, y], 'neighbours': [a, b, c], 'playerNo': playerNo, 'troopNo': troopNo},
 //          'currentPlayer': currentPlayer, 'reinNo': reinNo, 'selOwnTer':'ter', 'selOppTer':ter, 'tolerance':tolerance}
 
 function askWhoseTurn(responseSuccessF) {
@@ -273,6 +273,71 @@ window.onresize = function() {
 };
 
 
+function attackPressed() {
+    terFrom = risk['selOwnTer']
+    terTo = risk['selOppTer']
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = battleResults;
+    xhttp.open("PUT", "/REST/diceroll/" + terFrom + "/" + terTo, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
+function battleResults() {
+    if (this.readyState == 4 && this.status == 200) {
+
+        var redcon = document.getElementById("redcon")
+        var redops = document.getElementById("redops")
+        var redren = document.getElementById("redreinforceno")
+        var redatt = document.getElementById("redatt")
+        var redresult = document.getElementById("redresult")
+        redresult.innerHTML = ""
+
+        var bluecon = document.getElementById("bluecon")
+        var blueops = document.getElementById("blueops")
+        var blueren = document.getElementById("bluereinforceno")
+        var blueatt = document.getElementById("blueatt")
+        var blueresult = document.getElementById("blueresult")
+        blueresult.innerHTML = ""
+
+        var terFrom = risk['selOwnTer']
+        console.log("terFrom", terFrom)
+        var terTo = risk['selOppTer']
+        console.log("terTo", terTo)
+        var outcomeList = JSON.parse(this.responseText);
+        var outcomeAtt = outcomeList[0]
+        var outcomeDef = outcomeList[1]
+        console.log("outcomes:", outcomeAtt, outcomeDef)
+        risk['territories'][terFrom]['troopNo'] = outcomeAtt
+        risk['territories'][terTo]['troopNo'] = outcomeDef
+        if (outcomeDef == 0) {
+            risk['territories'][terTo]['playerNo'] = risk["currentPlayer"]
+
+            if (risk["currentPlayer"] == 1) {
+                redcon.innerHTML = ""
+                redops.innerHTML = ""
+                redren.innerHTML = ""
+                redatt.style.display = "none"
+                redresult.innerHTML = "You have <b> won </b> this battle! How many troops would you like to move?"
+                blueresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
+            }
+            else{
+                bluecon.style.display = "none"
+                blueops.style.display = "none"
+                blueren.style.display = "none"
+                blueatt.style.display  = "none"
+                blueresult.innerHTML = "You have <b> won </b> this battle! How many troops would you like to move?"
+                redresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
+            }
+        }
+
+        drawMap()
+        drawTroops()
+    }
+}
+
+
 function getCursorPosition(canvas, event) {
   const rect = canvas.getBoundingClientRect()
   const click_x = event.clientX - rect.left
@@ -320,10 +385,16 @@ function getCursorPosition(canvas, event) {
         redatt = document.getElementById("redatt")
         blueatt = document.getElementById("blueatt")
         if (risk['reinNo'] == 0 && risk['selOwnTer'] != undefined && attackable.indexOf(risk['selOppTer']) != -1){
-            redatt.style.display = "inline"
+            if (risk["currentPlayer"] == 1){
+                redatt.style.display = "inline"
+            }
+            else {
+                blueatt.style.display = "inline"
+            }
         }
         else {
             redatt.style.display = "none"
+            blueatt.style.display = "none"
         }
 
 
