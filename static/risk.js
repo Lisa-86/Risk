@@ -129,15 +129,15 @@ function fetchTroops(responseSuccessF) {
 }
 
 function drawMap() {
-  var canvas = document.getElementById('myCanvas');
-  var mapcol = $('#mapcol')
-  canvas.width = mapcol.width()
-  canvas.height = window.innerHeight - 65
-  var ctx = canvas.getContext('2d');
-  var img = document.getElementById('Map');
-  var widthScaler = mapcol.width() / img.naturalWidth
-  ctx.font = '18px hancock';
-  ctx.drawImage(img, 0, 0, mapcol.width(), img.naturalHeight * widthScaler);
+    var canvas = document.getElementById('myCanvas');
+    var mapcol = $('#mapcol')
+    canvas.width = mapcol.width()
+    canvas.height = window.innerHeight - 65
+    var ctx = canvas.getContext('2d');
+    var img = document.getElementById('Map');
+    var widthScaler = mapcol.width() / img.naturalWidth
+    ctx.font = '18px hancock';
+    ctx.drawImage(img, 0, 0, mapcol.width(), img.naturalHeight * widthScaler);
 };
 
 function troopsReceivedAction() {
@@ -292,14 +292,12 @@ function battleResults() {
         var redren = document.getElementById("redreinforceno")
         var redatt = document.getElementById("redatt")
         var redresult = document.getElementById("redresult")
-        redresult.innerHTML = ""
 
         var bluecon = document.getElementById("bluecon")
         var blueops = document.getElementById("blueops")
         var blueren = document.getElementById("bluereinforceno")
         var blueatt = document.getElementById("blueatt")
         var blueresult = document.getElementById("blueresult")
-        blueresult.innerHTML = ""
 
         var terFrom = risk['selOwnTer']
         console.log("terFrom", terFrom)
