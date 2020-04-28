@@ -55,26 +55,26 @@ function drawInstruction(){
 
     if (reinNo == 0 && risk['selOwnTer'] != undefined){
         if (risk['currentPlayer'] == 1 ){
-            redren.innerHTML = 'Please choose which territory you want to launch an attack from'
+            redren.innerHTML = 'Please choose a territory to attack from.'
             redops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(risk['selOwnTer'])
         }
         else {
-            blueren.innerHTML = 'Please choose which territory you want to launch an attack from'
+            blueren.innerHTML = 'Please choose a territory to attack from.'
             blueops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(risk['selOwnTer'])
         }
     }
 }
 
 function neighAttackOps(ter){
-    console.log('ter', ter)
+    // console.log('ter', ter)
     var neighbours = risk['territories'][ter]['neighbours']
-    console.log('neighbours', neighbours)
+    // console.log('neighbours', neighbours)
 
     var attackable = []
     for (var i = 0; i < neighbours.length; i++){
         var name = neighbours[i]
         if (risk['territories'][name]['playerNo'] != risk['currentPlayer']){
-            console.log("you can attack", name)
+            // console.log("you can attack", name)
             attackable.push(name)
         }
     }
@@ -314,6 +314,19 @@ function getCursorPosition(canvas, event) {
             console.log("update", risk['reinNo'], "troopNo", risk['territories'][name]['troopNo'])
             updateServerDeployment(name)
         }
+
+        // check if its ok to attack
+        attackable = neighAttackOps(risk['selOwnTer'])
+        redatt = document.getElementById("redatt")
+        blueatt = document.getElementById("blueatt")
+        if (risk['reinNo'] == 0 && risk['selOwnTer'] != undefined && attackable.indexOf(risk['selOppTer']) != -1){
+            redatt.style.display = "inline"
+        }
+        else {
+            redatt.style.display = "none"
+        }
+
+
 
       drawMap()
       drawTroops()
