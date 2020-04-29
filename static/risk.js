@@ -292,12 +292,14 @@ function battleResults() {
         var redren = document.getElementById("redreinforceno")
         var redatt = document.getElementById("redatt")
         var redresult = document.getElementById("redresult")
+        var redboxdiv = document.getElementById("redboxdiv")
 
         var bluecon = document.getElementById("bluecon")
         var blueops = document.getElementById("blueops")
         var blueren = document.getElementById("bluereinforceno")
         var blueatt = document.getElementById("blueatt")
         var blueresult = document.getElementById("blueresult")
+        var blueboxdiv = document.getElementById("blueboxdiv")
 
         var terFrom = risk['selOwnTer']
         console.log("terFrom", terFrom)
@@ -311,28 +313,41 @@ function battleResults() {
         risk['territories'][terTo]['troopNo'] = outcomeDef
         if (outcomeDef == 0) {
             risk['territories'][terTo]['playerNo'] = risk["currentPlayer"]
+            risk['territories'][terTo]['troopNo'] = 1
+            risk['territories'][terFrom]['troopNo'] -= 1
+            maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
 
             if (risk["currentPlayer"] == 1) {
                 redcon.innerHTML = ""
                 redops.innerHTML = ""
                 redren.innerHTML = ""
                 redatt.style.display = "none"
-                redresult.innerHTML = "You have <b> won </b> this battle! How many troops would you like to move?"
+                redresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce " + terTo + " with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
                 blueresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
+                redboxdiv.style.display = "inline"
             }
             else{
                 bluecon.style.display = "none"
                 blueops.style.display = "none"
                 blueren.style.display = "none"
                 blueatt.style.display  = "none"
-                blueresult.innerHTML = "You have <b> won </b> this battle! How many troops would you like to move?"
+                blueresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce " + terTo + " with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
                 redresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
+                blueboxdiv.style.display = "inline"
             }
         }
-
+        else {
+            redboxdiv.style.display = "none"
+            blueboxdiv.style.display = "none"
+        }
         drawMap()
         drawTroops()
     }
+}
+
+
+function reinPressed() {
+    console.log ("pressed")
 }
 
 
@@ -382,6 +397,7 @@ function getCursorPosition(canvas, event) {
         attackable = neighAttackOps(risk['selOwnTer'])
         redatt = document.getElementById("redatt")
         blueatt = document.getElementById("blueatt")
+
         if (risk['reinNo'] == 0 && risk['selOwnTer'] != undefined && attackable.indexOf(risk['selOppTer']) != -1){
             if (risk["currentPlayer"] == 1){
                 redatt.style.display = "inline"

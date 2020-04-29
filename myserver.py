@@ -57,6 +57,8 @@ class Diceroll(Resource):
         risk_data['territories'][terTo]['troopNo'] = outcomeDef
         if (outcomeDef == 0):
             risk_data['territories'][terTo]['playerNo'] = risk_data['currentPlayer']
+            risk_data['territories'][terTo]['troopNo'] = 1
+            risk_data['territories'][terFrom]['troopNo'] -= 1
         return [outcomeAtt, outcomeDef]
 
 
