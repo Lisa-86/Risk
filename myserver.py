@@ -19,13 +19,13 @@ class TroopResource(Resource):
     def get(self):
         if 'territories' in risk_data:
             # get the current state of play
-            return risk_data['territories']
+            return risk_data
         else:
             # allocate territories and initial troops to players
             allocated_ters = teralloc(territories)
             risk_data['territories'] = allocated_ters
             risk_data['stage'] = "DEPLOY"
-            return allocated_ters
+            return risk_data
 
 class PlayerTurn(Resource):
     def get(self):

@@ -146,9 +146,11 @@ function troopsReceivedAction() {
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext('2d');
     //console.log("got the allocation: ", this.responseText);
-    var territories = JSON.parse(this.responseText);
-    risk['territories'] = territories
+    var risk_server = JSON.parse(this.responseText);
+    // update client game representation
+    risk = risk_server
 
+    var territories = risk['territories']
     for (i = 0; i < Object.keys(territories).length; i++) {
       var city = Object.keys(territories)[i]
       var territory = territories[city]
