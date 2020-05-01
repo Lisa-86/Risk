@@ -21,6 +21,10 @@ def run_risk():
     return render_template("home.html")
 
 class TroopResource(Resource):
+    """
+        1. Allocate territories
+        2. Set the stage to reinforcment
+    """
     def get(self):
         if 'territories' in risk_data:
             # get the current state of play
@@ -29,32 +33,36 @@ class TroopResource(Resource):
             # allocate territories and initial troops to players
             allocated_ters = teralloc(territories)
             risk_data['territories'] = allocated_ters
-            risk_data['stage'] = "DEPLOY"
+            risk_data['stage'] = "REINFORCE"
             return risk_data
 
 class PlayerTurn(Resource):
     def get(self):
         if 'currentPlayer' in risk_data:
-            return risk_data['currentPlayer']
+            return risk_data
         # decide who goes first
         risk_data['currentPlayer'] = random.randint(1, 2) # only between two player for now
-        return risk_data['currentPlayer']
+        return risk_data
 
 class Reinforce(Resource):
+    """
+        How many to troops the current player can reinforce
+    """
     def get(self):
         if 'reinNo' in risk_data:
             # return the reinforcment number for the current player
-            return risk_data['reinNo']
+            return risk_data
         risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
-        return risk_data['reinNo']
+        return risk_data
 
 class Deployment(Resource):
     def put(self, country):
         risk_data['territories'][country]['troopNo'] += 1
         # update the number of available reinforcment troops
         risk_data['reinNo'] -= 1
-        print(country)
-        return
+        if risk_data['reinNo'] == 0:
+            risk_data['stage'] = 'ATTACK'
+        return risk_data
 
 class Diceroll(Resource):
     def put(self, terFrom, terTo):

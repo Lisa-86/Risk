@@ -59,16 +59,48 @@ function drawInstruction(){
             blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
         }
     }
-    else if (reinNo == 0 && local_risk['selOwnTer'] != undefined){
-        if (risk['currentPlayer'] == 1 ){
-            redren.innerHTML = 'Please choose a territory to attack from.'
-            redops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(local_risk['selOwnTer'])
-        }
-        else {
-            blueren.innerHTML = 'Please choose a territory to attack from.'
-            blueops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(local_risk['selOwnTer'])
-        }
+    else{
+        redren.innerHTML = ''
+        blueren.innerHTML = ''
     }
+
+
+    if (risk['stage'] == 'ATTACK'){
+        // attacker territory selected?
+        if (local_risk['selOwnTer'] != undefined){
+            // check if the neighbour opponent territory is selected
+            attackable = neighAttackOps(local_risk['selOwnTer'])
+            redatt = document.getElementById("redatt")
+            blueatt = document.getElementById("blueatt")
+
+            if (attackable.indexOf(local_risk['selOppTer']) != -1){
+                // time to attack
+                if (risk["currentPlayer"] == 1){
+                    redatt.style.display = "inline"
+                }
+                else {
+                    blueatt.style.display = "inline"
+                }
+            }
+            else {
+                // not time to attack
+                redatt.style.display = "none"
+                blueatt.style.display = "none"
+
+                // show which territories one can attack
+                if (risk['currentPlayer'] == 1 ){
+                    redops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
+                }
+                else {
+                    blueops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
+                }
+            }
+        }
+
+
+    }
+
+
 }
 
 function neighAttackOps(ter){
@@ -345,7 +377,6 @@ function battleResults() {
 
 function reinPressed() {
     console.log ("pressed")
-
 }
 
 
@@ -390,25 +421,6 @@ function getCursorPosition(canvas, event) {
             console.log("update", risk['reinNo'], "troopNo", risk['territories'][name]['troopNo'])
             updateServerDeployment(name)
         }
-
-        // check if its ok to attack
-        attackable = neighAttackOps(local_risk['selOwnTer'])
-        redatt = document.getElementById("redatt")
-        blueatt = document.getElementById("blueatt")
-
-        if (risk['reinNo'] == 0 && local_risk['selOwnTer'] != undefined && attackable.indexOf(local_risk['selOppTer']) != -1){
-            if (risk["currentPlayer"] == 1){
-                redatt.style.display = "inline"
-            }
-            else {
-                blueatt.style.display = "inline"
-            }
-        }
-        else {
-            redatt.style.display = "none"
-            blueatt.style.display = "none"
-        }
-
 
 
       drawMap()
