@@ -9,9 +9,16 @@ function askWhoseTurn(responseSuccessF) {
   xhttp.send("Your JSON Data Here");
 }
 
+function updateGameState(){
+    if (this.readyState == 4 && this.status == 200) {
+        risk = JSON.parse(this.responseText)
+        drawInstruction()
+    }
+}
+
 function updateServerDeployment(country) {
   var xhttp = new XMLHttpRequest();
-//  xhttp.onreadystatechange = responseSuccessF;
+  xhttp.onreadystatechange = updateGameState;
   xhttp.open("PUT", "/REST/deployment/" + country, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
@@ -44,7 +51,7 @@ function drawInstruction(){
     blueTerCount = getTerNo(2)
     blueTerNo.innerHTML = blueTerCount
 
-    if (reinNo > 0){
+    if (risk['stage'] == 'REINFORCE'){
         if (risk['currentPlayer'] == 1 ){
             redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
         }
@@ -52,15 +59,14 @@ function drawInstruction(){
             blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
         }
     }
-
-    if (reinNo == 0 && risk['selOwnTer'] != undefined){
+    else if (reinNo == 0 && local_risk['selOwnTer'] != undefined){
         if (risk['currentPlayer'] == 1 ){
             redren.innerHTML = 'Please choose a territory to attack from.'
-            redops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(risk['selOwnTer'])
+            redops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(local_risk['selOwnTer'])
         }
         else {
             blueren.innerHTML = 'Please choose a territory to attack from.'
-            blueops.innerHTML = 'From ' + risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(risk['selOwnTer'])
+            blueops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + neighAttackOps(local_risk['selOwnTer'])
         }
     }
 }
@@ -82,13 +88,6 @@ function neighAttackOps(ter){
     return attackable
 }
 
-function updateTroops(){
-    if (this.readyState == 4 && this.status == 200) {
-        console.log('Has ' + this.responseText + ' many  more troops')
-        risk['reinNo'] = Number(this.responseText)
-        drawInstruction()
-    }
-}
 
 function calcTroopNo(playerNo){
     var troopNo = 0
@@ -104,9 +103,9 @@ function calcTroopNo(playerNo){
 
 function reactToPlayerChoice(){
     if (this.readyState == 4 && this.status == 200) {
-        console.log('Next Player Turn:  ' + this.responseText)
-        risk['currentPlayer'] = Number(this.responseText)
-        howManyReinforcements(updateTroops)
+        risk = JSON.parse(this.responseText)
+        console.log('Next Player Turn:  ' + risk['currentPlayer'])
+        howManyReinforcements(updateGameState)
         redcon = document.getElementById('redcon')
         bluecon = document.getElementById('bluecon')
         if (risk['currentPlayer'] == 1){
@@ -224,13 +223,13 @@ function drawTroops() {
 
     if (territory['playerNo'] == 1){
         ctx.strokeStyle = 'red';
-        if (risk['selOwnTer'] == city || risk['selOppTer'] == city){
+        if (local_risk['selOwnTer'] == city || local_risk['selOppTer'] == city){
             ctx.stroke();
         }
     }
     else {
         ctx.strokeStyle = 'blue';
-        if (risk['selOwnTer'] == city || risk['selOppTer'] == city){
+        if (local_risk['selOwnTer'] == city || local_risk['selOppTer'] == city){
             ctx.stroke();
         }
     }
@@ -254,6 +253,7 @@ function getTerNo(playerNo){
 window.onload = function() {
   // our global data on state of play
   risk = {}
+  local_risk = {}
 
   // draw pure map without troops
   drawMap()
@@ -271,8 +271,8 @@ window.onresize = function() {
 
 
 function attackPressed() {
-    terFrom = risk['selOwnTer']
-    terTo = risk['selOppTer']
+    terFrom = local_risk['selOwnTer']
+    terTo = local_risk['selOppTer']
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = battleResults;
     xhttp.open("PUT", "/REST/diceroll/" + terFrom + "/" + terTo, true);
@@ -298,9 +298,9 @@ function battleResults() {
         var blueresult = document.getElementById("blueresult")
         var blueboxdiv = document.getElementById("blueboxdiv")
 
-        var terFrom = risk['selOwnTer']
+        var terFrom = local_risk['selOwnTer']
         console.log("terFrom", terFrom)
-        var terTo = risk['selOppTer']
+        var terTo = local_risk['selOppTer']
         console.log("terTo", terTo)
         var outcomeList = JSON.parse(this.responseText);
         var outcomeAtt = outcomeList[0]
@@ -376,10 +376,10 @@ function getCursorPosition(canvas, event) {
         click_y > box[1] && click_y < box[1] + box[3]) {
 
         if (risk['currentPlayer'] == risk['territories'][name]['playerNo']){
-            risk['selOwnTer'] = name
+            local_risk['selOwnTer'] = name
         }
         else {
-            risk['selOppTer'] = name
+            local_risk['selOppTer'] = name
         }
 
         console.log('clicked', name, risk['territories'][name]['playerNo'], 'currentPlayer', risk['currentPlayer'])
@@ -392,11 +392,11 @@ function getCursorPosition(canvas, event) {
         }
 
         // check if its ok to attack
-        attackable = neighAttackOps(risk['selOwnTer'])
+        attackable = neighAttackOps(local_risk['selOwnTer'])
         redatt = document.getElementById("redatt")
         blueatt = document.getElementById("blueatt")
 
-        if (risk['reinNo'] == 0 && risk['selOwnTer'] != undefined && attackable.indexOf(risk['selOppTer']) != -1){
+        if (risk['reinNo'] == 0 && local_risk['selOwnTer'] != undefined && attackable.indexOf(local_risk['selOppTer']) != -1){
             if (risk["currentPlayer"] == 1){
                 redatt.style.display = "inline"
             }
