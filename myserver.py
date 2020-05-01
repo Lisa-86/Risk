@@ -81,8 +81,7 @@ class Diceroll(Resource):
             risk_data['territories'][terTo]['playerNo'] = risk_data['currentPlayer']
             risk_data['territories'][terTo]['troopNo'] = 1
             risk_data['territories'][terFrom]['troopNo'] -= 1
-        return [outcomeAtt, outcomeDef]
-
+        return risk_data
 
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(PlayerTurn, '/REST/player')

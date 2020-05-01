@@ -1,22 +1,8 @@
 // risk = {'territories': ter: {'location': [x, y], 'neighbours': [a, b, c], 'playerNo': playerNo, 'troopNo': troopNo},
 //          'currentPlayer': currentPlayer, 'reinNo': reinNo, 'selOwnTer':'ter', 'selOppTer':ter, 'tolerance':tolerance}
 
-function askWhoseTurn(responseSuccessF) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = responseSuccessF;
-  xhttp.open("GET", "/REST/player", true);
-  xhttp.setRequestHeader("Content-type", "application/json");
-  xhttp.send("Your JSON Data Here");
-}
 
 function updateGameState(){
-    if (this.readyState == 4 && this.status == 200) {
-        risk = JSON.parse(this.responseText)
-        drawInstruction()
-    }
-}
-
-function updateGameStateBetter(){
     if (this.readyState == 4 && this.status == 200) {
         risk = JSON.parse(this.responseText)
         drawMap()
@@ -25,6 +11,8 @@ function updateGameStateBetter(){
     }
 }
 
+
+// updates the server after reincforcement click
 function updateServerDeployment(country) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = updateGameState;
@@ -43,15 +31,26 @@ function howManyReinforcements(responseSuccessF) {
 
 function drawInstruction(){
     var reinNo = risk['reinNo']
-    var redren = document.getElementById('redreinforceno')
-    var blueren = document.getElementById('bluereinforceno')
-    var redops = document.getElementById('redops')
-    var blueops = document.getElementById('blueops')
+
+    var redcon = document.getElementById("redcon")
+    var redops = document.getElementById("redops")
+    var redren = document.getElementById("redreinforceno")
+    var redatt = document.getElementById("redatt")
+    var redresult = document.getElementById("redresult")
+    var redboxdiv = document.getElementById("redboxdiv")
     var redTroopNo = document.getElementById('redTroopNo')
     var redTerNo = document.getElementById('redTerNo')
+
+    var bluecon = document.getElementById('bluecon')
+    var blueren = document.getElementById('bluereinforceno')
+    var blueops = document.getElementById('blueops')
     var blueTroopNo = document.getElementById('blueTroopNo')
     var blueTerNo = document.getElementById('blueTerNo')
+    var blueatt = document.getElementById("blueatt")
+    var blueresult = document.getElementById("blueresult")
+    var blueboxdiv = document.getElementById("blueboxdiv")
 
+    // prints the stats tables for each player, visible at all times
     redTroopNo.innerHTML = calcTroopNo(1)
     terCount = getTerNo(1)
     redTerNo.innerHTML = terCount
@@ -60,8 +59,7 @@ function drawInstruction(){
     blueTerCount = getTerNo(2)
     blueTerNo.innerHTML = blueTerCount
 
-    var redcon = document.getElementById('redcon')
-    var bluecon = document.getElementById('bluecon')
+    // prints whose go it is, visible at all times
     if (risk['currentPlayer'] == 1){
         redcon.innerText = 'It is your turn.'
         bluecon.innerText = 'Your orders are to wait for your next turn.'
@@ -71,6 +69,7 @@ function drawInstruction(){
         bluecon.innerText = 'It is your turn.'
     }
 
+    // prints how many troops the player has to reinforce with, only shows up at reinforce stage
     if (risk['stage'] == 'REINFORCE'){
         if (risk['currentPlayer'] == 1 ){
             redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
@@ -84,17 +83,15 @@ function drawInstruction(){
         blueren.innerHTML = ''
     }
 
-
+    // prints instructions for attack stage, only shows up at the attack stage
     if (risk['stage'] == 'ATTACK'){
-        // attacker territory selected?
+        // attacker territory selected
         if (local_risk['selOwnTer'] != undefined){
             // check if the neighbour opponent territory is selected
             attackable = neighAttackOps(local_risk['selOwnTer'])
-            redatt = document.getElementById("redatt")
-            blueatt = document.getElementById("blueatt")
 
             if (attackable.indexOf(local_risk['selOppTer']) != -1){
-                // time to attack
+                // time to attack, show attack button
                 if (risk["currentPlayer"] == 1){
                     redatt.style.display = "inline"
                 }
@@ -103,11 +100,11 @@ function drawInstruction(){
                 }
             }
             else {
-                // not time to attack
+                // not time to attack, hide attack button
                 redatt.style.display = "none"
                 blueatt.style.display = "none"
 
-                // show which territories one can attack
+                // print which territories one can attack, only visible when appropriate ters selected
                 if (risk['currentPlayer'] == 1 ){
                     redops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
                 }
@@ -115,28 +112,44 @@ function drawInstruction(){
                     blueops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
                 }
             }
+
+        var terFrom = local_risk['selOwnTer']
+        var terTo = local_risk['selOppTer']
+        var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
+        if (risk['territories'][terFrom]['playerNo'] == risk['territories'][terTo]['playerNo']) {
+            if (risk["currentPlayer"] == 1) {
+                    redops.innerHTML = ""
+                    redresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce " + terTo + " with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
+                    blueresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
+                    redboxdiv.style.display = "inline"
+                }
+                else{
+                    blueops.innerHTML = ""
+                    blueresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce " + terTo + " with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
+                    redresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
+                    blueboxdiv.style.display = "inline"
+                }
+            }
+            else {
+                redboxdiv.style.display = "none"
+                blueboxdiv.style.display = "none"
+                redresult.innerHTML = ""
+                blueresult.innerHTML = ""
+            }
         }
-
-
     }
-
-
 }
 
-function neighAttackOps(ter){
-    // console.log('ter', ter)
-    var neighbours = risk['territories'][ter]['neighbours']
-    // console.log('neighbours', neighbours)
 
+function neighAttackOps(ter){
+    var neighbours = risk['territories'][ter]['neighbours']
     var attackable = []
     for (var i = 0; i < neighbours.length; i++){
         var name = neighbours[i]
         if (risk['territories'][name]['playerNo'] != risk['currentPlayer']){
-            // console.log("you can attack", name)
             attackable.push(name)
         }
     }
-
     return attackable
 }
 
@@ -175,43 +188,6 @@ function drawMap() {
 };
 
 
-
-function troopsReceivedAction() {
-  if (this.readyState == 4 && this.status == 200) {
-    var img = document.getElementById('Map');
-    var canvas = document.getElementById('myCanvas');
-    var ctx = canvas.getContext('2d');
-    //console.log("got the allocation: ", this.responseText);
-    var risk_server = JSON.parse(this.responseText);
-    // update client game representation
-    risk = risk_server
-
-    var territories = risk['territories']
-    for (i = 0; i < Object.keys(territories).length; i++) {
-      var city = Object.keys(territories)[i]
-      var territory = territories[city]
-
-      pointWidth = territory['loc'][0]
-      var mapcol = $('#mapcol')
-      var finalWidth = pointWidth * mapcol.width()
-
-      pointHeight = territory['loc'][1]
-      var widthScaler = mapcol.width() / img.naturalWidth
-      NewImgHeight = img.naturalHeight * widthScaler
-      finalHeight = (pointHeight * NewImgHeight)
-
-      if (territory['playerNo'] == 1) {
-        ctx.strokeStyle = 'red';
-      } else {
-        ctx.strokeStyle = 'blue';
-      }
-      ctx.strokeText(territory['troopNo'], finalWidth, finalHeight);
-
-    };
-
-  };
-};
-
 function getTerBoundary(x, y){
     // x, y of the territory
     // This function adjust x,y to the middle of the troop number drawn on the map
@@ -232,6 +208,7 @@ function getTerBoundary(x, y){
     // return top-left x, top-left y, width, height
     return [finalWidth + fx - tolx, finalHeight + fy - toly, tolx * 2, toly * 2]
 }
+
 
 function drawTroops() {
   var territories = risk['territories']
@@ -285,12 +262,12 @@ function getTerNo(playerNo){
     return count
 }
 
+
 window.onload = function() {
   // our global data on state of play
   risk = {}
   local_risk = {}
-
-  fetchGame(updateGameStateBetter)
+  fetchGame(updateGameState)
 };
 
 
@@ -306,72 +283,10 @@ function attackPressed() {
     terFrom = local_risk['selOwnTer']
     terTo = local_risk['selOppTer']
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = battleResults;
+    xhttp.onreadystatechange = updateGameState;
     xhttp.open("PUT", "/REST/diceroll/" + terFrom + "/" + terTo, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
-}
-
-
-function battleResults() {
-    if (this.readyState == 4 && this.status == 200) {
-
-        var redcon = document.getElementById("redcon")
-        var redops = document.getElementById("redops")
-        var redren = document.getElementById("redreinforceno")
-        var redatt = document.getElementById("redatt")
-        var redresult = document.getElementById("redresult")
-        var redboxdiv = document.getElementById("redboxdiv")
-
-        var bluecon = document.getElementById("bluecon")
-        var blueops = document.getElementById("blueops")
-        var blueren = document.getElementById("bluereinforceno")
-        var blueatt = document.getElementById("blueatt")
-        var blueresult = document.getElementById("blueresult")
-        var blueboxdiv = document.getElementById("blueboxdiv")
-
-        var terFrom = local_risk['selOwnTer']
-        console.log("terFrom", terFrom)
-        var terTo = local_risk['selOppTer']
-        console.log("terTo", terTo)
-        var outcomeList = JSON.parse(this.responseText);
-        var outcomeAtt = outcomeList[0]
-        var outcomeDef = outcomeList[1]
-        console.log("outcomes:", outcomeAtt, outcomeDef)
-        risk['territories'][terFrom]['troopNo'] = outcomeAtt
-        risk['territories'][terTo]['troopNo'] = outcomeDef
-        if (outcomeDef == 0) {
-            risk['territories'][terTo]['playerNo'] = risk["currentPlayer"]
-            risk['territories'][terTo]['troopNo'] = 1
-            risk['territories'][terFrom]['troopNo'] -= 1
-            maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-
-            if (risk["currentPlayer"] == 1) {
-                redcon.innerHTML = ""
-                redops.innerHTML = ""
-                redren.innerHTML = ""
-                redatt.style.display = "none"
-                redresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce " + terTo + " with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
-                blueresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
-                redboxdiv.style.display = "inline"
-            }
-            else{
-                bluecon.style.display = "none"
-                blueops.style.display = "none"
-                blueren.style.display = "none"
-                blueatt.style.display  = "none"
-                blueresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce " + terTo + " with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
-                redresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
-                blueboxdiv.style.display = "inline"
-            }
-        }
-        else {
-            redboxdiv.style.display = "none"
-            blueboxdiv.style.display = "none"
-        }
-        drawMap()
-        drawTroops()
-    }
 }
 
 
@@ -403,7 +318,7 @@ function getCursorPosition(canvas, event) {
     // ie centre the position of the territory to the centre of the number
     var box = getTerBoundary(loc[0], loc[1])
 
-    if (click_x > box[0] && click_x < box[0] + box[2] &&
+     if (click_x > box[0] && click_x < box[0] + box[2] &&
         click_y > box[1] && click_y < box[1] + box[3]) {
 
         if (risk['currentPlayer'] == risk['territories'][name]['playerNo']){
@@ -413,12 +328,7 @@ function getCursorPosition(canvas, event) {
             local_risk['selOppTer'] = name
         }
 
-        console.log('clicked', name, risk['territories'][name]['playerNo'], 'currentPlayer', risk['currentPlayer'])
-        console.log('reinNo', risk['reinNo'])
         if (risk['reinNo'] > 0 && risk['currentPlayer'] == risk['territories'][name]['playerNo']){
-            risk['reinNo'] -= 1
-            risk['territories'][name]['troopNo'] += 1
-            console.log("update", risk['reinNo'], "troopNo", risk['territories'][name]['troopNo'])
             updateServerDeployment(name)
         }
 
@@ -433,5 +343,5 @@ function getCursorPosition(canvas, event) {
 
 const canvas = document.getElementById('myCanvas')
 canvas.addEventListener('mousedown', function(e) {
-  getCursorPosition(canvas, e)
+    getCursorPosition(canvas, e)
 });
