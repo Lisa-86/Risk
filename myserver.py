@@ -34,6 +34,12 @@ class TroopResource(Resource):
             allocated_ters = teralloc(territories)
             risk_data['territories'] = allocated_ters
             risk_data['stage'] = "REINFORCE"
+
+            # decide who goes first
+            risk_data['currentPlayer'] = random.randint(1, 2)  # only between two player for now
+            # and how many reinforcements the first time
+            risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
+
             return risk_data
 
 class PlayerTurn(Resource):

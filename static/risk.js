@@ -16,6 +16,15 @@ function updateGameState(){
     }
 }
 
+function updateGameStateBetter(){
+    if (this.readyState == 4 && this.status == 200) {
+        risk = JSON.parse(this.responseText)
+        drawMap()
+        drawTroops()
+        drawInstruction()
+    }
+}
+
 function updateServerDeployment(country) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = updateGameState;
@@ -50,6 +59,17 @@ function drawInstruction(){
     blueTroopNo.innerHTML = calcTroopNo(2)
     blueTerCount = getTerNo(2)
     blueTerNo.innerHTML = blueTerCount
+
+    var redcon = document.getElementById('redcon')
+    var bluecon = document.getElementById('bluecon')
+    if (risk['currentPlayer'] == 1){
+        redcon.innerText = 'It is your turn.'
+        bluecon.innerText = 'Your orders are to wait for your next turn.'
+    }
+    else {
+        redcon.innerText = 'Your orders are to wait for your next turn.'
+        bluecon.innerText = 'It is your turn.'
+    }
 
     if (risk['stage'] == 'REINFORCE'){
         if (risk['currentPlayer'] == 1 ){
@@ -133,25 +153,8 @@ function calcTroopNo(playerNo){
     return troopNo
 }
 
-function reactToPlayerChoice(){
-    if (this.readyState == 4 && this.status == 200) {
-        risk = JSON.parse(this.responseText)
-        console.log('Next Player Turn:  ' + risk['currentPlayer'])
-        howManyReinforcements(updateGameState)
-        redcon = document.getElementById('redcon')
-        bluecon = document.getElementById('bluecon')
-        if (risk['currentPlayer'] == 1){
-            redcon.innerText = 'It is your turn.'
-            bluecon.innerText = 'Your orders are to wait for your next turn.'
-        }
-        else {
-            redcon.innerText = 'Your orders are to wait for your next turn.'
-            bluecon.innerText = 'It is your turn.'
-        }
-    }
-}
 
-function fetchTroops(responseSuccessF) {
+function fetchGame(responseSuccessF) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = responseSuccessF;
   xhttp.open("GET", "/REST/countries", true);
@@ -170,6 +173,8 @@ function drawMap() {
     ctx.font = '18px hancock';
     ctx.drawImage(img, 0, 0, mapcol.width(), img.naturalHeight * widthScaler);
 };
+
+
 
 function troopsReceivedAction() {
   if (this.readyState == 4 && this.status == 200) {
@@ -204,8 +209,6 @@ function troopsReceivedAction() {
 
     };
 
-    // troops drawn, now ask whose it is
-    askWhoseTurn(reactToPlayerChoice)
   };
 };
 
@@ -287,10 +290,7 @@ window.onload = function() {
   risk = {}
   local_risk = {}
 
-  // draw pure map without troops
-  drawMap()
-  // fetch and draw (callback)
-  fetchTroops(troopsReceivedAction)
+  fetchGame(updateGameStateBetter)
 };
 
 
@@ -421,7 +421,6 @@ function getCursorPosition(canvas, event) {
             console.log("update", risk['reinNo'], "troopNo", risk['territories'][name]['troopNo'])
             updateServerDeployment(name)
         }
-
 
       drawMap()
       drawTroops()
