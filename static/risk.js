@@ -348,6 +348,7 @@ function battleResults() {
 
 function reinPressed() {
     console.log ("pressed")
+
 }
 
 

@@ -7,7 +7,9 @@ from risk import reinforcements, diceroll
 app = Flask(__name__)
 api = Api(app)
 
-risk_data = {} # keys: currentPlayer, territories
+risk_data = {} # keys: currentPlayer, territories, stage
+
+# stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN
 
 @app.route('/')
 def run_risk():
@@ -22,6 +24,7 @@ class TroopResource(Resource):
             # allocate territories and initial troops to players
             allocated_ters = teralloc(territories)
             risk_data['territories'] = allocated_ters
+            risk_data['stage'] = "DEPLOY"
             return allocated_ters
 
 class PlayerTurn(Resource):
