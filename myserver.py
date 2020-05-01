@@ -8,6 +8,11 @@ app = Flask(__name__)
 api = Api(app)
 
 risk_data = {} # keys: currentPlayer, territories, stage
+# defines the clickable square around the number
+# these values are relative to the map size
+risk_data['tolerance'] = 0.02
+risk_data['factorX'] = 0.015
+risk_data['factorY'] = -0.015
 
 # stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN
 

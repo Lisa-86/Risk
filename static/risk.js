@@ -254,11 +254,6 @@ function getTerNo(playerNo){
 window.onload = function() {
   // our global data on state of play
   risk = {}
-  // defines the clickable square around the number
-  // these values are relative to the map size
-  risk['tolerance'] = 0.02
-  risk['factorX'] = 0.015
-  risk['factorY'] = -0.015
 
   // draw pure map without troops
   drawMap()
