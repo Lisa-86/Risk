@@ -42,14 +42,6 @@ class TroopResource(Resource):
 
             return risk_data
 
-class PlayerTurn(Resource):
-    def get(self):
-        if 'currentPlayer' in risk_data:
-            return risk_data
-        # decide who goes first
-        risk_data['currentPlayer'] = random.randint(1, 2) # only between two player for now
-        return risk_data
-
 
 class Deployment(Resource):
     def put(self, country):
@@ -59,6 +51,7 @@ class Deployment(Resource):
         if risk_data['reinNo'] == 0:
             risk_data['stage'] = 'ATTACK'
         return risk_data
+
 
 class Diceroll(Resource):
     def put(self, terFrom, terTo):
@@ -74,7 +67,6 @@ class Diceroll(Resource):
         return risk_data
 
 api.add_resource(TroopResource, '/REST/countries')
-api.add_resource(PlayerTurn, '/REST/player')
 api.add_resource(Deployment, '/REST/deployment/<string:country>')
 api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')
 
