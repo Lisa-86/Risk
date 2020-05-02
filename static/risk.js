@@ -21,13 +21,31 @@ function updateServerDeployment(country) {
   xhttp.send("Your JSON Data Here");
 }
 
-function howManyReinforcements(responseSuccessF) {
+
+function fetchGame(responseSuccessF) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = responseSuccessF;
-  xhttp.open("GET", "/REST/reinforce", true);
+  xhttp.open("GET", "/REST/countries", true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }
+
+
+function attackPressed() {
+    terFrom = local_risk['selOwnTer']
+    terTo = local_risk['selOppTer']
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", "/REST/diceroll/" + terFrom + "/" + terTo, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
+function reinPressed() {
+    console.log ("pressed")
+}
+
 
 function drawInstruction(){
     var reinNo = risk['reinNo']
@@ -167,13 +185,18 @@ function calcTroopNo(playerNo){
 }
 
 
-function fetchGame(responseSuccessF) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = responseSuccessF;
-  xhttp.open("GET", "/REST/countries", true);
-  xhttp.setRequestHeader("Content-type", "application/json");
-  xhttp.send("Your JSON Data Here");
+function getTerNo(playerNo){
+    var territories = risk['territories']
+    var count = 0
+    for (i = 0; i < Object.keys(territories).length; i++){
+        var ter = Object.keys(territories)[i]
+        if (territories[ter]['playerNo'] == playerNo){
+            count += 1
+        }
+    }
+    return count
 }
+
 
 function drawMap() {
     var canvas = document.getElementById('myCanvas');
@@ -250,18 +273,6 @@ function drawTroops() {
   };
 }
 
-function getTerNo(playerNo){
-    var territories = risk['territories']
-    var count = 0
-    for (i = 0; i < Object.keys(territories).length; i++){
-        var ter = Object.keys(territories)[i]
-        if (territories[ter]['playerNo'] == playerNo){
-            count += 1
-        }
-    }
-    return count
-}
-
 
 window.onload = function() {
   // our global data on state of play
@@ -277,22 +288,6 @@ window.onresize = function() {
   drawTroops()
   drawInstruction()
 };
-
-
-function attackPressed() {
-    terFrom = local_risk['selOwnTer']
-    terTo = local_risk['selOppTer']
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/diceroll/" + terFrom + "/" + terTo, true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send("Your JSON Data Here");
-}
-
-
-function reinPressed() {
-    console.log ("pressed")
-}
 
 
 function getCursorPosition(canvas, event) {

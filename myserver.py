@@ -50,16 +50,6 @@ class PlayerTurn(Resource):
         risk_data['currentPlayer'] = random.randint(1, 2) # only between two player for now
         return risk_data
 
-class Reinforce(Resource):
-    """
-        How many to troops the current player can reinforce
-    """
-    def get(self):
-        if 'reinNo' in risk_data:
-            # return the reinforcment number for the current player
-            return risk_data
-        risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
-        return risk_data
 
 class Deployment(Resource):
     def put(self, country):
@@ -85,7 +75,6 @@ class Diceroll(Resource):
 
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(PlayerTurn, '/REST/player')
-api.add_resource(Reinforce, '/REST/reinforce')
 api.add_resource(Deployment, '/REST/deployment/<string:country>')
 api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')
 
