@@ -33,7 +33,7 @@ class TroopResource(Resource):
             # allocate territories and initial troops to players
             allocated_ters = teralloc(territories)
             risk_data['territories'] = allocated_ters
-            risk_data['stage'] = "REINFORCE"
+            risk_data['stage'] = "DEPLOYMENT"
 
             # decide who goes first
             risk_data['currentPlayer'] = random.randint(1, 2)  # only between two player for now
@@ -64,11 +64,25 @@ class Diceroll(Resource):
             risk_data['territories'][terTo]['playerNo'] = risk_data['currentPlayer']
             risk_data['territories'][terTo]['troopNo'] = 1
             risk_data['territories'][terFrom]['troopNo'] -= 1
+            risk_data['stage'] = 'REINFORCE'
+            risk_data['reinFrom'] = terFrom
+            risk_data['reinTo'] = terTo
+        return risk_data
+
+
+class Reinforcement(Resource):
+    def put(self, input):
+        terFrom = risk_data['reinFrom']
+        terTo = risk_data['reinTo']
+        risk_data['territories'][terFrom]['troopNo'] -= input
+        risk_data['territories'][terTo]['troopNo'] += input
+        risk_data['stage'] = "ATTACK"
         return risk_data
 
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(Deployment, '/REST/deployment/<string:country>')
 api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')
+api.add_resource(Reinforcement, '/REST/reinforcement/<int:input>')
 
 if __name__ == '__main__':
     app.run()

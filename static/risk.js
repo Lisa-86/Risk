@@ -42,8 +42,58 @@ function attackPressed() {
 }
 
 
+// check the input is valid
 function reinPressed() {
-    console.log ("pressed")
+    var terFrom = local_risk['selOwnTer']
+    var terTo = local_risk['selOppTer']
+    var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
+    if (maxTroopNo == 0) {
+        return updateInput(0)
+    }
+    if (risk['currentPlayer'] == 1) {
+        input = document.getElementById("redbox").value
+        if (input == "") {
+            input = "0"
+            return updateInput(input)
+        }
+        else if (input < 0) {
+            document.getElementById("redresult").innerHTML =  "<p> You can't move negative troops! </p>"
+            redboxdiv.style.display = "inline"
+        }
+        else if (input > maxTroopNo) {
+            document.getElementById("redresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+            redboxdiv.style.display = "inline"
+        }
+        else {
+            return updateInput(input)
+        }
+    }
+    else {
+        input = document.getElementById("bluebox").value
+        if (input == "") {
+            input = "0"
+            return updateInput(input)
+        }
+        else if (input < 0) {
+            document.getElementById("blueresult").innerHTML =  "<p> You can't move negative troops! </p>"
+            blueboxdiv.style.display = "inline"
+        }
+        else if (input > maxTroopNo) {
+            document.getElementById("blueresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+            blueboxdiv.style.display = "inline"
+        }
+        else {
+            return updateInput(input)
+        }
+    }
+}
+
+function updateInput(validInput) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", "/REST/reinforcement/" + validInput, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
 }
 
 
@@ -77,18 +127,18 @@ function drawInstruction(){
     blueTerCount = getTerNo(2)
     blueTerNo.innerHTML = blueTerCount
 
-    // prints whose go it is, visible at all times
+    // prints whose go it is and what stage they're on, visible at all times
     if (risk['currentPlayer'] == 1){
-        redcon.innerText = 'It is your turn.'
-        bluecon.innerText = 'Your orders are to wait for your next turn.'
+        redcon.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
+        bluecon.innerHTML = 'Your orders are to wait for your next turn.'
     }
     else {
-        redcon.innerText = 'Your orders are to wait for your next turn.'
-        bluecon.innerText = 'It is your turn.'
+        redcon.innerHTML = 'Your orders are to wait for your next turn.'
+        bluecon.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
     }
 
     // prints how many troops the player has to reinforce with, only shows up at reinforce stage
-    if (risk['stage'] == 'REINFORCE'){
+    if (risk['stage'] == 'DEPLOYMENT'){
         if (risk['currentPlayer'] == 1 ){
             redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
         }
@@ -130,31 +180,32 @@ function drawInstruction(){
                     blueops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
                 }
             }
-
+        }
+    }
+    if (risk['stage'] == "REINFORCE") {
+        redatt.style.display = "none"
+        blueatt.style.display = "none"
         var terFrom = local_risk['selOwnTer']
         var terTo = local_risk['selOppTer']
         var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-        if (risk['territories'][terFrom]['playerNo'] == risk['territories'][terTo]['playerNo']) {
-            if (risk["currentPlayer"] == 1) {
-                    redops.innerHTML = ""
-                    redresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce " + terTo + " with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
-                    blueresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
-                    redboxdiv.style.display = "inline"
-                }
-                else{
-                    blueops.innerHTML = ""
-                    blueresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce " + terTo + " with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
-                    redresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
-                    blueboxdiv.style.display = "inline"
-                }
-            }
-            else {
-                redboxdiv.style.display = "none"
-                blueboxdiv.style.display = "none"
-                redresult.innerHTML = ""
-                blueresult.innerHTML = ""
-            }
+        if (risk["currentPlayer"] == 1) {
+            redops.innerHTML = ""
+            redresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce <b>" + terTo + "</b> with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
+            blueresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
+            redboxdiv.style.display = "inline"
         }
+        else {
+            blueops.innerHTML = ""
+            blueresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce <b>" + terTo + "</b> with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
+            redresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
+            blueboxdiv.style.display = "inline"
+        }
+    }
+    else {
+        redboxdiv.style.display = "none"
+        blueboxdiv.style.display = "none"
+        redresult.innerHTML = ""
+        blueresult.innerHTML = ""
     }
 }
 
