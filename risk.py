@@ -23,11 +23,11 @@ def diceroll(p1troops, p2troops):
 
     if p1troops < 2:
         raise ValueError
-    if p1troops == 1:
-        p1dice = 1
     if p1troops == 2:
+        p1dice = 1
+    if p1troops == 3:
         p1dice = 2
-    if p1troops > 2:
+    if p1troops > 3:
         p1dice = 3
 
     if p2troops == 1:

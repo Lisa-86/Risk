@@ -157,8 +157,9 @@ function drawInstruction(){
         if (local_risk['selOwnTer'] != undefined){
             // check if the neighbour opponent territory is selected
             attackable = neighAttackOps(local_risk['selOwnTer'])
+            selOwnTer = local_risk['selOwnTer']
 
-            if (attackable.indexOf(local_risk['selOppTer']) != -1){
+            if (attackable.indexOf(local_risk['selOppTer']) != -1 && risk['territories'][selOwnTer]['troopNo'] >= 2){
                 // time to attack, show attack button
                 if (risk["currentPlayer"] == 1){
                     redatt.style.display = "inline"
