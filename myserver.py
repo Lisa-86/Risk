@@ -79,10 +79,17 @@ class Reinforcement(Resource):
         risk_data['stage'] = "ATTACK"
         return risk_data
 
+
+class EndMove(Resource):
+    def put(self):
+        risk_data["stage"] = "MANOEUVRE"
+        return risk_data
+
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(Deployment, '/REST/deployment/<string:country>')
 api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')
 api.add_resource(Reinforcement, '/REST/reinforcement/<int:input>')
+api.add_resource(EndMove, '/REST/endmove')
 
 if __name__ == '__main__':
     app.run()

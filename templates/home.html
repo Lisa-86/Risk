@@ -75,6 +75,10 @@
             <input type="text" class="form-control" id="redbox" min="0" placeholder="0">
             <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
         </div>
+        <div id="redend" style="display:none">
+            <p> If you would rather <b> not </b> attack then you can skip straight to your <b> final maneouvre </b> and end your turn. </p>
+            <button type="button" class="btn btn-success" onclick="endMovePressed()">END TURN</button>
+        </div>
     </div>
 
     <div class="col-md-8", id='mapcol'>
@@ -110,6 +114,10 @@
         <div id="blueboxdiv" style="display:none">
             <input type="text" class="form-control" id="bluebox" min="0" placeholder="0">
             <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
+        </div>
+        <div id="blueend" style="display:none">
+            <p> If you would rather <b> not </b> attack then you can skip straight to your <b> final maneouvre </b> and end your turn. </p>
+            <button type="button" class="btn btn-success" onclick="endMovePressed()">END TURN</button>
         </div>
     </div>
   </div>
