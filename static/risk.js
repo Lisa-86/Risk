@@ -88,6 +88,16 @@ function reinPressed() {
     }
 }
 
+
+function endMovePressed() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", "/REST/endmove", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
 function updateInput(validInput) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
@@ -108,6 +118,7 @@ function drawInstruction(){
     var redboxdiv = document.getElementById("redboxdiv")
     var redTroopNo = document.getElementById('redTroopNo')
     var redTerNo = document.getElementById('redTerNo')
+    var redend = document.getElementById("redend")
 
     var bluecon = document.getElementById('bluecon')
     var blueren = document.getElementById('bluereinforceno')
@@ -117,6 +128,7 @@ function drawInstruction(){
     var blueatt = document.getElementById("blueatt")
     var blueresult = document.getElementById("blueresult")
     var blueboxdiv = document.getElementById("blueboxdiv")
+    var blueend = document.getElementById("blueend")
 
     // prints the stats tables for each player, visible at all times
     redTroopNo.innerHTML = calcTroopNo(1)
@@ -153,6 +165,12 @@ function drawInstruction(){
 
     // prints instructions for attack stage, only shows up at the attack stage
     if (risk['stage'] == 'ATTACK'){
+        if (risk["currentPlayer"] == 1) {
+            redend.style.display = "inline"
+        }
+        if (risk["currentPlayer"] == 2) {
+            blueend.style.display = "inline"
+        }
         // attacker territory selected
         if (local_risk['selOwnTer'] != undefined){
             // check if the neighbour opponent territory is selected
@@ -207,6 +225,15 @@ function drawInstruction(){
         blueboxdiv.style.display = "none"
         redresult.innerHTML = ""
         blueresult.innerHTML = ""
+    }
+
+    if (risk["stage"] == "MANOEUVRE") {
+        if (risk["currentPlayer"] == 1) {
+            redops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
+        }
+        else {
+            blueops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
+        }
     }
 }
 
