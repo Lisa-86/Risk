@@ -337,13 +337,13 @@ function drawTroops() {
 
     if (territory['playerNo'] == 1){
         ctx.strokeStyle = 'red';
-        if (local_risk['selOwnTer'] == city || local_risk['selOppTer'] == city){
+        if (local_risk['selOwnTer'] == city || local_risk['selOwnTer2'] == city || local_risk['selOppTer'] == city){
             ctx.stroke();
         }
     }
     else {
         ctx.strokeStyle = 'blue';
-        if (local_risk['selOwnTer'] == city || local_risk['selOppTer'] == city){
+        if (local_risk['selOwnTer'] == city || local_risk['selOwnTer2'] == city || local_risk['selOppTer'] == city){
             ctx.stroke();
         }
     }
@@ -369,17 +369,16 @@ window.onresize = function() {
 };
 
 
-function getCursorPosition(canvas, event) {
+function mapPressed(canvas, event) {
   const rect = canvas.getBoundingClientRect()
   const click_x = event.clientX - rect.left
   const click_y = event.clientY - rect.top
-  //console.log('x: ' + x + ' y: ' + y)
+
   // normalise with respect to the image
   var mapcol = $('#mapcol')
   var img = document.getElementById('Map');
   var widthScaler = mapcol.width() / img.naturalWidth
   var disp_img_height = img.naturalHeight * widthScaler
-  // console.log("norm new", norm_x, norm_y)
 
   // look up where it belongs
   var territories = risk['territories']
@@ -392,11 +391,40 @@ function getCursorPosition(canvas, event) {
     // ie centre the position of the territory to the centre of the number
     var box = getTerBoundary(loc[0], loc[1])
 
+     // check if the click is within the territory box
      if (click_x > box[0] && click_x < box[0] + box[2] &&
         click_y > box[1] && click_y < box[1] + box[3]) {
 
         if (risk['currentPlayer'] == risk['territories'][name]['playerNo']){
-            local_risk['selOwnTer'] = name
+
+            if (risk["stage"] != "MANOEUVRE") {
+                local_risk['selOwnTer'] = name
+                local_risk['last_selected'] = "selOwnTer"
+            }
+            else {
+                // MANOEUVRE stage
+                // two variables to handle two territories
+                // 1) local_risk['selOwnTer']
+                // 2) local_risk['selOwnTer2']
+                // we have to keep track of which click is the oldest one
+
+                if (local_risk['last_selected'] == undefined){
+                    local_risk['selOwnTer'] = name
+                    local_risk['last_selected'] = "selOwnTer"
+                }
+                else {
+                    // something was selected before
+                    var last_selected = local_risk['last_selected']
+                    if ('selOwnTer' == last_selected){
+                        local_risk['selOwnTer2'] = name
+                        local_risk['last_selected'] = "selOwnTer2"
+                    }
+                    else {
+                        local_risk['selOwnTer'] = name
+                        local_risk['last_selected'] = "selOwnTer"
+                    }
+                }
+            }
         }
         else {
             local_risk['selOppTer'] = name
@@ -417,5 +445,5 @@ function getCursorPosition(canvas, event) {
 
 const canvas = document.getElementById('myCanvas')
 canvas.addEventListener('mousedown', function(e) {
-    getCursorPosition(canvas, e)
+    mapPressed(canvas, e)
 });
