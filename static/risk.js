@@ -202,6 +202,8 @@ function drawInstruction(){
         }
     }
     if (risk['stage'] == "REINFORCE") {
+        redend.style.display = "none"
+        blueend.style.display = "none"
         redatt.style.display = "none"
         blueatt.style.display = "none"
         var terFrom = local_risk['selOwnTer']
@@ -228,11 +230,40 @@ function drawInstruction(){
     }
 
     if (risk["stage"] == "MANOEUVRE") {
-        if (risk["currentPlayer"] == 1) {
-            redops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
+        redend.style.display = "none"
+        blueend.style.display = "none"
+        var terFrom = local_risk["selOwnTer"]
+        var terTo = local_risk["selOwnTer2"]
+        var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
+
+        if (terFrom == undefined && terTo == undefined) {
+            if (risk["currentPlayer"] == 1) {
+                redops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
+            }
+            else {
+                blueops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
+            }
         }
-        else {
-            blueops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
+
+
+        else if (terFrom != undefined || terTo != undefined) {
+            neighs = neighManOps(terFrom)
+            if (risk["currentPlayer"] == 1) {
+                if (neighs.length >= 1 && maxTroopNo >= 1) {
+                    redops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
+                }
+                else {
+                    redops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
+                }
+            }
+            else {
+                if (neighs.length >= 1 && maxTroopNo >= 1) {
+                    blueops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
+                }
+                else {
+                    blueops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
+                }
+            }
         }
     }
 }
@@ -248,6 +279,19 @@ function neighAttackOps(ter){
         }
     }
     return attackable
+}
+
+
+function neighManOps(ter){
+    var neighbours = risk['territories'][ter]['neighbours']
+    var moveable = []
+    for (var i = 0; i < neighbours.length; i++){
+        var name = neighbours[i]
+        if (risk['territories'][name]['playerNo'] == risk['currentPlayer']){
+            moveable.push(name)
+        }
+    }
+    return moveable
 }
 
 
@@ -400,6 +444,7 @@ function mapPressed(canvas, event) {
             if (risk["stage"] != "MANOEUVRE") {
                 local_risk['selOwnTer'] = name
                 local_risk['last_selected'] = "selOwnTer"
+                local_risk['selOwnTer2'] = undefined
             }
             else {
                 // MANOEUVRE stage
