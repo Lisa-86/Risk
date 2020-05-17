@@ -76,8 +76,15 @@
             <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
         </div>
         <div id="redend" style="display:none">
-            <p> If you would rather <b> not </b> attack then you can skip straight to your <b> final maneouvre </b>. </p>
-            <button type="button" class="btn btn-success" onclick="endMovePressed()">MANOEUVRE<</button>
+            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
+        </div>
+        <div id="redman" style="display:none">
+            <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
+            <input type="text" class="form-control" id="redmanbox" min="0" placeholder="0">
+            <button type="button" class="btn btn-info" onclick="manPressed()">MANOEUVRE</button>
+        </div>
+        <div id="redendturn" style="display:none">
+            <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
         </div>
     </div>
 
@@ -116,8 +123,15 @@
             <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
         </div>
         <div id="blueend" style="display:none">
-            <p> If you would rather <b> not </b> attack then you can skip straight to your <b> final manoeuvre </b>. </p>
-            <button type="button" class="btn btn-success" onclick="endMovePressed()">MANOEUVRE</button>
+            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
+        </div>
+        <div id="blueman" style="display:none">
+            <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
+            <input type="text" class="form-control" id="bluemanbox" min="0" placeholder="0">
+            <button type="button" class="btn btn-info" onclick="manPressed()">MANOEUVRE</button>
+        </div>
+        <div id="blueendturn" style="display:none">
+            <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
         </div>
     </div>
   </div>

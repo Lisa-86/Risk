@@ -85,11 +85,43 @@ class EndMove(Resource):
         risk_data["stage"] = "MANOEUVRE"
         return risk_data
 
+
+class Man(Resource):
+    def put(self, terFrom, terTo, troopNo):
+        risk_data['territories'][terFrom]['troopNo'] -= troopNo
+        risk_data['territories'][terTo]['troopNo'] += troopNo
+        risk_data['stage'] = "DEPLOYMENT"
+
+        if risk_data['currentPlayer'] == 1:
+            risk_data['currentPlayer'] = 2
+        else:
+            risk_data['currentPlayer'] = 1
+
+        risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
+
+        return risk_data
+
+
+class EndTurn(Resource):
+    def put(self):
+        if risk_data['currentPlayer'] == 1:
+            risk_data['currentPlayer'] = 2
+        else:
+            risk_data['currentPlayer'] = 1
+            
+        risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
+
+        return risk_data
+
+
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(Deployment, '/REST/deployment/<string:country>')
 api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')
 api.add_resource(Reinforcement, '/REST/reinforcement/<int:input>')
 api.add_resource(EndMove, '/REST/endmove')
+api.add_resource(Man, '/REST/man/<string:terFrom>/<string:terTo>/<int:troopNo>')
+api.add_resource(EndTurn, '/REST/endTurn')
+
 
 if __name__ == '__main__':
     app.run()

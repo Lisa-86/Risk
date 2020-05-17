@@ -89,6 +89,15 @@ function reinPressed() {
 }
 
 
+function updateInput(validInput) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", "/REST/reinforcement/" + validInput, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
 function endMovePressed() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
@@ -98,10 +107,65 @@ function endMovePressed() {
 }
 
 
-function updateInput(validInput) {
+function manPressed() {
+    var terFrom = local_risk['selOwnTer']
+    var terTo = local_risk['selOwnTer2']
+    var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
+
+    if (risk['currentPlayer'] == 1) {
+        input = document.getElementById("redmanbox").value
+        if (input == "") {
+            input = "0"
+            return updateManInput(input)
+        }
+        else if (input < 0) {
+            document.getElementById("redresult").innerHTML =  "<p> You can't move negative troops! </p>"
+            redmanboxdiv.style.display = "inline"
+        }
+        else if (input > maxTroopNo) {
+            document.getElementById("redresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+            redmanboxdiv.style.display = "inline"
+        }
+        else {
+            return updateManInput(input)
+        }
+    }
+    else {
+        input = document.getElementById("bluemanbox").value
+        if (input == "") {
+            input = "0"
+            return updateManInput(input)
+        }
+        else if (input < 0) {
+            document.getElementById("blueresult").innerHTML =  "<p> You can't move negative troops! </p>"
+            bluemanboxdiv.style.display = "inline"
+        }
+        else if (input > maxTroopNo) {
+            document.getElementById("blueresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+            bluemanboxdiv.style.display = "inline"
+        }
+        else {
+            return updateManInput(input)
+        }
+    }
+}
+
+
+function updateManInput(troopNo) {
+    var terFrom = local_risk['selOwnTer']
+    var terTo = local_risk['selOwnTer2']
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/reinforcement/" + validInput, true);
+    xhttp.open("PUT", "/REST/man/" + terFrom + "/" + terTo + "/" + troopNo, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
+function endTurnPressed() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", "/REST/endTurn/", true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -119,6 +183,8 @@ function drawInstruction(){
     var redTroopNo = document.getElementById('redTroopNo')
     var redTerNo = document.getElementById('redTerNo')
     var redend = document.getElementById("redend")
+    var redman = document.getElementById("redman")
+    var redendturn = document.getElementById("redendturn")
 
     var bluecon = document.getElementById('bluecon')
     var blueren = document.getElementById('bluereinforceno')
@@ -129,6 +195,8 @@ function drawInstruction(){
     var blueresult = document.getElementById("blueresult")
     var blueboxdiv = document.getElementById("blueboxdiv")
     var blueend = document.getElementById("blueend")
+    var blueman = document.getElementById("blueman")
+    var blueendturn = document.getElementById("blueendturn")
 
     // prints the stats tables for each player, visible at all times
     redTroopNo.innerHTML = calcTroopNo(1)
@@ -232,9 +300,20 @@ function drawInstruction(){
     if (risk["stage"] == "MANOEUVRE") {
         redend.style.display = "none"
         blueend.style.display = "none"
+
+        if (risk["currentPlayer"] == 1) {
+            redendturn.style.display = "inline"
+        }
+        else {
+            blueendturn.style.display = "inline"
+        }
+
         var terFrom = local_risk["selOwnTer"]
         var terTo = local_risk["selOwnTer2"]
-        var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
+
+        if (terFrom != undefined) {
+            var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
+        }
 
         if (terFrom == undefined && terTo == undefined) {
             if (risk["currentPlayer"] == 1) {
@@ -245,6 +324,14 @@ function drawInstruction(){
             }
         }
 
+        else if (terFrom != undefined && terTo != undefined) {
+            if (risk["currentPlayer"] == 1) {
+                redman.style.display = "inline"
+            }
+            else {
+                blueman.style.display = "inline"
+            }
+        }
 
         else if (terFrom != undefined || terTo != undefined) {
             neighs = neighManOps(terFrom)
