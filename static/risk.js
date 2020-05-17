@@ -5,6 +5,15 @@
 function updateGameState(){
     if (this.readyState == 4 && this.status == 200) {
         risk = JSON.parse(this.responseText)
+
+        if (risk['stage'] == 'MANOEUVRE'){
+            // deselect territories
+            console.log('Manoeuvre: deselect territories')
+            local_risk['selOwnTer'] = undefined
+            local_risk['selOwnTer2'] = undefined
+            local_risk['selOppTer'] = undefined
+        }
+
         drawMap()
         drawTroops()
         drawInstruction()
@@ -120,11 +129,11 @@ function manPressed() {
         }
         else if (input < 0) {
             document.getElementById("redresult").innerHTML =  "<p> You can't move negative troops! </p>"
-            redmanboxdiv.style.display = "inline"
+            redmanbox.style.display = "inline"
         }
         else if (input > maxTroopNo) {
             document.getElementById("redresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
-            redmanboxdiv.style.display = "inline"
+            redmanbox.style.display = "inline"
         }
         else {
             return updateManInput(input)
@@ -138,11 +147,11 @@ function manPressed() {
         }
         else if (input < 0) {
             document.getElementById("blueresult").innerHTML =  "<p> You can't move negative troops! </p>"
-            bluemanboxdiv.style.display = "inline"
+            bluemanbox.style.display = "inline"
         }
         else if (input > maxTroopNo) {
             document.getElementById("blueresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
-            bluemanboxdiv.style.display = "inline"
+            bluemanbox.style.display = "inline"
         }
         else {
             return updateManInput(input)
@@ -165,7 +174,7 @@ function updateManInput(troopNo) {
 function endTurnPressed() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/endTurn/", true);
+    xhttp.open("PUT", "/REST/endTurn", true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -317,24 +326,43 @@ function drawInstruction(){
 
         if (terFrom == undefined && terTo == undefined) {
             if (risk["currentPlayer"] == 1) {
+                redman.style.display = "none"
                 redops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
             }
             else {
+                blueman.style.display = "none"
                 blueops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
             }
         }
 
         else if (terFrom != undefined && terTo != undefined) {
+            var neighs = neighManOps(terFrom)
+            var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
             if (risk["currentPlayer"] == 1) {
                 redman.style.display = "inline"
+                if (neighs.length >= 1 && maxTroopNo >= 1) {
+                    redops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
+                }
+                else {
+                    redops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
+                }
             }
             else {
                 blueman.style.display = "inline"
+                if (neighs.length >= 1 && maxTroopNo >= 1) {
+                    blueops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
+                }
+                else {
+                    blueops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
+                }
             }
         }
 
-        else if (terFrom != undefined || terTo != undefined) {
-            neighs = neighManOps(terFrom)
+        else if (terFrom != undefined && terTo == undefined) {
+            redman.style.display = "none"
+            blueman.style.display = "none"
+            var neighs = neighManOps(terFrom)
+            var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
             if (risk["currentPlayer"] == 1) {
                 if (neighs.length >= 1 && maxTroopNo >= 1) {
                     redops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs

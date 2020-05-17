@@ -90,13 +90,13 @@ class Man(Resource):
     def put(self, terFrom, terTo, troopNo):
         risk_data['territories'][terFrom]['troopNo'] -= troopNo
         risk_data['territories'][terTo]['troopNo'] += troopNo
-        risk_data['stage'] = "DEPLOYMENT"
 
         if risk_data['currentPlayer'] == 1:
             risk_data['currentPlayer'] = 2
         else:
             risk_data['currentPlayer'] = 1
 
+        risk_data['stage'] = "DEPLOYMENT"
         risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
 
         return risk_data
@@ -108,7 +108,8 @@ class EndTurn(Resource):
             risk_data['currentPlayer'] = 2
         else:
             risk_data['currentPlayer'] = 1
-            
+
+        risk_data['stage'] = "DEPLOYMENT"
         risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
 
         return risk_data
