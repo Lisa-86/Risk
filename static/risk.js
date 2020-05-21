@@ -181,32 +181,6 @@ function endTurnPressed() {
 
 
 function drawInstruction(){
-    var reinNo = risk['reinNo']
-
-    var redcon = document.getElementById("redcon")
-    var redops = document.getElementById("redops")
-    var redren = document.getElementById("redreinforceno")
-    var redatt = document.getElementById("redatt")
-    var redresult = document.getElementById("redresult")
-    var redboxdiv = document.getElementById("redboxdiv")
-    var redTroopNo = document.getElementById('redTroopNo')
-    var redTerNo = document.getElementById('redTerNo')
-    var redend = document.getElementById("redend")
-    var redman = document.getElementById("redman")
-    var redendturn = document.getElementById("redendturn")
-
-    var bluecon = document.getElementById('bluecon')
-    var blueren = document.getElementById('bluereinforceno')
-    var blueops = document.getElementById('blueops')
-    var blueTroopNo = document.getElementById('blueTroopNo')
-    var blueTerNo = document.getElementById('blueTerNo')
-    var blueatt = document.getElementById("blueatt")
-    var blueresult = document.getElementById("blueresult")
-    var blueboxdiv = document.getElementById("blueboxdiv")
-    var blueend = document.getElementById("blueend")
-    var blueman = document.getElementById("blueman")
-    var blueendturn = document.getElementById("blueendturn")
-
     // prints the stats tables for each player, visible at all times
     redTroopNo.innerHTML = calcTroopNo(1)
     terCount = getTerNo(1)
@@ -217,6 +191,8 @@ function drawInstruction(){
     blueTerNo.innerHTML = blueTerCount
 
     // prints whose go it is and what stage they're on, visible at all times
+    var redcon = document.getElementById("redcon")
+    var bluecon = document.getElementById('bluecon')
     if (risk['currentPlayer'] == 1){
         redcon.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
         bluecon.innerHTML = 'Your orders are to wait for your next turn.'
@@ -226,7 +202,19 @@ function drawInstruction(){
         bluecon.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
     }
 
-    // prints how many troops the player has to reinforce with, only shows up at reinforce stage
+    // prints instructions for attack stage, only shows up at the attack stage
+    drawDeploymentInstructions()
+    drawAttackInstructions()
+    drawReinforceInstructions()
+    drawManInstructions()
+}
+
+function drawDeploymentInstructions(){
+    // prints how many troops the player has to reinforce with, only shows up at deployment stage
+    var reinNo = risk['reinNo']
+    var blueren = document.getElementById('bluereinforceno')
+    var redren = document.getElementById("redreinforceno")
+
     if (risk['stage'] == 'DEPLOYMENT'){
         if (risk['currentPlayer'] == 1 ){
             redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
@@ -239,8 +227,20 @@ function drawInstruction(){
         redren.innerHTML = ''
         blueren.innerHTML = ''
     }
+}
 
-    // prints instructions for attack stage, only shows up at the attack stage
+function drawAttackInstructions(){
+    // Draws Attack instruction during the attack stage
+    // but during every other stage, cleans up attack instructions
+    var reinNo = risk['reinNo']
+    var redops = document.getElementById("redops")
+    var redatt = document.getElementById("redatt")
+    var redend = document.getElementById("redend")
+
+    var blueops = document.getElementById('blueops')
+    var blueatt = document.getElementById("blueatt")
+    var blueend = document.getElementById("blueend")
+
     if (risk['stage'] == 'ATTACK'){
         if (risk["currentPlayer"] == 1) {
             redend.style.display = "inline"
@@ -278,11 +278,29 @@ function drawInstruction(){
             }
         }
     }
-    if (risk['stage'] == "REINFORCE") {
+    else{
+        // clean up the attack instruction
         redend.style.display = "none"
         blueend.style.display = "none"
         redatt.style.display = "none"
         blueatt.style.display = "none"
+    }
+
+}
+
+
+function drawReinforceInstructions(){
+    var reinNo = risk['reinNo']
+
+    var redops = document.getElementById("redops")
+    var redresult = document.getElementById("redresult")
+    var redboxdiv = document.getElementById("redboxdiv")
+
+    var blueops = document.getElementById('blueops')
+    var blueresult = document.getElementById("blueresult")
+    var blueboxdiv = document.getElementById("blueboxdiv")
+
+    if (risk['stage'] == "REINFORCE") {
         var terFrom = local_risk['selOwnTer']
         var terTo = local_risk['selOppTer']
         var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
@@ -305,10 +323,18 @@ function drawInstruction(){
         redresult.innerHTML = ""
         blueresult.innerHTML = ""
     }
+}
+
+function drawManInstructions(){
+    var redops = document.getElementById("redops")
+    var redman = document.getElementById("redman")
+    var redendturn = document.getElementById("redendturn")
+
+    var blueops = document.getElementById('blueops')
+    var blueman = document.getElementById("blueman")
+    var blueendturn = document.getElementById("blueendturn")
 
     if (risk["stage"] == "MANOEUVRE") {
-        redend.style.display = "none"
-        blueend.style.display = "none"
 
         if (risk["currentPlayer"] == 1) {
             redendturn.style.display = "inline"
@@ -320,10 +346,6 @@ function drawInstruction(){
         var terFrom = local_risk["selOwnTer"]
         var terTo = local_risk["selOwnTer2"]
 
-        if (terFrom != undefined) {
-            var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-        }
-
         if (terFrom == undefined && terTo == undefined) {
             if (risk["currentPlayer"] == 1) {
                 redman.style.display = "none"
@@ -334,7 +356,6 @@ function drawInstruction(){
                 blueops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
             }
         }
-
         else if (terFrom != undefined && terTo != undefined) {
             var neighs = neighManOps(terFrom)
             var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
@@ -381,8 +402,16 @@ function drawInstruction(){
             }
         }
     }
+    else{
+        // clean up
+        redendturn.style.display = "none"
+        blueendturn.style.display = "none"
+        redops.innerHTML = ''
+        blueops.innerHTML = ''
+        redman.style.display = 'none'
+        blueman.style.display = 'none'
+    }
 }
-
 
 function neighAttackOps(ter){
     var neighbours = risk['territories'][ter]['neighbours']
@@ -558,7 +587,6 @@ function mapPressed(canvas, event) {
 
             if (risk["stage"] != "MANOEUVRE") {
                 local_risk['selOwnTer'] = name
-                local_risk['last_selected'] = "selOwnTer"
                 local_risk['selOwnTer2'] = undefined
             }
             else {
@@ -568,21 +596,19 @@ function mapPressed(canvas, event) {
                 // 2) local_risk['selOwnTer2']
                 // we have to keep track of which click is the oldest one
 
-                if (local_risk['last_selected'] == undefined){
+                if (local_risk['selOwnTer'] == undefined){
                     local_risk['selOwnTer'] = name
-                    local_risk['last_selected'] = "selOwnTer"
                 }
                 else {
-                    // something was selected before
-                    var last_selected = local_risk['last_selected']
-                    if ('selOwnTer' == last_selected){
+                    // selOwnTer is defined,
+                    if (local_risk['selOwnTer2'] == undefined){
                         local_risk['selOwnTer2'] = name
-                        local_risk['last_selected'] = "selOwnTer2"
                     }
-                    else {
+                    else{
                         local_risk['selOwnTer'] = name
-                        local_risk['last_selected'] = "selOwnTer"
+                        local_risk['selOwnTer2'] = undefined
                     }
+
                 }
             }
         }
