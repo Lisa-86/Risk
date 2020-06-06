@@ -2,7 +2,7 @@ from flask import Flask, render_template, session
 from flask_restful import Resource, Api
 import random
 from territories import teralloc, territories
-from risk import reinforcements, diceroll
+from risk import reinforcements, diceroll, winGame
 
 app = Flask(__name__)
 api = Api(app)
@@ -31,7 +31,7 @@ class TroopResource(Resource):
             return risk_data
         else:
             # allocate territories and initial troops to players
-            allocated_ters = teralloc(territories)
+            allocated_ters = teralloc(territories, testWin=True)
             risk_data['territories'] = allocated_ters
             risk_data['stage'] = "DEPLOYMENT"
 
@@ -104,15 +104,22 @@ class Man(Resource):
 
 class EndTurn(Resource):
     def put(self):
-        if risk_data['currentPlayer'] == 1:
-            risk_data['currentPlayer'] = 2
+        winCheck = winGame(risk_data)
+
+        if winCheck == True:
+            return risk_data
+
         else:
-            risk_data['currentPlayer'] = 1
+            if risk_data['currentPlayer'] == 1:
+                risk_data['currentPlayer'] = 2
+            else:
+                risk_data['currentPlayer'] = 1
 
-        risk_data['stage'] = "DEPLOYMENT"
-        risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
+            risk_data['stage'] = "DEPLOYMENT"
+            risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
 
-        return risk_data
+            return risk_data
+
 
 
 api.add_resource(TroopResource, '/REST/countries')

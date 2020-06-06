@@ -26,6 +26,7 @@ function drawInstruction(){
     drawAttackInstructions()
     drawReinforceInstructions()
     drawManInstructions()
+    drawWinInstructions()
 }
 
 function drawDeploymentInstructions(){
@@ -230,4 +231,24 @@ function drawManInstructions(){
         redman.style.display = 'none'
         blueman.style.display = 'none'
     }
+}
+
+function drawWinInstructions() {
+    redWin = document.getElementById("redwin")
+    blueWin = document.getElementById("bluewin")
+
+    if (risk["stage"] == "WIN!") {
+        winner = risk["currentPlayer"]
+
+        if (winner == 1) {
+            redWin.innerHTML = "You Have Won!"
+            blueWin.innerHTML = "Sorry, You Have Lost"
+        }
+
+        else {
+            blueWin.innerHTML = "You Have Won!"
+            redWin.innerHTML = "Sorry, You Have Lost"
+        }
+    }
+
 }

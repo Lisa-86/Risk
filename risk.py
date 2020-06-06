@@ -97,4 +97,18 @@ def diceroll(p1troops, p2troops):
 #if p1troops == 0:
 #    print("not enough troops to attack")
 
+def winGame(risk):
+    # first calculate no of ters the player has
+    count = 0
+    for ter in risk["territories"]:
+        if risk['territories'][ter]['playerNo'] == risk["currentPlayer"]:
+            count += 1
+    if count == 42:
+        risk["stage"] = "WIN!"
+        return True
+
+    else:
+        return False
+
+
 
