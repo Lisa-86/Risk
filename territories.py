@@ -76,9 +76,11 @@ for ter in territories:
 
 
 
-def teralloc(territories, troopNo=3):
+def teralloc(territories, troopNo=3, testWin=False):
     playerno = 2
     ter_no = int(len(territories) / playerno)
+    if testWin:
+        ter_no = 1
 
     # just the territories
     ters = list(territories)

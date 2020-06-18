@@ -1,11 +1,24 @@
 from flask import Flask, render_template, session
 from flask_restful import Resource, Api
+from flask_sqlalchemy import SQLAlchemy
 import random
 from territories import teralloc, territories
 from risk import reinforcements, diceroll, winGame
 
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+
+db = SQLAlchemy()
+db.init_app(app)
+
+from auth import auth as auth_blueprint
+app.register_blueprint(auth_blueprint)
 api = Api(app)
+
+
+
 
 risk_data = {} # keys: currentPlayer, territories, stage
 # defines the clickable square around the number
@@ -14,7 +27,7 @@ risk_data['tolerance'] = 0.02
 risk_data['factorX'] = 0.015
 risk_data['factorY'] = -0.015
 
-# stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN
+# stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN, WIN!
 
 @app.route('/')
 def run_risk():
@@ -130,6 +143,14 @@ api.add_resource(EndMove, '/REST/endmove')
 api.add_resource(Man, '/REST/man/<string:terFrom>/<string:terTo>/<int:troopNo>')
 api.add_resource(EndTurn, '/REST/endTurn')
 
+
+@app.route('/profile')
+def profile():
+   return render_template("profile.html")
+
+@app.route('/base')
+def base():
+    return render_template("base.html")
 
 if __name__ == '__main__':
     app.run()
