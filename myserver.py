@@ -4,13 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 import random
 from territories import teralloc, territories
 from risk import reinforcements, diceroll, winGame
+import sys
 
+from db import db
+from models import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 
-db = SQLAlchemy()
 db.init_app(app)
 
 from auth import auth as auth_blueprint
@@ -151,6 +153,12 @@ def profile():
 @app.route('/base')
 def base():
     return render_template("base.html")
+
+
+
+# Just do this once: Create the database file
+# db.create_all(app=app)
+# sys.exit()
 
 if __name__ == '__main__':
     app.run()
