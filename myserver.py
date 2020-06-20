@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import random
 from territories import teralloc, territories
 from risk import reinforcements, diceroll, winGame
+
 import sys
 
 from db import db
