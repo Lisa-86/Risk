@@ -4,24 +4,22 @@ from flask_sqlalchemy import SQLAlchemy
 import random
 from territories import teralloc, territories
 from risk import reinforcements, diceroll, winGame
-
 import sys
-
 from db import db
 from models import User
+from auth import auth as auth_blueprint
+from main import main as main_blueprint
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-
 db.init_app(app)
 
-from auth import auth as auth_blueprint
+# add other URLs etc
 app.register_blueprint(auth_blueprint)
+app.register_blueprint(main_blueprint)
+
 api = Api(app)
-
-
-
 
 risk_data = {} # keys: currentPlayer, territories, stage
 # defines the clickable square around the number
@@ -31,10 +29,6 @@ risk_data['factorX'] = 0.015
 risk_data['factorY'] = -0.015
 
 # stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN, WIN!
-
-@app.route('/')
-def run_risk():
-    return render_template("home.html")
 
 class TroopResource(Resource):
     """
@@ -145,17 +139,6 @@ api.add_resource(Reinforcement, '/REST/reinforcement/<int:input>')
 api.add_resource(EndMove, '/REST/endmove')
 api.add_resource(Man, '/REST/man/<string:terFrom>/<string:terTo>/<int:troopNo>')
 api.add_resource(EndTurn, '/REST/endTurn')
-
-
-@app.route('/profile')
-def profile():
-   return render_template("profile.html")
-
-@app.route('/base')
-def base():
-    return render_template("base.html")
-
-
 
 # Just do this once: Create the database file
 # db.create_all(app=app)
