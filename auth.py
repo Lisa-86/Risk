@@ -19,11 +19,35 @@ def signup_post():
     name = request.form.get('name')
     password = request.form.get('password')
 
+    # check email field isn't empty
+    if email == "":
+        flash('Must provide an email address')
+        return redirect(url_for('auth.signup'))
+
+    # check name field isn't empty
+    if name == "":
+        flash('Must provide a username')
+        return redirect(url_for('auth.signup'))
+
+    # check password field isn't empty
+    if password == "":
+        flash('Must provide a password')
+        return redirect(url_for('auth.signup'))
+
+    # check if password is minimum 6 characters
+    if len(password) < 6:
+        flash('Password must be minimum of 6 characters long')
+        return redirect(url_for('auth.signup'))
+
+    # check if password is secure
+    # TODO
+
     user = User.query.filter_by(email=email).first()
 
     if user:
         flash('Email address already exists')
         return redirect(url_for('auth.signup'))
+
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
     new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
@@ -50,7 +74,7 @@ def login_post():
     # if the above check passes, then we know the user has the right credentials
 
 
-    return redirect(url_for('profile'))
+    return redirect(url_for('main.profile'))
 
 
 @auth.route('/logout')
