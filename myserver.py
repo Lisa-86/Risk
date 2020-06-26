@@ -1,15 +1,18 @@
+
+import random
+import sys
+
 from flask import Flask, render_template, session
 from flask_login import LoginManager
 from flask_restful import Resource, Api
-from flask_sqlalchemy import SQLAlchemy
-import random
+
 from territories import teralloc, territories
 from risk import reinforcements, diceroll, winGame
-import sys
 from db import db
 from models import User
 from auth import auth as auth_blueprint
 from main import main as main_blueprint
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
