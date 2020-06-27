@@ -153,8 +153,8 @@ api.add_resource(Man, '/REST/man/<string:terFrom>/<string:terTo>/<int:troopNo>')
 api.add_resource(EndTurn, '/REST/endTurn')
 
 # Just do this once: Create the database file
-# db.create_all(app=app)
-# sys.exit()
+db.create_all(app=app)
+sys.exit()
 
 if __name__ == '__main__':
     app.run()

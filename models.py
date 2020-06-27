@@ -1,4 +1,5 @@
 from flask_login import UserMixin
+
 from db import db
 
 
@@ -8,3 +9,27 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
 
+class Game(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    player1 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    player2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    currentPlayer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+
+neighbours = db.Table('neighbours',
+    db.Column('fromTer_id', db.Integer, db.ForeignKey('territories.id'), primary_key=True),
+    db.Column('toTer_id', db.Integer, db.ForeignKey('territories.id'), primary_key=True)
+    )
+
+class Territories(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    country = db.Column(db.String(100))
+    locX = db.Column(db.Integer)
+    locY = db.Column(db.Integer)
+    neighbours = db.relationship('Territories')
+
+
+# class GameState(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     territoryId = db.Column(db.Integer, db.ForeignKey('territories.id'))
+#     troopNo = db.Column(db.Integer)
+#     currentOwner = db.Column(db.Integer, db.ForeignKey('user.id'))
