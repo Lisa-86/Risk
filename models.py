@@ -1,5 +1,4 @@
 from flask_login import UserMixin
-
 from db import db
 
 
@@ -15,16 +14,25 @@ class Game(db.Model):
     player2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     currentPlayer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
 
-class Neighbours(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    TerFromId = db.Column(db.Integer, db.ForeignKey('territory.id'))
-    TerToId = db.Column(db.Integer, db.ForeignKey('territory.id'))
+neighbours = db.Table("neighbours",
+    db.Column('terFrom', db.Integer, db.ForeignKey('territory.id'), primary_key=True),
+    db.Column('terTo', db.Integer, db.ForeignKey('territory.id'), primary_key=True)
+)
 
 class Territory(db.Model):
+    __tablename__ = 'territory'
     id = db.Column(db.Integer, primary_key=True)
     country = db.Column(db.String(100))
     locX = db.Column(db.Integer)
     locY = db.Column(db.Integer)
+    neighbours = db.relationship("Territory",
+                               secondary=neighbours,
+                               primaryjoin=id == neighbours.c.terFrom,
+                               secondaryjoin=id == neighbours.c.terTo,
+                                 )# backref="left_nodes")
+
+    def __repr__(self):
+        return f'Country {self.country}'
 
 class GameState(db.Model):
     id = db.Column(db.Integer, primary_key=True)

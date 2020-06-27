@@ -20,8 +20,18 @@ def profile():
 def base():
     return render_template("base.html")
 
+@main.route('/test')
+def test():
+    ter = Territory.query.filter_by(country='Eastern Australia').first()
+    return ('hi')
+
 @main.route('/populate')
 def populate():
+    # remove all the territories first
+    for ter in Territory.query.all():
+        db.session.delete(ter)
+    db.session.commit()
+
     # create the territories in the database
     for ter, values in territories.items():
         db_ter = Territory(country=ter, locX=values['loc'][0], locY=values['loc'][1])
@@ -32,8 +42,8 @@ def populate():
         from_ter = Territory.query.filter_by(country=ter).first()
         for neighbour in values['neighbours']:
             to_ter = Territory.query.filter_by(country=neighbour).first()
-            new_neigh = Neighbours(TerFromId=from_ter.id, TerToId=to_ter.id)
-            db.session.add(new_neigh)
-            db.session.commit()
+            from_ter.neighbours.append(to_ter)
+        db.session.add(from_ter)
+        db.session.commit()
 
     return ('populated')
