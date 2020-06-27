@@ -15,21 +15,20 @@ class Game(db.Model):
     player2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     currentPlayer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
 
-neighbours = db.Table('neighbours',
-    db.Column('fromTer_id', db.Integer, db.ForeignKey('territories.id'), primary_key=True),
-    db.Column('toTer_id', db.Integer, db.ForeignKey('territories.id'), primary_key=True)
-    )
+class Neighbours(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    TerFromId = db.Column(db.Integer, db.ForeignKey('territory.id'))
+    TerToId = db.Column(db.Integer, db.ForeignKey('territory.id'))
 
-class Territories(db.Model):
+class Territory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     country = db.Column(db.String(100))
     locX = db.Column(db.Integer)
     locY = db.Column(db.Integer)
     neighbours = db.relationship('Territories')
 
-
-# class GameState(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     territoryId = db.Column(db.Integer, db.ForeignKey('territories.id'))
-#     troopNo = db.Column(db.Integer)
-#     currentOwner = db.Column(db.Integer, db.ForeignKey('user.id'))
+class GameState(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    territoryId = db.Column(db.Integer, db.ForeignKey('territories.id'))
+    troopNo = db.Column(db.Integer)
+    currentOwner = db.Column(db.Integer, db.ForeignKey('user.id'))
