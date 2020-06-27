@@ -9,7 +9,7 @@ from flask_restful import Resource, Api
 from territories import teralloc, territories
 from risk import reinforcements, diceroll, winGame
 from db import db
-from models import User
+from models import *
 from auth import auth as auth_blueprint
 from main import main as main_blueprint
 
@@ -154,7 +154,6 @@ api.add_resource(EndTurn, '/REST/endTurn')
 
 # Just do this once: Create the database file
 db.create_all(app=app)
-sys.exit()
 
 if __name__ == '__main__':
     app.run()

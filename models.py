@@ -25,10 +25,9 @@ class Territory(db.Model):
     country = db.Column(db.String(100))
     locX = db.Column(db.Integer)
     locY = db.Column(db.Integer)
-    neighbours = db.relationship('Territories')
 
 class GameState(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    territoryId = db.Column(db.Integer, db.ForeignKey('territories.id'))
+    territoryId = db.Column(db.Integer, db.ForeignKey('territory.id'))
     troopNo = db.Column(db.Integer)
     currentOwner = db.Column(db.Integer, db.ForeignKey('user.id'))
