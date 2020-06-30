@@ -23,7 +23,7 @@ def base():
 @main.route('/test')
 def test():
     ter = Territory.query.filter_by(country='Eastern Australia').first()
-    return ('hi')
+    return str(ter.neighbours)
 
 @main.route('/populate')
 def populate():
