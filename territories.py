@@ -96,6 +96,24 @@ def teralloc(territories, troopNo=3, testWin=False):
 
     return territories
 
+
+def teralloc_db(territories, players, troopNo=3, test_winning=False):
+    playerno = 2
+    ter_no = int(len(territories) / playerno)
+    if test_winning:
+        ter_no = 1
+
+    # just the territories
+    p1ters = random.sample(territories, ter_no)
+
+    for ter in territories:
+        ter.troopNo = troopNo
+        if ter in p1ters:
+            ter.currentOwner = players[0].id
+        else:
+            ter.currentOwner = players[1].id
+
+
 #test = teralloc(territories)
 #
 # for ter in territories:

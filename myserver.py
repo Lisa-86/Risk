@@ -6,8 +6,8 @@ from flask import Flask, render_template, session
 from flask_login import LoginManager
 from flask_restful import Resource, Api
 
-from territories import teralloc, territories
-from risk import reinforcements, diceroll, winGame
+from territories import teralloc, teralloc_db, territories
+from risk import reinforcements, reinforcements_db, diceroll, winGame
 from db import db
 from models import *
 from auth import auth as auth_blueprint
@@ -48,21 +48,38 @@ class TroopResource(Resource):
         2. Set the stage to reinforcment
     """
     def get(self):
-        if 'territories' in risk_data:
+        if 'territories' in risk_data and False:
             # get the current state of play
             return risk_data
         else:
-            # allocate territories and initial troops to players
-            allocated_ters = teralloc(territories, testWin=True)
-            risk_data['territories'] = allocated_ters
-            risk_data['stage'] = "DEPLOYMENT"
-
+            # A NEW GAME
+            # create a new game
+            mat = User.query.filter_by(email='bieniekmat@gmail.com').first()
+            lis = User.query.filter_by(email='pod.features@gmail.com').first()
             # decide who goes first
-            risk_data['currentPlayer'] = random.randint(1, 2)  # only between two player for now
-            # and how many reinforcements the first time
-            risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
+            current_player = random.sample([mat, lis], 1)[0]
+            game = Game(player1=mat.id, player2=lis.id, currentPlayer=current_player.id, stage='DEPLOYMENT')
+            db.session.add(game)
+            db.session.commit()
 
-            return risk_data
+            # for each territory, create a gamestate
+            game_states = []
+            for ter in Territory.query.all():
+                game_state = GameState(territoryId=ter.id, game_id=game.id)
+                game_states.append(game_state)
+
+            # allocate territories and initial troops to players
+            teralloc_db(game_states, [mat, lis])
+
+            # and how many reinforcements the first time
+            game.rein_no = reinforcements_db(game_states, current_player)
+
+            db.session.add(game)
+            [db.session.add(gs) for gs in game_states]
+            db.session.commit()
+
+            simple_dict_game = game.get_basic_dict()
+            return {'game': simple_dict_game, **risk_data}
 
 
 class Deployment(Resource):

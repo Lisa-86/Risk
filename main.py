@@ -32,6 +32,8 @@ def populate():
         db.session.delete(ter)
     db.session.commit()
 
+    # create users
+
     # create the territories in the database
     for ter, values in territories.items():
         db_ter = Territory(country=ter, locX=values['loc'][0], locY=values['loc'][1])
