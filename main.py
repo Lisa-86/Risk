@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
-from db import db
+from werkzeug.security import generate_password_hash
+
 from models import *
+from db import db
 from territories import territories
 
 main = Blueprint('main', __name__)
@@ -33,10 +35,15 @@ def populate():
     db.session.commit()
 
     # create users
+    mat = User(email="bieniekmat@gmail.com", name="mat", password=generate_password_hash("risk12", method='sha256'))
+    lis = User(email="pod.features@gmail.com", name="lisa", password=generate_password_hash("risk12", method='sha256'))
+    db.session.add(mat)
+    db.session.add(lis)
+    db.session.commit()
 
     # create the territories in the database
     for ter, values in territories.items():
-        db_ter = Territory(country=ter, locX=values['loc'][0], locY=values['loc'][1])
+        db_ter = Territory(country=ter, locx=values['loc'][0], locy=values['loc'][1])
         db.session.add(db_ter)
     db.session.commit()
     # add the neighbours

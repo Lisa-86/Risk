@@ -58,6 +58,7 @@ class TroopResource(Resource):
             lis = User.query.filter_by(email='pod.features@gmail.com').first()
             # decide who goes first
             current_player = random.sample([mat, lis], 1)[0]
+            # create a game in the database
             game = Game(player1=mat.id, player2=lis.id, currentPlayer=current_player.id, stage='DEPLOYMENT')
             db.session.add(game)
             db.session.commit()
@@ -71,15 +72,16 @@ class TroopResource(Resource):
             # allocate territories and initial troops to players
             teralloc_db(game_states, [mat, lis])
 
-            # and how many reinforcements the first time
+            # compute the reinforcement number
             game.rein_no = reinforcements_db(game_states, current_player)
 
             db.session.add(game)
             [db.session.add(gs) for gs in game_states]
             db.session.commit()
 
-            simple_dict_game = game.get_basic_dict()
-            return {'game': simple_dict_game, **risk_data}
+            game_json_ready = game.get_risk_json()
+            game_with_meta = {**game_json_ready, **risk_data}
+            return game_with_meta
 
 
 class Deployment(Resource):

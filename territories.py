@@ -109,9 +109,9 @@ def teralloc_db(territories, players, troopNo=3, test_winning=False):
     for ter in territories:
         ter.troopNo = troopNo
         if ter in p1ters:
-            ter.currentOwner = players[0].id
+            ter.owner = players[0].id
         else:
-            ter.currentOwner = players[1].id
+            ter.owner = players[1].id
 
 
 #test = teralloc(territories)

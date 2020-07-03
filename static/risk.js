@@ -1,4 +1,4 @@
-// risk = {'territories': ter: {'location': [x, y], 'neighbours': [a, b, c], 'playerNo': playerNo, 'troopNo': troopNo},
+// risk = {'territories': ter: {'location': [x, y], 'neighbours': [a, b, c], 'owner': ownerNo, 'troopNo': troopNo},
 //          'currentPlayer': currentPlayer, 'reinNo': reinNo, 'selOwnTer':'ter', 'selOppTer':ter, 'tolerance':tolerance}
 
 
@@ -183,7 +183,7 @@ function neighAttackOps(ter){
     var attackable = []
     for (var i = 0; i < neighbours.length; i++){
         var name = neighbours[i]
-        if (risk['territories'][name]['playerNo'] != risk['currentPlayer']){
+        if (risk['territories'][name]['owner'] != risk['currentPlayer']){
             attackable.push(name)
         }
     }
@@ -196,7 +196,7 @@ function neighManOps(ter){
     var moveable = []
     for (var i = 0; i < neighbours.length; i++){
         var name = neighbours[i]
-        if (risk['territories'][name]['playerNo'] == risk['currentPlayer']){
+        if (risk['territories'][name]['owner'] == risk['currentPlayer']){
             moveable.push(name)
         }
     }
@@ -209,7 +209,7 @@ function calcTroopNo(playerNo){
     var territories = risk['territories']
     for (i = 0; i < Object.keys(territories).length; i++){
         name = Object.keys(territories)[i]
-        if (risk['territories'][name]['playerNo'] == playerNo){
+        if (risk['territories'][name]['owner'] == playerNo){
             troopNo += risk['territories'][name]['troopNo']
         }
     }
@@ -222,7 +222,7 @@ function getTerNo(playerNo){
     var count = 0
     for (i = 0; i < Object.keys(territories).length; i++){
         var ter = Object.keys(territories)[i]
-        if (territories[ter]['playerNo'] == playerNo){
+        if (territories[ter]['owner'] == playerNo){
             count += 1
         }
     }
@@ -276,19 +276,19 @@ function drawTroops() {
     var territory = territories[city]
 
     var mapcol = $('#mapcol')
-    var terx = territory['loc'][0]
+    var terx = territory['locx']
     var finalWidth = terx * mapcol.width()
 
     var widthScaler = mapcol.width() / img.naturalWidth
     var NewImgHeight = img.naturalHeight * widthScaler
-    var tery = territory['loc'][1]
+    var tery = territory['locy']
     var finalHeight = tery * NewImgHeight
 
     box = getTerBoundary(terx, tery)
     ctx.beginPath();
     ctx.rect(box[0], box[1], box[2], box[3]);
 
-    if (territory['playerNo'] == 1){
+    if (territory['owner'] == 1){
         ctx.strokeStyle = 'red';
         if (local_risk['selOwnTer'] == city || local_risk['selOwnTer2'] == city || local_risk['selOppTer'] == city){
             ctx.stroke();
@@ -338,17 +338,16 @@ function mapPressed(canvas, event) {
   for (i = 0; i < Object.keys(territories).length; i++) {
     var name = Object.keys(territories)[i]
     var territory = territories[name]
-    var loc = territory['loc']
 
     // consider that troops are drawn from the bottom left corner
     // ie centre the position of the territory to the centre of the number
-    var box = getTerBoundary(loc[0], loc[1])
+    var box = getTerBoundary(territory['locx'], territory['locy'])
 
      // check if the click is within the territory box
      if (click_x > box[0] && click_x < box[0] + box[2] &&
         click_y > box[1] && click_y < box[1] + box[3]) {
 
-        if (risk['currentPlayer'] == risk['territories'][name]['playerNo']){
+        if (risk['currentPlayer'] == risk['territories'][name]['owner']){
 
             if (risk["stage"] != "MANOEUVRE") {
                 local_risk['selOwnTer'] = name
@@ -381,7 +380,7 @@ function mapPressed(canvas, event) {
             local_risk['selOppTer'] = name
         }
 
-        if (risk['reinNo'] > 0 && risk['currentPlayer'] == risk['territories'][name]['playerNo']){
+        if (risk['reinNo'] > 0 && risk['currentPlayer'] == risk['territories'][name]['owner']){
             updateServerDeployment(name)
         }
 

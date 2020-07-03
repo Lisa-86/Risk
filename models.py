@@ -21,33 +21,33 @@ class Game(db.Model):
     currentPlayer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     stage = db.Column(db.String(20))
     rein_no = db.Column(db.Integer)
-    states = db.relationship('GameState', backref='game', lazy=False)
+    territories = db.relationship('GameState', backref='game', lazy=False)
 
-    risk = ['id', 'player1', 'player2', 'currentPlayer', 'stage', 'states']
+    def get_risk_json(self):
+        # prepare the game json for the client
+        # gather the territories information
+        risk_territories = {}
+        for ter in self.territories:
+            tername, tervalues = ter.get_risk_structure()
+            risk_territories[tername] = tervalues
 
-    def get_basic_dict(self):
-        """
-        Return all the information
-        :return:
-        """
-        # for each key,
-        to_return = {}
-        for key in Game.risk:
-            value = self.__getattribute__(key)
-            # if the value is more complex, such as another model, fetch that separately
-            if type(value) is sqlalchemy.orm.collections.InstrumentedList:
-                simple_list = []
-                for item in value:
-                    simple_list.append(item.get_basic_dict())
-                to_return[key] = simple_list
-            else:
-                to_return[key] = value
-        return to_return
+        # create a simple game dictionary
+        game = {
+            'id': self.id,
+            'player1': self.player1,
+            'player2': self.player2,
+            'currentPlayer': self.currentPlayer,
+            'stage': self.stage,
+            'territories': risk_territories
+        }
+        return game
+
 
 neighbours = db.Table("neighbours",
     db.Column('terFrom', db.Integer, db.ForeignKey('territory.id'), primary_key=True),
     db.Column('terTo', db.Integer, db.ForeignKey('territory.id'), primary_key=True)
 )
+
 
 class Territory(db.Model):
     """
@@ -56,26 +56,13 @@ class Territory(db.Model):
     __tablename__ = 'territory'
     id = db.Column(db.Integer, primary_key=True)
     country = db.Column(db.String(100))
-    locX = db.Column(db.Integer)
-    locY = db.Column(db.Integer)
+    locx = db.Column(db.Integer)
+    locy = db.Column(db.Integer)
     neighbours = db.relationship("Territory",
                                secondary=neighbours,
                                primaryjoin=id == neighbours.c.terFrom,
                                secondaryjoin=id == neighbours.c.terTo,
                                  )# backref="left_nodes")
-
-    risk = ['id', 'country', 'locX', 'locY', 'neighbours']
-
-    def get_basic_dict(self):
-        risk_data = {}
-        for key in Territory.risk:
-            value = self.__getattribute__(key)
-            if type(value) is sqlalchemy.orm.collections.InstrumentedList:
-                # it is a list, in this case extract only the name strings
-                value = [neigh.country for neigh in value]
-
-            risk_data[key] = value
-        return risk_data
 
     def __repr__(self):
         return f'Territory {self.country}'
@@ -89,17 +76,21 @@ class GameState(db.Model):
     territoryId = db.Column(db.Integer, db.ForeignKey('territory.id'))
     territory = db.relationship('Territory', uselist=False)
     troopNo = db.Column(db.Integer)
-    currentOwner = db.Column(db.Integer, db.ForeignKey('user.id'))
+    owner = db.Column(db.Integer, db.ForeignKey('user.id'))
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
 
-    risk = ['id', 'territory', 'troopNo', 'currentOwner']
-
-    def get_basic_dict(self):
-        risk_data = {}
-        for key in GameState.risk:
-            value = self.__getattribute__(key)
-            if type(value) is Territory:
-                value = value.get_basic_dict()
-
-            risk_data[key] = value
-        return risk_data
+    def get_risk_structure(self):
+        # prepare the risk structure for the client json
+        country_name = self.territory.country
+        country_info = {
+            # map info, loc x y, name, neighbours
+            'locx': self.territory.locx,
+            'locy': self.territory.locy,
+            'neighbours': [neigh.country for neigh in self.territory.neighbours],
+            # user/game data (who it belongs to etc)
+            'troopNo': self.troopNo,
+            'owner': self.owner,
+            # to identify the game state internally
+            'id': self.id
+        }
+        return country_name, country_info

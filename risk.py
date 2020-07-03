@@ -20,7 +20,7 @@ def reinforcements_db(territories, playerNo):
     # Will calculate how many troops a player receives at the beginning of their turn (only based on ters held)
     count = 0
     for ter in territories:
-        if ter.currentOwner == playerNo.id:
+        if ter.owner == playerNo.id:
             count += 1
 
     if count <= 11:
