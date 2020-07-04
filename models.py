@@ -20,7 +20,7 @@ class Game(db.Model):
     player2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     currentPlayer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     stage = db.Column(db.String(20))
-    rein_no = db.Column(db.Integer)
+    reinNo = db.Column(db.Integer)
     territories = db.relationship('GameState', backref='game', lazy=False)
 
     def get_risk_json(self):
@@ -38,7 +38,8 @@ class Game(db.Model):
             'player2': self.player2,
             'currentPlayer': self.currentPlayer,
             'stage': self.stage,
-            'territories': risk_territories
+            'territories': risk_territories,
+            'reinNo': self.reinNo,
         }
         return game
 

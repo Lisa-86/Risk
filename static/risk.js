@@ -24,7 +24,7 @@ function updateGameState(){
 function updateServerDeployment(country) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = updateGameState;
-  xhttp.open("PUT", "/REST/deployment/" + country, true);
+  xhttp.open("PUT", "/REST/deployment/" + risk['id'] + "/" + country, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }

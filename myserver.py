@@ -3,7 +3,7 @@ import random
 import sys
 
 from flask import Flask, render_template, session
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_restful import Resource, Api
 
 from territories import teralloc, teralloc_db, territories
@@ -73,7 +73,7 @@ class TroopResource(Resource):
             teralloc_db(game_states, [mat, lis])
 
             # compute the reinforcement number
-            game.rein_no = reinforcements_db(game_states, current_player)
+            game.reinNo = reinforcements_db(game_states, current_player)
 
             db.session.add(game)
             [db.session.add(gs) for gs in game_states]
@@ -85,13 +85,27 @@ class TroopResource(Resource):
 
 
 class Deployment(Resource):
-    def put(self, country):
-        risk_data['territories'][country]['troopNo'] += 1
+    def put(self, gameID, country):
+        game = Game.query.filter_by(id=gameID).first()
+        country_meta = Territory.query.filter_by(country=country).first()
+        game_state = GameState.query.filter_by(game_id=game.id, territoryId=country_meta.id).first()
+
+        # fixme: check if the game actually belongs to the player
+
+        # check if the country belongs to the person
+        if game_state.owner != current_user.id:
+            return "wowowowo, nice try hacker"
+
+        game_state.troopNo += 1
+        db.session.add(game_state)
+        db.session.commit()
         # update the number of available reinforcment troops
-        risk_data['reinNo'] -= 1
-        if risk_data['reinNo'] == 0:
-            risk_data['stage'] = 'ATTACK'
-        return risk_data
+        # risk_data['reinNo'] -= 1
+        # if risk_data['reinNo'] == 0:
+        #     risk_data['stage'] = 'ATTACK'
+        game_json_ready = game.get_risk_json()
+        game_with_meta = {**game_json_ready, **risk_data}
+        return game_with_meta
 
 
 class Diceroll(Resource):
@@ -164,7 +178,7 @@ class EndTurn(Resource):
 
 
 api.add_resource(TroopResource, '/REST/countries')
-api.add_resource(Deployment, '/REST/deployment/<string:country>')
+api.add_resource(Deployment, '/REST/deployment/<int:gameID>/<string:country>')
 api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')
 api.add_resource(Reinforcement, '/REST/reinforcement/<int:input>')
 api.add_resource(EndMove, '/REST/endmove')

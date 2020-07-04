@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 
@@ -55,4 +55,4 @@ def populate():
         db.session.add(from_ter)
         db.session.commit()
 
-    return ('populated')
+    redirect ('/')
