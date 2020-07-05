@@ -20,8 +20,11 @@ class Game(db.Model):
     player2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     currentPlayer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     stage = db.Column(db.String(20))
-    reinNo = db.Column(db.Integer)
     territories = db.relationship('GameState', backref='game', lazy=False)
+    # reinforcement information, number, terFrom and terTo
+    reinNo = db.Column(db.Integer)
+    reinFrom = db.Column(db.Integer, db.ForeignKey('territory.id'))
+    reinTo = db.Column(db.Integer, db.ForeignKey('territory.id'))
 
     def get_risk_json(self):
         # prepare the game json for the client

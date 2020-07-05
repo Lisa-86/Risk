@@ -7,7 +7,7 @@ from flask_login import LoginManager, current_user
 from flask_restful import Resource, Api
 
 from territories import teralloc, teralloc_db, territories
-from risk import reinforcements, reinforcements_db, diceroll, winGame
+from risk import reinforcements_db, diceroll, winGame
 from db import db
 from models import *
 from auth import auth as auth_blueprint
@@ -71,7 +71,7 @@ class TroopResource(Resource):
             teralloc_db(game_states, [mat, lis])
 
             # compute the reinforcement number
-            game.reinNo = reinforcements_db(game_states, current_player)
+            game.reinNo = reinforcements_db(game_states, current_player.id)
 
             db.session.add(game)
             [db.session.add(gs) for gs in game_states]
@@ -112,80 +112,179 @@ class Deployment(Resource):
 
 
 class Diceroll(Resource):
-    def put(self, terFrom, terTo):
-        attTroops = risk_data['territories'][terFrom]['troopNo']
-        defTroops = risk_data['territories'][terTo]['troopNo']
+    def put(self, gameID, terFrom, terTo):
+        game = Game.query.filter_by(id=gameID).first()
+
+        # TODO check its the right game
+
+        # get the attacking country game state
+        country_from = Territory.query.filter_by(country=terFrom).first()
+        game_state_from = GameState.query.filter_by(game_id=game.id, territoryId=country_from.id).first()
+
+        # get the defending country game state
+        country_to = Territory.query.filter_by(country=terTo).first()
+        game_state_to = GameState.query.filter_by(game_id=game.id, territoryId=country_to.id).first()
+
+        # check the troop nos in both countries
+        attTroops = game_state_from.troopNo
+        defTroops = game_state_to.troopNo
+
+        # perform the attack
         outcomeAtt, outcomeDef = diceroll(attTroops,defTroops)
-        risk_data['territories'][terFrom]['troopNo'] = outcomeAtt
-        risk_data['territories'][terTo]['troopNo'] = outcomeDef
+
+        # update the countries with the results
+        game_state_from.troopNo = outcomeAtt
+        game_state_to.troopNo = outcomeDef
+
+        # if the attacker wins the territory then change the owner of the territory and automatically move one troop there
+        extra_data = {}
         if (outcomeDef == 0):
-            risk_data['territories'][terTo]['playerNo'] = risk_data['currentPlayer']
-            risk_data['territories'][terTo]['troopNo'] = 1
-            risk_data['territories'][terFrom]['troopNo'] -= 1
-            risk_data['stage'] = 'REINFORCE'
-            risk_data['reinFrom'] = terFrom
-            risk_data['reinTo'] = terTo
-        return risk_data
+            game_state_to.owner = game_state_from.owner
+            game_state_to.troopNo = 1
+            game_state_from.troopNo -= 1
+
+            # allow the attacker to move in the number of troops of their choice.
+            game.stage = "REINFORCE"
+
+            game.reinFrom = game_state_from.id
+            game.reinTo = game_state_to.id
+
+        # now update everybody about everything
+        db.session.add(game_state_from)
+        db.session.add(game_state_to)
+        db.session.add(game)
+        db.session.commit()
+
+        game_json_ready = game.get_risk_json()
+        game_with_meta = {**game_json_ready, **risk_data}
+        return game_with_meta
 
 
 class Reinforcement(Resource):
-    def put(self, input):
-        terFrom = risk_data['reinFrom']
-        terTo = risk_data['reinTo']
-        risk_data['territories'][terFrom]['troopNo'] -= input
-        risk_data['territories'][terTo]['troopNo'] += input
-        risk_data['stage'] = "ATTACK"
-        return risk_data
+    def put(self, gameID, troopNo):
+
+        # check which game it is and TODO check that the person owns it
+        game = Game.query.filter_by(id=gameID).first()
+
+        # get the attacking country game state by using game.reinFrom to see where troops will move from
+        game_state_from = GameState.query.filter_by(id=game.reinFrom, game_id=game.id).first()
+
+        # get the defending country game state using game.reinTo to see where the troops will move to
+        game_state_to = GameState.query.filter_by(id=game.reinTo, game_id=game.id).first()
+
+        # update the troop numbers in the game states
+        game_state_from.troopNo -= troopNo
+        game_state_to.troopNo += troopNo
+
+        # update the game state
+        game.stage = "ATTACK"
+
+        # update the dbs and stuff
+        db.session.add(game_state_from)
+        db.session.add(game_state_to)
+        db.session.add(game)
+        db.session.commit()
+
+        game_json_ready = game.get_risk_json()
+        game_with_meta = {**game_json_ready, **risk_data}
+        return game_with_meta
 
 
 class EndMove(Resource):
-    def put(self):
-        risk_data["stage"] = "MANOEUVRE"
-        return risk_data
+    def put(self, gameID):
+        # check which game it is and TODO check that the person owns it
+        game = Game.query.filter_by(id=gameID).first()
+
+        # update the game stage
+        game.stage = "MANOEUVRE"
+
+        # update all the things
+        db.session.add(game)
+        db.session.commit()
+
+        game_json_ready = game.get_risk_json()
+        game_with_meta = {**game_json_ready, **risk_data}
+        return game_with_meta
 
 
 class Man(Resource):
-    def put(self, terFrom, terTo, troopNo):
-        risk_data['territories'][terFrom]['troopNo'] -= troopNo
-        risk_data['territories'][terTo]['troopNo'] += troopNo
+    def put(self, gameID, terFrom, terTo, troopNo):
 
-        if risk_data['currentPlayer'] == 1:
-            risk_data['currentPlayer'] = 2
+        # check which game it is and TODO check that the person owns it
+        game = Game.query.filter_by(id=gameID).first()
+
+        # move the final manoeuvred troops from the old to the new place
+        # get the attacking country game state and remove the troops
+        country_from = Territory.query.filter_by(country=terFrom).first()
+        game_state_from = GameState.query.filter_by(game_id=game.id, territoryId=country_from.id).first()
+        game_state_from.troopNo -= troopNo
+
+        # get the defending country game state and add the troops
+        country_to = Territory.query.filter_by(country=terTo).first()
+        game_state_to = GameState.query.filter_by(game_id=game.id, territoryId=country_to.id).first()
+        game_state_to.troopNo += troopNo
+
+        # change the player so it's the next players turn
+        if game.currentPlayer == 1:
+            game.currentPlayer = 2
         else:
-            risk_data['currentPlayer'] = 1
+            game.currentPlayer = 1
 
-        risk_data['stage'] = "DEPLOYMENT"
-        risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
+        # update the game stage
+        game.stage = "DEPLOYMENT"
 
-        return risk_data
+        # calculate the no of troops the next player can deploy at the beginning of their turn
+        all_game_states = GameState.query.filter_by(game_id=game.id).all()
+        game.reinNo = reinforcements_db(all_game_states, game.currentPlayer)
+
+        # update the dbs and stuff
+        db.session.add(game_state_from)
+        db.session.add(game_state_to)
+        db.session.add(game)
+        db.session.commit()
+
+        game_json_ready = game.get_risk_json()
+        game_with_meta = {**game_json_ready, **risk_data}
+        return game_with_meta
+
 
 
 class EndTurn(Resource):
-    def put(self):
-        winCheck = winGame(risk_data)
+    def put(self, gameID):
+        game = Game.query.filter_by(id=gameID).first()
+        all_game_states = GameState.query.filter_by(game_id=game.id).all()
 
-        if winCheck == True:
-            return risk_data
+        if winGame(all_game_states, game.currentPlayer):
+            game.stage = 'WIN!'
+            db.session.add(game)
+            db.session.commit()
+            game_json_ready = game.get_risk_json()
+            game_with_meta = {**game_json_ready, **risk_data}
+            return game_with_meta
 
         else:
-            if risk_data['currentPlayer'] == 1:
-                risk_data['currentPlayer'] = 2
+            if game.currentPlayer == 1:
+                game.currentPlayer = 2
             else:
-                risk_data['currentPlayer'] = 1
+                game.currentPlayer = 1
 
-            risk_data['stage'] = "DEPLOYMENT"
-            risk_data['reinNo'] = reinforcements(risk_data['territories'], risk_data['currentPlayer'])
+            game.stage = "DEPLOYMENT"
+            game.reinNo = reinforcements_db(all_game_states, game.currentPlayer)
+            db.session.add(game)
+            db.session.commit()
 
-            return risk_data
+            game_json_ready = game.get_risk_json()
+            game_with_meta = {**game_json_ready, **risk_data}
+            return game_with_meta
 
 api = Api(app)
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(Deployment, '/REST/deployment/<int:gameID>/<string:country>')
-api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')
-api.add_resource(Reinforcement, '/REST/reinforcement/<int:input>')
-api.add_resource(EndMove, '/REST/endmove')
-api.add_resource(Man, '/REST/man/<string:terFrom>/<string:terTo>/<int:troopNo>')
-api.add_resource(EndTurn, '/REST/endTurn')
+api.add_resource(Diceroll, '/REST/diceroll/<int:gameID>/<string:terFrom>/<string:terTo>')
+api.add_resource(Reinforcement, '/REST/reinforcement/<int:gameID>/<int:troopNo>')
+api.add_resource(EndMove, '/REST/endmove/<int:gameID>')
+api.add_resource(Man, '/REST/man/<int:gameID>/<string:terFrom>/<string:terTo>/<int:troopNo>')
+api.add_resource(EndTurn, '/REST/endTurn/<int:gameID>')
 
 # Just do this once: Create the database file
 db.create_all(app=app)

@@ -37,8 +37,10 @@ def populate():
     # create users
     prev_mat = User.query.filter_by(name='mat').first()
     prev_lisa = User.query.filter_by(name='lisa').first()
-    db.session.delete(prev_mat)
-    db.session.delete(prev_lisa)
+    if prev_mat is not None:
+        db.session.delete(prev_mat)
+    if prev_lisa is not None:
+        db.session.delete(prev_lisa)
     db.session.commit()
     mat = User(email="bieniekmat@gmail.com", name="mat", password=generate_password_hash("risk12", method='sha256'))
     lis = User(email="pod.features@gmail.com", name="lisa", password=generate_password_hash("risk12", method='sha256'))

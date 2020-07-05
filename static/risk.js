@@ -44,7 +44,7 @@ function attackPressed() {
     terTo = local_risk['selOppTer']
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/diceroll/" + terFrom + "/" + terTo, true);
+    xhttp.open("PUT", "/REST/diceroll/" + risk["id"] + "/" + terFrom + "/" + terTo, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -100,7 +100,7 @@ function reinPressed() {
 function updateInput(validInput) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/reinforcement/" + validInput, true);
+    xhttp.open("PUT", "/REST/reinforcement/" + risk["id"] + "/" + validInput, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -109,7 +109,7 @@ function updateInput(validInput) {
 function endMovePressed() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/endmove", true);
+    xhttp.open("PUT", "/REST/endmove/" + risk["id"], true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -164,7 +164,7 @@ function updateManInput(troopNo) {
     var terTo = local_risk['selOwnTer2']
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/man/" + terFrom + "/" + terTo + "/" + troopNo, true);
+    xhttp.open("PUT", "/REST/man/" + risk["id"] + "/" + terFrom + "/" + terTo + "/" + troopNo, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -173,7 +173,7 @@ function updateManInput(troopNo) {
 function endTurnPressed() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/endTurn", true);
+    xhttp.open("PUT", "/REST/endTurn/" + risk["id"], true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }

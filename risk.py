@@ -2,11 +2,11 @@ import random
 from territories import territories, teralloc
 
 
-def reinforcements(territories, playerNo):
+def reinforcements_db(territories, player_id):
     # Will calculate how many troops a player receives at the beginning of their turn (only based on ters held)
     count = 0
     for ter in territories:
-        if territories[ter]['playerNo'] == playerNo:
+        if ter.owner == player_id:
             count += 1
 
     if count <= 11:
@@ -14,21 +14,6 @@ def reinforcements(territories, playerNo):
     else:
         reinforcements = count // 3
         return reinforcements
-
-
-def reinforcements_db(territories, playerNo):
-    # Will calculate how many troops a player receives at the beginning of their turn (only based on ters held)
-    count = 0
-    for ter in territories:
-        if ter.owner == playerNo.id:
-            count += 1
-
-    if count <= 11:
-        return 3
-    else:
-        reinforcements = count // 3
-        return reinforcements
-
 
 
 def diceroll(p1troops, p2troops):
@@ -111,18 +96,13 @@ def diceroll(p1troops, p2troops):
 #if p1troops == 0:
 #    print("not enough troops to attack")
 
-def winGame(risk):
+def winGame(game_states, playerID):
     # first calculate no of ters the player has
     count = 0
-    for ter in risk["territories"]:
-        if risk['territories'][ter]['playerNo'] == risk["currentPlayer"]:
+    for state in game_states:
+        if state.owner == playerID:
             count += 1
     if count == 42:
-        risk["stage"] = "WIN!"
         return True
 
-    else:
-        return False
-
-
-
+    return False
