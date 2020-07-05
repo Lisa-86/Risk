@@ -1,65 +1,40 @@
-from flask import Blueprint, render_template, redirect, url_for
-from flask_login import login_required, current_user
-from werkzeug.security import generate_password_hash
 
-from models import *
+import random
+import sys
+
+from flask import Flask, render_template, session
+from flask_login import LoginManager, current_user
+from flask_restful import Resource, Api
+
+from territories import teralloc, teralloc_db, territories
+from risk import reinforcements_db, diceroll, winGame
 from db import db
-from territories import territories
+from models import *
+from auth import auth as auth_blueprint
+from web import web as main_blueprint
+from rest import register_rest_api
 
-main = Blueprint('main', __name__)
 
-@main.route('/')
-@login_required
-def run_risk():
-    return render_template("home.html")
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+db.init_app(app)
 
-@main.route('/profile')
-@login_required
-def profile():
-   return render_template("profile.html", name = current_user.name)
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
 
-@main.route('/base')
-def base():
-    return render_template("base.html")
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
-@main.route('/test')
-def test():
-    ter = Territory.query.filter_by(country='Eastern Australia').first()
-    return str(ter.neighbours)
+# add other URLs etc
+app.register_blueprint(auth_blueprint)
+app.register_blueprint(main_blueprint)
+register_rest_api(app)
 
-@main.route('/populate')
-def populate():
-    # remove all the territories first
-    for ter in Territory.query.all():
-        db.session.delete(ter)
-    db.session.commit()
+# Just do this once: Create the database file
+db.create_all(app=app)
 
-    # create users
-    prev_mat = User.query.filter_by(name='mat').first()
-    prev_lisa = User.query.filter_by(name='lisa').first()
-    if prev_mat is not None:
-        db.session.delete(prev_mat)
-    if prev_lisa is not None:
-        db.session.delete(prev_lisa)
-    db.session.commit()
-    mat = User(email="bieniekmat@gmail.com", name="mat", password=generate_password_hash("risk12", method='sha256'))
-    lis = User(email="pod.features@gmail.com", name="lisa", password=generate_password_hash("risk12", method='sha256'))
-    db.session.add(mat)
-    db.session.add(lis)
-    db.session.commit()
-
-    # create the territories in the database
-    for ter, values in territories.items():
-        db_ter = Territory(country=ter, locx=values['loc'][0], locy=values['loc'][1])
-        db.session.add(db_ter)
-    db.session.commit()
-    # add the neighbours
-    for ter, values in territories.items():
-        from_ter = Territory.query.filter_by(country=ter).first()
-        for neighbour in values['neighbours']:
-            to_ter = Territory.query.filter_by(country=neighbour).first()
-            from_ter.neighbours.append(to_ter)
-        db.session.add(from_ter)
-        db.session.commit()
-
-    return redirect(url_for('auth.login'))
+if __name__ == '__main__':
+    app.run()
