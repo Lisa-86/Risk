@@ -31,7 +31,7 @@ def load_user(user_id):
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(main_blueprint)
 
-api = Api(app)
+# stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN, WIN!
 
 risk_data = {} # keys: currentPlayer, territories, stage
 # defines the clickable square around the number
@@ -39,8 +39,6 @@ risk_data = {} # keys: currentPlayer, territories, stage
 risk_data['tolerance'] = 0.02
 risk_data['factorX'] = 0.015
 risk_data['factorY'] = -0.015
-
-# stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN, WIN!
 
 class TroopResource(Resource):
     """
@@ -93,16 +91,21 @@ class Deployment(Resource):
         # fixme: check if the game actually belongs to the player
 
         # check if the country belongs to the person
-        if game_state.owner != current_user.id:
-            return "wowowowo, nice try hacker"
+        # if game_state.owner != current_user.id:
+        #     return "wowowowo, nice try hacker: you are not the current user in this game. "
+
+        if not game.reinNo > 0:
+            return "hohohoho, no way: you have no troops to deploy any more. "
 
         game_state.troopNo += 1
-        db.session.add(game_state)
-        db.session.commit()
         # update the number of available reinforcment troops
-        # risk_data['reinNo'] -= 1
-        # if risk_data['reinNo'] == 0:
-        #     risk_data['stage'] = 'ATTACK'
+        game.reinNo -= 1
+        if game.reinNo == 0:
+            game.stage = 'ATTACK'
+        db.session.add(game_state)
+        db.session.add(game)
+        db.session.commit()
+
         game_json_ready = game.get_risk_json()
         game_with_meta = {**game_json_ready, **risk_data}
         return game_with_meta
@@ -175,8 +178,7 @@ class EndTurn(Resource):
 
             return risk_data
 
-
-
+api = Api(app)
 api.add_resource(TroopResource, '/REST/countries')
 api.add_resource(Deployment, '/REST/deployment/<int:gameID>/<string:country>')
 api.add_resource(Diceroll, '/REST/diceroll/<string:terFrom>/<string:terTo>')

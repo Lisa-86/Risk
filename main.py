@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect
+from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 
@@ -35,6 +35,11 @@ def populate():
     db.session.commit()
 
     # create users
+    prev_mat = User.query.filter_by(name='mat').first()
+    prev_lisa = User.query.filter_by(name='lisa').first()
+    db.session.delete(prev_mat)
+    db.session.delete(prev_lisa)
+    db.session.commit()
     mat = User(email="bieniekmat@gmail.com", name="mat", password=generate_password_hash("risk12", method='sha256'))
     lis = User(email="pod.features@gmail.com", name="lisa", password=generate_password_hash("risk12", method='sha256'))
     db.session.add(mat)
@@ -55,4 +60,4 @@ def populate():
         db.session.add(from_ter)
         db.session.commit()
 
-    redirect ('/')
+    return redirect(url_for('auth.login'))
