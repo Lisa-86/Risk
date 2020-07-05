@@ -255,10 +255,10 @@ function getTerBoundary(x, y){
     var finalWidth = x * mapcol.width()
     var finalHeight = y * NewImgHeight
 
-    var tolx = risk['tolerance'] * mapcol.width()
-    var toly = risk['tolerance'] * NewImgHeight
-    var fx = risk['factorX'] * mapcol.width()
-    var fy = risk['factorY'] * NewImgHeight
+    var tolx = local_risk['tolerance'] * mapcol.width()
+    var toly = local_risk['tolerance'] * NewImgHeight
+    var fx = local_risk['factorX'] * mapcol.width()
+    var fy = local_risk['factorY'] * NewImgHeight
 
     // return top-left x, top-left y, width, height
     return [finalWidth + fx - tolx, finalHeight + fy - toly, tolx * 2, toly * 2]
@@ -309,7 +309,11 @@ function drawTroops() {
 window.onload = function() {
   // our global data on state of play
   risk = {}
-  local_risk = {}
+  local_risk = {
+    'tolerance': 0.02,
+    'factorX': 0.015,
+    'factorY': -0.015
+  }
   fetchGame(updateGameState)
 };
 

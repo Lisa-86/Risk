@@ -11,53 +11,40 @@ from models import *
 
 # stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN, WIN!
 
-risk_data = {} # keys: currentPlayer, territories, stage
-# defines the clickable square around the number
-# these values are relative to the map size
-risk_data['tolerance'] = 0.02
-risk_data['factorX'] = 0.015
-risk_data['factorY'] = -0.015
-
 class TroopResource(Resource):
     """
         1. Allocate territories
         2. Set the stage to reinforcment
     """
     def get(self):
-        if 'territories' in risk_data and False:
-            # get the current state of play
-            return risk_data
-        else:
-            # A NEW GAME
-            # create a new game
-            mat = User.query.filter_by(email='bieniekmat@gmail.com').first()
-            lis = User.query.filter_by(email='pod.features@gmail.com').first()
-            # decide who goes first
-            current_player = random.sample([mat, lis], 1)[0]
-            # create a game in the database
-            game = Game(player1=mat.id, player2=lis.id, currentPlayer=current_player.id, stage='DEPLOYMENT')
-            db.session.add(game)
-            db.session.commit()
+        # A NEW GAME
+        # create a new game
+        mat = User.query.filter_by(email='bieniekmat@gmail.com').first()
+        lis = User.query.filter_by(email='pod.features@gmail.com').first()
+        # decide who goes first
+        current_player = random.sample([mat, lis], 1)[0]
+        # create a game in the database
+        game = Game(player1=mat.id, player2=lis.id, currentPlayer=current_player.id, stage='DEPLOYMENT')
+        db.session.add(game)
+        db.session.commit()
 
-            # for each territory, create a gamestate
-            game_states = []
-            for ter in Territory.query.all():
-                game_state = GameState(territoryId=ter.id, game_id=game.id)
-                game_states.append(game_state)
+        # for each territory, create a gamestate
+        game_states = []
+        for ter in Territory.query.all():
+            game_state = GameState(territoryId=ter.id, game_id=game.id)
+            game_states.append(game_state)
 
-            # allocate territories and initial troops to players
-            teralloc_db(game_states, [mat, lis])
+        # allocate territories and initial troops to players
+        teralloc_db(game_states, [mat, lis])
 
-            # compute the reinforcement number
-            game.reinNo = reinforcements_db(game_states, current_player.id)
+        # compute the reinforcement number
+        game.reinNo = reinforcements_db(game_states, current_player.id)
 
-            db.session.add(game)
-            [db.session.add(gs) for gs in game_states]
-            db.session.commit()
+        db.session.add(game)
+        [db.session.add(gs) for gs in game_states]
+        db.session.commit()
 
-            game_json_ready = game.get_risk_json()
-            game_with_meta = {**game_json_ready, **risk_data}
-            return game_with_meta
+        return game.get_risk_json()
 
 
 class Deployment(Resource):
@@ -84,9 +71,7 @@ class Deployment(Resource):
         db.session.add(game)
         db.session.commit()
 
-        game_json_ready = game.get_risk_json()
-        game_with_meta = {**game_json_ready, **risk_data}
-        return game_with_meta
+        return game.get_risk_json()
 
 
 class Diceroll(Resource):
@@ -133,9 +118,7 @@ class Diceroll(Resource):
         db.session.add(game)
         db.session.commit()
 
-        game_json_ready = game.get_risk_json()
-        game_with_meta = {**game_json_ready, **risk_data}
-        return game_with_meta
+        return game.get_risk_json()
 
 
 class Reinforcement(Resource):
@@ -163,9 +146,7 @@ class Reinforcement(Resource):
         db.session.add(game)
         db.session.commit()
 
-        game_json_ready = game.get_risk_json()
-        game_with_meta = {**game_json_ready, **risk_data}
-        return game_with_meta
+        return game.get_risk_json()
 
 
 class EndMove(Resource):
@@ -180,9 +161,7 @@ class EndMove(Resource):
         db.session.add(game)
         db.session.commit()
 
-        game_json_ready = game.get_risk_json()
-        game_with_meta = {**game_json_ready, **risk_data}
-        return game_with_meta
+        return game.get_risk_json()
 
 
 class Man(Resource):
@@ -221,10 +200,7 @@ class Man(Resource):
         db.session.add(game)
         db.session.commit()
 
-        game_json_ready = game.get_risk_json()
-        game_with_meta = {**game_json_ready, **risk_data}
-        return game_with_meta
-
+        return game.get_risk_json()
 
 
 class EndTurn(Resource):
@@ -236,10 +212,7 @@ class EndTurn(Resource):
             game.stage = 'WIN!'
             db.session.add(game)
             db.session.commit()
-            game_json_ready = game.get_risk_json()
-            game_with_meta = {**game_json_ready, **risk_data}
-            return game_with_meta
-
+            return game.get_risk_json()
         else:
             if game.currentPlayer == 1:
                 game.currentPlayer = 2
@@ -251,10 +224,7 @@ class EndTurn(Resource):
             db.session.add(game)
             db.session.commit()
 
-            game_json_ready = game.get_risk_json()
-            game_with_meta = {**game_json_ready, **risk_data}
-            return game_with_meta
-
+            return game.get_risk_json()
 
 
 def register_rest_api(app):
