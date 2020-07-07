@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% block maincontent %}
+
+<h1 class="title">
+  Create New Game
+</h1>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+    <div class="notification is-danger">
+        {{ messages[0] }}
+    </div>
+{% endif %}
+{% endwith %}
+
+<form method = "post" action = "/createGame">
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" class="form-control" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+    <small id="emailHelp" class="form-text text-muted">Please enter the email address of the person you'd like to play with.</small>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock %}

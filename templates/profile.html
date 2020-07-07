@@ -6,7 +6,6 @@
 </h1>
 <p> This is your profile page where you find your current games. </p>
 
-
 <div class="container-fluid">
   <div class="row">
     <div class="col-md", id="ongoing">
@@ -30,13 +29,21 @@
 
   <div class="row">
     <div class="col-md">
-      id 1
+
     </div>
     <div class="col-md">
-      id 2
+    {% for user in games_invited_other %}
+        <div>
+            {{user.email}}
+        </div>
+    {% endfor %}
     </div>
     <div class="col-md">
-      id 3
+    {% for user in games_invited_to %}
+        <div>
+            {{user.email}}
+        </div>
+    {% endfor %}
     </div>
   </div>
 </div>

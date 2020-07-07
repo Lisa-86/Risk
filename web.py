@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 
@@ -6,7 +6,7 @@ from models import *
 from db import db
 from territories import territories
 
-web = Blueprint('main', __name__)
+web = Blueprint('web', __name__)
 
 @web.route('/')
 @login_required
@@ -16,7 +16,50 @@ def home():
 @web.route('/profile')
 @login_required
 def profile():
-   return render_template("profile.html", name = current_user.name)
+    # get all games that you are invited for
+    invited_to_games =  GameInvitation.query.filter_by(invitee=current_user.id).all()
+    parsed_invited_to_games = []
+    for p in invited_to_games:
+        u = User.query.filter_by(id=p.inviter).first()
+        parsed_invited_to_games.append(u)
+
+    # get all the games we've invited other people to
+    invited_others = GameInvitation.query.filter_by(inviter=current_user.id).all()
+    parsed_invited_others = []
+    for p in invited_others:
+        u = User.query.filter_by(id=p.invitee).first()
+        parsed_invited_others.append(u)
+
+    return render_template("profile.html", name = current_user.name,
+                          games_invited_to = parsed_invited_to_games,
+                           games_invited_other = parsed_invited_others)
+
+@web.route('/createGame')
+@login_required
+def createGame():
+    return render_template("createGame.html")
+
+@web.route('/createGame', methods=['POST'])
+def createGamePost():
+    email = request.form.get('email')
+
+    # returns the whole user related to this email
+    user = User.query.filter_by(email=email).first()
+
+    # check if there is such a user, if not return error message
+    if user is None:
+        flash('This person is not signed up to play, please try another email address or MAKE THEM SIGN UP!!')
+        return render_template("createGame.html")
+
+    # Now it is time to invite the other user by adding it to their invitation list
+    invite = GameInvitation(inviter = current_user.id, invitee = user.id)
+    db.session.add(invite)
+    db.session.commit()
+
+    # then the database will update the sent invitations column for the inviter and the received invites column for the invitee
+
+    return redirect(url_for("web.profile"))
+
 
 @web.route('/test')
 def test():

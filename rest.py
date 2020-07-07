@@ -11,6 +11,35 @@ from models import *
 
 # stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN, WIN!
 
+def create_game(user1, user2):
+    # A NEW GAME
+    # create a new game
+    # decide who goes first
+    current_player = random.sample([user1, user1], 1)[0]
+    other_player = user1 if current_player == user2 else user2
+    # create a game in the database
+    game = Game(player1=current_player, player2=other_player, currentPlayer=current_player.id, stage='DEPLOYMENT')
+    db.session.add(game)
+    db.session.commit()
+
+    # for each territory, create a gamestate
+    game_states = []
+    for ter in Territory.query.all():
+        game_state = GameState(territoryId=ter.id, game_id=game.id)
+        game_states.append(game_state)
+
+    # allocate territories and initial troops to players
+    teralloc_db(game_states, [user1, user2])
+
+    # compute the reinforcement number
+    game.reinNo = reinforcements_db(game_states, current_player.id)
+
+    db.session.add(game)
+    [db.session.add(gs) for gs in game_states]
+    db.session.commit()
+
+    return game
+
 class TroopResource(Resource):
     """
         1. Allocate territories

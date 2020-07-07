@@ -47,6 +47,15 @@ class Game(db.Model):
         return game
 
 
+class GameInvitation(db.Model):
+    """
+    Contains the invitee and inviter of games which haven't started yet
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    inviter = db.Column(db.Integer, db.ForeignKey('user.id'))
+    invitee = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
 neighbours = db.Table("neighbours",
     db.Column('terFrom', db.Integer, db.ForeignKey('territory.id'), primary_key=True),
     db.Column('terTo', db.Integer, db.ForeignKey('territory.id'), primary_key=True)
