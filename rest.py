@@ -256,8 +256,51 @@ class EndTurn(Resource):
             return game.get_risk_json()
 
 
+
+class Reject(Resource):
+    def put(self, email):
+        # check which game it is and TODO check that the person owns it
+        inviter_user = User.query.filter_by(email=email).first()
+        if not inviter_user:
+            raise NotImplementedError('do me')
+
+        game_invite = GameInvitation.query.filter_by(inviter=inviter_user.id, invitee=current_user.id).first()
+
+        # update all the things
+        db.session.delete(game_invite)
+        db.session.commit()
+
+        return {'email': inviter_user.email}
+
+
+class Accept(Resource):
+    def put(self, email):
+
+        # check which game it is and TODO check that the person owns it
+        inviter_user = User.query.filter_by(email=email).first()
+        if not inviter_user:
+            raise NotImplementedError('do me')
+
+        # find the game invite so we can delete that from the database GameInvitations table
+        game_invite = GameInvitation.query.filter_by(inviter=inviter_user.id, invitee=current_user.id).first()
+
+        # create the new game (which can then be put into the ongoing games column)
+        game = create_game(inviter_user, current_user)
+
+        # update all the things
+        db.session.delete(game_invite)
+        db.session.commit()
+
+        return {'email': inviter_user.email, 'game_id': game.id}
+
+
+
 def register_rest_api(app):
     api = Api(app)
+
+    # meta
+    api.add_resource(Reject, '/REST/reject/<string:email>')
+    api.add_resource(Accept, '/REST/accept/<string:email>')
 
     api.add_resource(TroopResource, '/REST/countries')
     api.add_resource(Deployment, '/REST/deployment/<int:gameID>/<string:country>')
