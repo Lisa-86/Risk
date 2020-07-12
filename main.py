@@ -15,14 +15,14 @@ from web import web as main_blueprint
 from rest import register_rest_api
 
 
-def create_app():
+def create_app(db_path):
     import logging
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.INFO)
 
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_path
     db.init_app(app)
 
     login_manager = LoginManager()
@@ -45,7 +45,7 @@ def create_app():
 
 
 if __name__ == '__main__':
-    app = create_app()
+    app = create_app('sqlite:///db.sqlite')
 
     if sys.argv[-1] == 'waitress':
         # run waitress
