@@ -33,7 +33,9 @@ function updateServerDeployment(country) {
 function fetchGame(responseSuccessF) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = responseSuccessF;
-  xhttp.open("GET", "/REST/countries", true);
+  // get the current url and extract from it the game ID no
+  var gameNo = window.location.href.split("/").pop()
+  xhttp.open("GET", "/REST/game/" +  gameNo, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }

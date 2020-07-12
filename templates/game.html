@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block maincontent %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-2">
+        <strong>
+            Red Player:
+        </strong>
+        <div id='redstatstable'>
+            <table>
+                <tr>
+                    <th> No of troops </th>
+                    <th> No of territories </th>
+                </tr>
+                <tr>
+                    <td id="redTroopNo"> </td>
+                    <td id="redTerNo"> </td>
+            </table>
+        </div>
+        <div id="redcon" >
+        </div>
+        <div id="redreinforceno">
+        </div>
+        <div id="redops" >
+        </div>
+        <div id="redatt" style='display:none;'>
+            <button type="button" class="btn btn-danger" onclick="attackPressed()">ATTACK!</button>
+        </div>
+        <div id="redresult" >
+        </div>
+        <div id="redboxdiv" style="display:none">
+            <input type="text" class="form-control" id="redbox" min="0" placeholder="0">
+            <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
+        </div>
+        <div id="redend" style="display:none">
+            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
+        </div>
+        <div id="redman" style="display:none">
+            <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
+            <input type="text" class="form-control" id="redmanbox" min="0" placeholder="0">
+            <button type="button" class="btn btn-info" onclick="manPressed()">MANOEUVRE</button>
+        </div>
+        <div id="redendturn" style="display:none">
+            <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
+        </div>
+        <div id="redwin">
+        </div>
+    </div>
+
+    <div class="col-md-8", id='mapcol'>
+        <img id='Map' src='{{url_for('static', filename = 'riskMap.jpeg')}}' alt='Map' style='display:none;' >
+        <canvas id='myCanvas'></canvas>
+    </div>
+
+    <div class="col-md-2">
+        <strong>
+        Blue Player:
+        </strong>
+        <div id='bluestatstable'>
+            <table>
+                <tr>
+                    <th> No of troops </th>
+                    <th> No of territories </th>
+                </tr>
+                <tr>
+                    <td id="blueTroopNo"> </td>
+                    <td id="blueTerNo"> </td>
+            </table>
+        <div id="bluecon">
+        </div>
+        <div id="bluereinforceno">
+        </div>
+        <div id="blueops" >
+        </div>
+        <div id="blueatt" style='display:none;'>
+            <button type="button" class="btn btn-danger" onclick="attackPressed()">ATTACK!</button>
+        </div>
+        <div id="blueresult" >
+        </div>
+        <div id="blueboxdiv" style="display:none">
+            <input type="text" class="form-control" id="bluebox" min="0" placeholder="0">
+            <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
+        </div>
+        <div id="blueend" style="display:none">
+            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
+        </div>
+        <div id="blueman" style="display:none">
+            <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
+            <input type="text" class="form-control" id="bluemanbox" min="0" placeholder="0">
+            <button type="button" class="btn btn-info" onclick="manPressed()">MANOEUVRE</button>
+        </div>
+        <div id="blueendturn" style="display:none">
+            <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
+        </div>
+        <div id="bluewin">
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script type = 'text/javascript' src = '{{ url_for('static', filename = 'instructions.js') }}'></script>
+<script type = 'text/javascript' src = '{{ url_for('static', filename = 'risk.js') }}'></script>
+
+{% endblock %}

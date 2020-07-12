@@ -18,7 +18,7 @@ def create_game(user1, user2):
     current_player = random.sample([user1, user1], 1)[0]
     other_player = user1 if current_player == user2 else user2
     # create a game in the database
-    game = Game(player1=current_player, player2=other_player, currentPlayer=current_player.id, stage='DEPLOYMENT')
+    game = Game(player1=current_player.id, player2=other_player.id, currentPlayer=current_player.id, stage='DEPLOYMENT')
     db.session.add(game)
     db.session.commit()
 
@@ -40,39 +40,11 @@ def create_game(user1, user2):
 
     return game
 
-class TroopResource(Resource):
-    """
-        1. Allocate territories
-        2. Set the stage to reinforcment
-    """
-    def get(self):
-        # A NEW GAME
-        # create a new game
-        mat = User.query.filter_by(email='bieniekmat@gmail.com').first()
-        lis = User.query.filter_by(email='pod.features@gmail.com').first()
-        # decide who goes first
-        current_player = random.sample([mat, lis], 1)[0]
-        # create a game in the database
-        game = Game(player1=mat.id, player2=lis.id, currentPlayer=current_player.id, stage='DEPLOYMENT')
-        db.session.add(game)
-        db.session.commit()
 
-        # for each territory, create a gamestate
-        game_states = []
-        for ter in Territory.query.all():
-            game_state = GameState(territoryId=ter.id, game_id=game.id)
-            game_states.append(game_state)
-
-        # allocate territories and initial troops to players
-        teralloc_db(game_states, [mat, lis])
-
-        # compute the reinforcement number
-        game.reinNo = reinforcements_db(game_states, current_player.id)
-
-        db.session.add(game)
-        [db.session.add(gs) for gs in game_states]
-        db.session.commit()
-
+class GetGame(Resource):
+    def get(self, gameID):
+        # fetch the right game and return it to the user
+        game = Game.query.filter_by(id = gameID).first()
         return game.get_risk_json()
 
 
@@ -285,6 +257,7 @@ class Accept(Resource):
         game_invite = GameInvitation.query.filter_by(inviter=inviter_user.id, invitee=current_user.id).first()
 
         # create the new game (which can then be put into the ongoing games column)
+        # note: new game commited in the new game function
         game = create_game(inviter_user, current_user)
 
         # update all the things
@@ -302,7 +275,7 @@ def register_rest_api(app):
     api.add_resource(Reject, '/REST/reject/<string:email>')
     api.add_resource(Accept, '/REST/accept/<string:email>')
 
-    api.add_resource(TroopResource, '/REST/countries')
+    api.add_resource(GetGame, '/REST/game/<int:gameID>')
     api.add_resource(Deployment, '/REST/deployment/<int:gameID>/<string:country>')
     api.add_resource(Diceroll, '/REST/diceroll/<int:gameID>/<string:terFrom>/<string:terTo>')
     api.add_resource(Reinforcement, '/REST/reinforcement/<int:gameID>/<int:troopNo>')

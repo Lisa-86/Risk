@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
+from sqlalchemy import or_
 
 from models import *
 from db import db
@@ -8,14 +9,15 @@ from territories import territories
 
 web = Blueprint('web', __name__)
 
+
 @web.route('/')
 @login_required
 def home():
-    return render_template("home.html")
+    # get all the ongoing games
+    games_ongoing_first = Game.query.filter_by(player1 = current_user.id)
+    games_ongoing_second = Game.query.filter_by(player2 = current_user.id)
+    games_ongoing = set(list(games_ongoing_first) + list(games_ongoing_second))
 
-@web.route('/profile')
-@login_required
-def profile():
     # get all games that you are invited for
     invited_to_games =  GameInvitation.query.filter_by(invitee=current_user.id).all()
     parsed_invited_to_games = []
@@ -30,9 +32,10 @@ def profile():
         u = User.query.filter_by(id=p.invitee).first()
         parsed_invited_others.append(u)
 
-    return render_template("profile.html", name = current_user.name,
+    return render_template("home.html", name = current_user.name,
                           games_invited_to = parsed_invited_to_games,
-                           games_invited_other = parsed_invited_others)
+                           games_invited_other = parsed_invited_others,
+                           games_ongoing = games_ongoing)
 
 @web.route('/createGame')
 @login_required
@@ -58,7 +61,7 @@ def createGamePost():
 
     # then the database will update the sent invitations column for the inviter and the received invites column for the invitee
 
-    return redirect(url_for("web.profile"))
+    return redirect(url_for("web.home"))
 
 
 @web.route('/test')
@@ -102,3 +105,12 @@ def populate():
         db.session.commit()
 
     return redirect(url_for('auth.login'))
+
+
+@web.route('/game/<int:gameID>')
+@login_required
+def getGame(gameID):
+
+    # make sure we know which the correct game is to show
+
+    return render_template('game.html')

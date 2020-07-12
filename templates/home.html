@@ -1,107 +1,54 @@
 {% extends "base.html" %}
 
 {% block maincontent %}
+<h1 class="title">
+  Welcome, {{name}}!
+</h1>
+<p> This is your profile page where you find your current games. </p>
+
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-2">
+    <div class="col-md", id="ongoing">
         <strong>
-            Red Player:
+            Ongoing Games
         </strong>
-        <div id='redstatstable'>
-            <table>
-                <tr>
-                    <th> No of troops </th>
-                    <th> No of territories </th>
-                </tr>
-                <tr>
-                    <td id="redTroopNo"> </td>
-                    <td id="redTerNo"> </td>
-            </table>
+        {% for game in games_ongoing %}
+        <div>
+            <a href="/game/{{game.id}}">Game {{game.player1}} vs {{game.player2}}</a>
         </div>
-        <div id="redcon" >
-        </div>
-        <div id="redreinforceno">
-        </div>
-        <div id="redops" >
-        </div>
-        <div id="redatt" style='display:none;'>
-            <button type="button" class="btn btn-danger" onclick="attackPressed()">ATTACK!</button>
-        </div>
-        <div id="redresult" >
-        </div>
-        <div id="redboxdiv" style="display:none">
-            <input type="text" class="form-control" id="redbox" min="0" placeholder="0">
-            <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
-        </div>
-        <div id="redend" style="display:none">
-            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
-        </div>
-        <div id="redman" style="display:none">
-            <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
-            <input type="text" class="form-control" id="redmanbox" min="0" placeholder="0">
-            <button type="button" class="btn btn-info" onclick="manPressed()">MANOEUVRE</button>
-        </div>
-        <div id="redendturn" style="display:none">
-            <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
-        </div>
-        <div id="redwin">
-        </div>
+        {% endfor %}
     </div>
 
-    <div class="col-md-8", id='mapcol'>
-        <img id='Map' src='{{url_for('static', filename = 'riskMap.jpeg')}}' alt='Map' style='display:none;' >
-        <canvas id='myCanvas'></canvas>
+    <div class="col-md", id='sent'>
+        <strong>
+            Sent Invitations
+        </strong>
+        {% for user in games_invited_other %}
+        <div>
+            {{user.email}}
+        </div>
+    {% endfor %}
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md", id="received">
         <strong>
-        Blue Player:
+        Received Invitations
         </strong>
-        <div id='bluestatstable'>
-            <table>
-                <tr>
-                    <th> No of troops </th>
-                    <th> No of territories </th>
-                </tr>
-                <tr>
-                    <td id="blueTroopNo"> </td>
-                    <td id="blueTerNo"> </td>
-            </table>
-        <div id="bluecon">
+        {% for user in games_invited_to %}
+        <div>
+            {{user.email}}
+            </br>
+            <button type="button" class="btn btn-success" onclick="acceptGame('{{user.email}}')">Accept </button>
+            <button type="button" class="btn btn-danger" onclick="rejectGame('{{user.email}}')">Reject</button>
         </div>
-        <div id="bluereinforceno">
-        </div>
-        <div id="blueops" >
-        </div>
-        <div id="blueatt" style='display:none;'>
-            <button type="button" class="btn btn-danger" onclick="attackPressed()">ATTACK!</button>
-        </div>
-        <div id="blueresult" >
-        </div>
-        <div id="blueboxdiv" style="display:none">
-            <input type="text" class="form-control" id="bluebox" min="0" placeholder="0">
-            <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
-        </div>
-        <div id="blueend" style="display:none">
-            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
-        </div>
-        <div id="blueman" style="display:none">
-            <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
-            <input type="text" class="form-control" id="bluemanbox" min="0" placeholder="0">
-            <button type="button" class="btn btn-info" onclick="manPressed()">MANOEUVRE</button>
-        </div>
-        <div id="blueendturn" style="display:none">
-            <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
-        </div>
-        <div id="bluewin">
-        </div>
+        </br>
+    {% endfor %}
     </div>
   </div>
+
+
+    <script type = 'text/javascript' src = '{{ url_for('static', filename = 'profile.js') }}'></script>
 </div>
 
-
-
-<script type = 'text/javascript' src = '{{ url_for('static', filename = 'instructions.js') }}'></script>
-<script type = 'text/javascript' src = '{{ url_for('static', filename = 'risk.js') }}'></script>
 
 {% endblock %}
