@@ -15,26 +15,42 @@ from web import web as main_blueprint
 from rest import register_rest_api
 
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-db.init_app(app)
+def create_app():
+    import logging
+    logger = logging.getLogger('waitress')
+    logger.setLevel(logging.INFO)
 
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
-login_manager.init_app(app)
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+    db.init_app(app)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
 
-# add other URLs etc
-app.register_blueprint(auth_blueprint)
-app.register_blueprint(main_blueprint)
-register_rest_api(app)
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-# Just do this once: Create the database file
-db.create_all(app=app)
+    # add other URLs etc
+    app.register_blueprint(auth_blueprint)
+    app.register_blueprint(main_blueprint)
+    register_rest_api(app)
+
+    # Just do this once: Create the database file
+    db.create_all(app=app)
+
+    return app
+
 
 if __name__ == '__main__':
-    app.run()
+    app = create_app()
+
+    if sys.argv[-1] == 'waitress':
+        # run waitress
+        from waitress import serve
+        serve(app, listen='*:80')
+    else:
+        # run typical flask
+        app.run()
