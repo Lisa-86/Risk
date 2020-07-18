@@ -9,10 +9,22 @@ function drawInstruction(){
     blueTerCount = getTerNo(risk.player2)
     blueTerNo.innerHTML = blueTerCount
 
+    // prints at the top of the screen which player is which
+    var redWhoAreYou = document.getElementById("redWhoAreYou")
+    var blueWhoAreYou = document.getElementById("blueWhoAreYou")
+    if (risk.myID == risk.player1) {
+        redWhoAreYou.innerHTML = "You are the RED PLAYER"
+        blueWhoAreYou.innerHTML = "This is your OPPONENT"
+    }
+    else {
+        blueWhoAreYou.innerHTML = "You are the BLUE PLAYER"
+        redWhoAreYou.innerHTML = "This is your OPPONENT"
+    }
+
     // prints whose go it is and what stage they're on, visible at all times
     var redcon = document.getElementById("redcon")
     var bluecon = document.getElementById('bluecon')
-    if (risk['currentPlayer'] == risk.player1){
+    if (risk.currentPlayer == risk.player1){
         redcon.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
         bluecon.innerHTML = 'Your orders are to wait for your next turn.'
     }
