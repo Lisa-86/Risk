@@ -1,4 +1,4 @@
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 import sqlalchemy
 
 from db import db
@@ -43,6 +43,7 @@ class Game(db.Model):
             'stage': self.stage,
             'territories': risk_territories,
             'reinNo': self.reinNo,
+            'myID': current_user.id,
         }
         return game
 

@@ -60,7 +60,9 @@ function reinPressed() {
     if (maxTroopNo == 0) {
         return updateInput(0)
     }
-    if (risk['currentPlayer'] == 1) {
+    if (risk['currentPlayer'] == risk.player1) {
+        // serve the player with the left column (red) -
+        // checks player has entered appropriate no and updates the instructions writen on the screen
         input = document.getElementById("redbox").value
         if (input == "") {
             input = "0"
@@ -79,6 +81,7 @@ function reinPressed() {
         }
     }
     else {
+        // does the same for player 2 on the right column (blue)
         input = document.getElementById("bluebox").value
         if (input == "") {
             input = "0"
@@ -122,7 +125,8 @@ function manPressed() {
     var terTo = local_risk['selOwnTer2']
     var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
 
-    if (risk['currentPlayer'] == 1) {
+    // checks the red player has put in an appropriate number and writes instructions on the screen
+    if (risk['currentPlayer'] == risk.player1) {
         input = document.getElementById("redmanbox").value
         if (input == "") {
             input = "0"
@@ -141,6 +145,7 @@ function manPressed() {
         }
     }
     else {
+        // does the same for the blue player
         input = document.getElementById("bluemanbox").value
         if (input == "") {
             input = "0"
@@ -290,12 +295,14 @@ function drawTroops() {
     ctx.beginPath();
     ctx.rect(box[0], box[1], box[2], box[3]);
 
-    if (territory['owner'] == 1){
+    // draws in red boxes around places
+    if (territory['owner'] == risk.player1){
         ctx.strokeStyle = 'red';
         if (local_risk['selOwnTer'] == city || local_risk['selOwnTer2'] == city || local_risk['selOppTer'] == city){
             ctx.stroke();
         }
     }
+    // does the same for the blue player
     else {
         ctx.strokeStyle = 'blue';
         if (local_risk['selOwnTer'] == city || local_risk['selOwnTer2'] == city || local_risk['selOppTer'] == city){

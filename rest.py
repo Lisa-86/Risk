@@ -15,7 +15,7 @@ def create_game(user1, user2):
     # A NEW GAME
     # create a new game
     # decide who goes first
-    current_player = random.sample([user1, user1], 1)[0]
+    current_player = random.sample([user1, user2], 1)[0]
     other_player = user1 if current_player == user2 else user2
     # create a game in the database
     game = Game(player1=current_player.id, player2=other_player.id, currentPlayer=current_player.id, stage='DEPLOYMENT')
@@ -183,10 +183,10 @@ class Man(Resource):
         game_state_to.troopNo += troopNo
 
         # change the player so it's the next players turn
-        if game.currentPlayer == 1:
-            game.currentPlayer = 2
+        if game.currentPlayer == game.player1:
+            game.currentPlayer = game.player2
         else:
-            game.currentPlayer = 1
+            game.currentPlayer = game.player1
 
         # update the game stage
         game.stage = "DEPLOYMENT"
@@ -215,10 +215,10 @@ class EndTurn(Resource):
             db.session.commit()
             return game.get_risk_json()
         else:
-            if game.currentPlayer == 1:
-                game.currentPlayer = 2
+            if game.currentPlayer == game.player1:
+                game.currentPlayer = game.player2
             else:
-                game.currentPlayer = 1
+                game.currentPlayer = game.player1
 
             game.stage = "DEPLOYMENT"
             game.reinNo = reinforcements_db(all_game_states, game.currentPlayer)

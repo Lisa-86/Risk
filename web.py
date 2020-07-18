@@ -76,6 +76,12 @@ def populate():
         db.session.delete(ter)
     db.session.commit()
 
+    # fakeuser = User(email="fake@gmail.com", name="fake1", password=generate_password_hash("risk12", method='sha256'))
+    # db.session.add(fakeuser)
+    # fakeuser = User(email="fake2@gmail.com", name="fake2", password=generate_password_hash("risk12", method='sha256'))
+    # db.session.add(fakeuser)
+    # db.session.commit()
+
     # create users
     prev_mat = User.query.filter_by(name='mat').first()
     prev_lisa = User.query.filter_by(name='lisa').first()

@@ -12,7 +12,7 @@ function drawInstruction(){
     // prints whose go it is and what stage they're on, visible at all times
     var redcon = document.getElementById("redcon")
     var bluecon = document.getElementById('bluecon')
-    if (risk['currentPlayer'] == 1){
+    if (risk['currentPlayer'] == risk.player1){
         redcon.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
         bluecon.innerHTML = 'Your orders are to wait for your next turn.'
     }
@@ -36,7 +36,7 @@ function drawDeploymentInstructions(){
     var redren = document.getElementById("redreinforceno")
 
     if (risk['stage'] == 'DEPLOYMENT'){
-        if (risk['currentPlayer'] == 1 ){
+        if (risk['currentPlayer'] == risk.player1 ){
             redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
         }
         else {
@@ -62,10 +62,10 @@ function drawAttackInstructions(){
     var blueend = document.getElementById("blueend")
 
     if (risk['stage'] == 'ATTACK'){
-        if (risk["currentPlayer"] == 1) {
+        if (risk["currentPlayer"] == risk.player1) {
             redend.style.display = "inline"
         }
-        if (risk["currentPlayer"] == 2) {
+        if (risk["currentPlayer"] == risk.player2) {
             blueend.style.display = "inline"
         }
         // attacker territory selected
@@ -76,7 +76,7 @@ function drawAttackInstructions(){
 
             if (attackable.indexOf(local_risk['selOppTer']) != -1 && risk['territories'][selOwnTer]['troopNo'] >= 2){
                 // time to attack, show attack button
-                if (risk["currentPlayer"] == 1){
+                if (risk["currentPlayer"] == risk.player1){
                     redatt.style.display = "inline"
                 }
                 else {
@@ -89,7 +89,7 @@ function drawAttackInstructions(){
                 blueatt.style.display = "none"
 
                 // print which territories one can attack, only visible when appropriate ters selected
-                if (risk['currentPlayer'] == 1 ){
+                if (risk['currentPlayer'] == risk.player1){
                     redops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
                 }
                 else {
@@ -124,7 +124,7 @@ function drawReinforceInstructions(){
         var terFrom = local_risk['selOwnTer']
         var terTo = local_risk['selOppTer']
         var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-        if (risk["currentPlayer"] == 1) {
+        if (risk["currentPlayer"] == risk.player1) {
             redops.innerHTML = ""
             redresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce <b>" + terTo + "</b> with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
             blueresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
@@ -156,7 +156,7 @@ function drawManInstructions(){
 
     if (risk["stage"] == "MANOEUVRE") {
 
-        if (risk["currentPlayer"] == 1) {
+        if (risk["currentPlayer"] == risk.player1) {
             redendturn.style.display = "inline"
         }
         else {
@@ -167,7 +167,7 @@ function drawManInstructions(){
         var terTo = local_risk["selOwnTer2"]
 
         if (terFrom == undefined && terTo == undefined) {
-            if (risk["currentPlayer"] == 1) {
+            if (risk["currentPlayer"] == risk.player1) {
                 redman.style.display = "none"
                 redops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
             }
@@ -179,7 +179,7 @@ function drawManInstructions(){
         else if (terFrom != undefined && terTo != undefined) {
             var neighs = neighManOps(terFrom)
             var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-            if (risk["currentPlayer"] == 1) {
+            if (risk["currentPlayer"] == risk.player1) {
                 redman.style.display = "inline"
                 if (neighs.length >= 1 && maxTroopNo >= 1) {
                     redops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
@@ -204,7 +204,7 @@ function drawManInstructions(){
             blueman.style.display = "none"
             var neighs = neighManOps(terFrom)
             var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-            if (risk["currentPlayer"] == 1) {
+            if (risk["currentPlayer"] == risk.player1) {
                 if (neighs.length >= 1 && maxTroopNo >= 1) {
                     redops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
                 }
@@ -240,7 +240,7 @@ function drawWinInstructions() {
     if (risk["stage"] == "WIN!") {
         winner = risk["currentPlayer"]
 
-        if (winner == 1) {
+        if (winner == risk.player1) {
             redWin.innerHTML = "You Have Won!"
             blueWin.innerHTML = "Sorry, You Have Lost"
         }
