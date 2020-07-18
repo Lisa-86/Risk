@@ -91,7 +91,7 @@ class GameState(db.Model):
     territory = db.relationship('Territory', uselist=False)
     troopNo = db.Column(db.Integer)
     owner = db.Column(db.Integer, db.ForeignKey('user.id'))
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
+    game_id = db.Column(db.Integer, db.ForeignKey('game.id', ondelete="cascade"), nullable=False)
 
     def get_risk_structure(self):
         # prepare the risk structure for the client json
