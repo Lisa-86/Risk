@@ -42,6 +42,11 @@ function fetchGame(responseSuccessF) {
 
 
 function attackPressed() {
+    if (risk.currentPlayer != risk.myID){
+        alert('You wish!')
+        return
+    }
+
     terFrom = local_risk['selOwnTer']
     terTo = local_risk['selOppTer']
     var xhttp = new XMLHttpRequest();
@@ -54,6 +59,11 @@ function attackPressed() {
 
 // check the input is valid
 function reinPressed() {
+    if (risk.currentPlayer != risk.myID){
+        alert('no, no, no')
+        return
+    }
+
     var terFrom = local_risk['selOwnTer']
     var terTo = local_risk['selOppTer']
     var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
@@ -112,6 +122,11 @@ function updateInput(validInput) {
 
 
 function endMovePressed() {
+    if (risk.currentPlayer != risk.myID){
+        alert('I dont think so')
+        return
+    }
+
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
     xhttp.open("PUT", "/REST/endmove/" + risk["id"], true);
@@ -121,6 +136,11 @@ function endMovePressed() {
 
 
 function manPressed() {
+    if (risk.currentPlayer != risk.myID){
+        alert('cheater!')
+        return
+    }
+
     var terFrom = local_risk['selOwnTer']
     var terTo = local_risk['selOwnTer2']
     var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
@@ -178,6 +198,11 @@ function updateManInput(troopNo) {
 
 
 function endTurnPressed() {
+    if (risk.currentPlayer != risk.myID){
+        alert('are you trying to end your opponents turn?')
+        return
+    }
+
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
     xhttp.open("PUT", "/REST/endTurn/" + risk["id"], true);
@@ -360,6 +385,7 @@ function mapPressed(canvas, event) {
      if (click_x > box[0] && click_x < box[0] + box[2] &&
         click_y > box[1] && click_y < box[1] + box[3]) {
 
+        // check if the current player owns the clicked territory
         if (risk['currentPlayer'] == risk['territories'][name]['owner']){
 
             if (risk["stage"] != "MANOEUVRE") {
@@ -393,8 +419,12 @@ function mapPressed(canvas, event) {
             local_risk['selOppTer'] = name
         }
 
-        if (risk['reinNo'] > 0 && risk['currentPlayer'] == risk['territories'][name]['owner']){
-            updateServerDeployment(name)
+        // if there are still rein troops left and if the player clicks on a territory they own and its their turn
+        // then add 1 troop
+        if (risk['reinNo'] > 0 &&
+            risk['currentPlayer'] == risk['territories'][name]['owner'] &&
+            risk.currentPlayer == risk.myID){
+                updateServerDeployment(name)
         }
 
       drawMap()
