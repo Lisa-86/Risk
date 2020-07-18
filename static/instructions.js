@@ -1,12 +1,12 @@
 
 function drawInstruction(){
     // prints the stats tables for each player, visible at all times
-    redTroopNo.innerHTML = calcTroopNo(1)
-    terCount = getTerNo(1)
+    redTroopNo.innerHTML = calcTroopNo(risk.player1)
+    terCount = getTerNo(risk.player1)
     redTerNo.innerHTML = terCount
 
-    blueTroopNo.innerHTML = calcTroopNo(2)
-    blueTerCount = getTerNo(2)
+    blueTroopNo.innerHTML = calcTroopNo(risk.player2)
+    blueTerCount = getTerNo(risk.player2)
     blueTerNo.innerHTML = blueTerCount
 
     // prints whose go it is and what stage they're on, visible at all times
