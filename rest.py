@@ -1,4 +1,4 @@
-import random
+import random, time
 
 from flask_login import current_user
 from flask_restful import Resource, Api
@@ -267,6 +267,24 @@ class Accept(Resource):
         return {'email': inviter_user.email, 'game_id': game.id}
 
 
+class Refresh(Resource):
+    def get(self, gameID):
+        for i in range(19):
+            # checks if the game is ready to be refreshed
+            game = Game.query.filter_by(id=gameID).first()
+
+            print("user, ", current_user.id, "current player", game.currentPlayer)
+            if current_user.id == game.currentPlayer:
+                print("its your turn", current_user.id)
+                return game.get_risk_json()
+
+            print("not yet", current_user.id)
+            time.sleep(3)
+
+        print('refreshed natually - no game changed')
+        game = Game.query.filter_by(id=gameID).first()
+        return game.get_risk_json()
+
 
 def register_rest_api(app):
     api = Api(app)
@@ -282,3 +300,4 @@ def register_rest_api(app):
     api.add_resource(EndMove, '/REST/endmove/<int:gameID>')
     api.add_resource(Man, '/REST/man/<int:gameID>/<string:terFrom>/<string:terTo>/<int:troopNo>')
     api.add_resource(EndTurn, '/REST/endTurn/<int:gameID>')
+    api.add_resource(Refresh, '/REST/refresh/<int:gameID>')
