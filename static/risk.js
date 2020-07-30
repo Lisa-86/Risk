@@ -6,6 +6,17 @@ function updateGameState(){
     if (this.readyState == 4 && this.status == 200) {
         risk = JSON.parse(this.responseText)
 
+        if (risk == undefined){
+            // long polling does not return an update
+            // ignore
+            return
+        }
+
+        if (risk.currentPlayer != risk.myID) {
+            refreshPage(risk.id)
+            console.log("refresh page check sent: current player ", risk.currentPlayer, "current user", risk.myID)
+        }
+
         if (risk['stage'] == 'MANOEUVRE'){
             // deselect territories
             console.log('Manoeuvre: deselect territories')
@@ -193,6 +204,18 @@ function updateManInput(troopNo) {
     xhttp.onreadystatechange = updateGameState;
     xhttp.open("PUT", "/REST/man/" + risk["id"] + "/" + terFrom + "/" + terTo + "/" + troopNo, true);
     xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
+// this is the long polling function
+function refreshPage(gameID) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("GET", "/REST/refresh/" + gameID);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    // timeout every minute
+    xhttp.timeout = 1000 * 60;
     xhttp.send("Your JSON Data Here");
 }
 
