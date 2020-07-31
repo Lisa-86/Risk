@@ -275,6 +275,7 @@ class Refresh(Resource):
         # loops 19 times so it will time out in roughly a minute
         for i in range(19):
             # refreshes the db query to check if the game is ready to be refreshed
+            # see (https://www.michaelcho.me/article/sqlalchemy-commit-flush-expire-refresh-merge-whats-the-difference)
             db.session.refresh(game)
 
             # if it has returned to the current users turn then it refreshes the game
