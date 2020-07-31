@@ -269,20 +269,23 @@ class Accept(Resource):
 
 class Refresh(Resource):
     def get(self, gameID):
-        for i in range(19):
-            # checks if the game is ready to be refreshed
-            game = Game.query.filter_by(id=gameID).first()
+        # get the correct game
+        game = Game.query.filter_by(id=gameID).first()
 
-            print("user, ", current_user.id, "current player", game.currentPlayer)
+        # loops 19 times so it will time out in roughly a minute
+        for i in range(19):
+            # refreshes the db query to check if the game is ready to be refreshed
+            db.session.refresh(game)
+
+            # if it has returned to the current users turn then it refreshes the game
             if current_user.id == game.currentPlayer:
-                print("its your turn", current_user.id)
                 return game.get_risk_json()
 
-            print("not yet", current_user.id)
+            # otherwise makes it sleep so it's not checking too many times
             time.sleep(3)
 
-        print('refreshed natually - no game changed')
-        game = Game.query.filter_by(id=gameID).first()
+        # make sure the query is up to date
+        db.session.refresh(game)
         return game.get_risk_json()
 
 
