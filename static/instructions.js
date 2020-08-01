@@ -50,9 +50,11 @@ function drawDeploymentInstructions(){
     if (risk['stage'] == 'DEPLOYMENT'){
         if (risk['currentPlayer'] == risk.player1 ){
             redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
+            blueren.innerHTML = ''
         }
         else {
             blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
+            redren.innerHTML = ''
         }
     }
     else{
