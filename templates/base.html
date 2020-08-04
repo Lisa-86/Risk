@@ -15,11 +15,11 @@
   <div class='collapse navbar-collapse' id='navbarSupportedContent'>
     <ul class='navbar-nav mr-auto'>
       <li class='nav-item active'>
-        <a class='nav-link' href='/'>Home</a>
+        <a class='nav-link' href='{{ url_for("web.home") }}'>Home</a>
       </li>
       {% if current_user.is_authenticated %}
       <li class='nav-item active'>
-        <a class='nav-link' href='/createGame'>New_Game</a>
+        <a class='nav-link' href='{{ url_for("web.createGame") }}'>New_Game</a>
       </li>
       {% endif %}
     </ul>
@@ -29,7 +29,7 @@
   <div class='collapse navbar-collapse justify-content-end' id='navbarSupportedContent'>
     <ul class='navbar-nav mr-auto'>
        <li class='nav-item'>
-        <a class='nav-link' href='/logout'>Log Out</a>
+        <a class='nav-link' href='{{ url_for("auth.logout") }}'>Log Out</a>
       </li>
     </ul>
   </div>
@@ -39,10 +39,10 @@
   <div class='collapse navbar-collapse justify-content-end' id='navbarSupportedContent'>
     <ul class='navbar-nav mr-auto'>
        <li class='nav-item'>
-        <a class='nav-link' href='/login'>Log In</a>
+        <a class='nav-link' href='{{ url_for("auth.login") }}'>Log In</a>
       </li>
       <li class='nav-item active'>
-        <a class='nav-link' href='/signup'>Sign Up</a>
+        <a class='nav-link' href='{{ url_for("auth.signup") }}'>Sign Up</a>
       </li>
     </ul>
   </div>
