@@ -14,7 +14,7 @@
 {% endif %}
 {% endwith %}
 
-<form method = "post" action = "{{ url_for('/login') }}">
+<form method = "post" action = "{{ url_for('auth.login') }}">
 
   <div class="form-group">
     <label for="exampleInputEmail1">Email address</label>
