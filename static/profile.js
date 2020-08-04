@@ -7,9 +7,12 @@ function acceptGame(email){
 }
 
 function acceptGameREST(email, callback) {
+  // note that this part is hardcoded
+  var baseUrl = getBaseUrl('/')
+
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = callback;
-  xhttp.open("PUT", "/REST/accept/" + email, true);
+  xhttp.open("PUT", baseUrl + "/REST/accept/" + email, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }
@@ -25,9 +28,12 @@ function acceptGameCallback(){
 }
 
 function rejectGameREST(email, callback) {
+  // note that this part is hardcoded
+  var baseUrl = getBaseUrl('/')
+
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = callback;
-  xhttp.open("PUT", "/REST/reject/" + email, true);
+  xhttp.open("PUT", baseUrl + "/REST/reject/" + email, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }
