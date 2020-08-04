@@ -31,11 +31,18 @@ function updateGameState(){
     }
 }
 
+
+function getThisBaseUrl(){
+    // adapter function to avoid hardcoding "/game" everywhere
+    var baseUrl = getBaseUrl('/game')
+    return baseUrl
+}
+
 // updates the server after reincforcement click
 function updateServerDeployment(country) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = updateGameState;
-  xhttp.open("PUT", "/REST/deployment/" + risk['id'] + "/" + country, true);
+  xhttp.open("PUT", getThisBaseUrl() + "/REST/deployment/" + risk['id'] + "/" + country, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }
@@ -46,7 +53,7 @@ function fetchGame(responseSuccessF) {
   xhttp.onreadystatechange = responseSuccessF;
   // get the current url and extract from it the game ID no
   var gameNo = window.location.href.split("/").pop()
-  xhttp.open("GET", "/REST/game/" +  gameNo, true);
+  xhttp.open("GET", getThisBaseUrl() + "/REST/game/" +  gameNo, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }
@@ -62,7 +69,7 @@ function attackPressed() {
     terTo = local_risk['selOppTer']
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/diceroll/" + risk["id"] + "/" + terFrom + "/" + terTo, true);
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/diceroll/" + risk["id"] + "/" + terFrom + "/" + terTo, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -126,7 +133,7 @@ function reinPressed() {
 function updateInput(validInput) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/reinforcement/" + risk["id"] + "/" + validInput, true);
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/reinforcement/" + risk["id"] + "/" + validInput, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -140,7 +147,7 @@ function endMovePressed() {
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/endmove/" + risk["id"], true);
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/endmove/" + risk["id"], true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -202,7 +209,7 @@ function updateManInput(troopNo) {
     var terTo = local_risk['selOwnTer2']
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/man/" + risk["id"] + "/" + terFrom + "/" + terTo + "/" + troopNo, true);
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/man/" + risk["id"] + "/" + terFrom + "/" + terTo + "/" + troopNo, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
@@ -212,7 +219,7 @@ function updateManInput(troopNo) {
 function refreshPage(gameID) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("GET", "/REST/refresh/" + gameID);
+    xhttp.open("GET", getThisBaseUrl() + "/REST/refresh/" + gameID);
     xhttp.setRequestHeader("Content-type", "application/json");
     // timeout every minute
     xhttp.timeout = 1000 * 60;
@@ -228,7 +235,7 @@ function endTurnPressed() {
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", "/REST/endTurn/" + risk["id"], true);
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/endTurn/" + risk["id"], true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
