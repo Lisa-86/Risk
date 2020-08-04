@@ -16,7 +16,7 @@
 {% endif %}
 {% endwith %}
 
-<form method = "post" action = "/createGame">
+<form method = "post" action = "{{ url_for('web.createGame') }}">
   <div class="form-group">
     <label for="exampleInputEmail1">Email address</label>
     <input type="email" class="form-control" name="email" aria-describedby="emailHelp" placeholder="Enter email">
