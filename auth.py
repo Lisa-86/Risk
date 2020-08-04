@@ -77,7 +77,7 @@ def login_post():
     # if the above check passes, then we know the user has the right credentials
     # find the correct profile page to redirect the user to
     login_user(user, remember=False)
-    return redirect('/')
+    return redirect(url_for('web.home'))
 
 
 @auth.route('/logout')
