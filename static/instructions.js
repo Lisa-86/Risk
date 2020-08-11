@@ -1,39 +1,31 @@
 
 function drawInstruction(){
     // prints the stats tables for each player, visible at all times
-    redTroopNo.innerHTML = calcTroopNo(risk.player1)
-    terCount = getTerNo(risk.player1)
-    redTerNo.innerHTML = terCount
+    var TroopNo = document.getElementById("TroopNo")
+    var TerNo = document.getElementById("TerNo")
 
-    blueTroopNo.innerHTML = calcTroopNo(risk.player2)
-    blueTerCount = getTerNo(risk.player2)
-    blueTerNo.innerHTML = blueTerCount
+    TroopNo.innerHTML = calcTroopNo(risk.currentPlayer)
+    TerNo.innerHTML = getTerNo(risk.currentPlayer)
 
-    // prints at the top of the screen which player is which
-    var redWhoAreYou = document.getElementById("redWhoAreYou")
-    var blueWhoAreYou = document.getElementById("blueWhoAreYou")
+    // prints at the top of the screen which colour player you are
+    var WhoAreYou = document.getElementById("WhoAreYou")
     if (risk.myID == risk.player1) {
-        redWhoAreYou.innerHTML = "You are the RED PLAYER"
-        blueWhoAreYou.innerHTML = "This is your OPPONENT"
+        WhoAreYou.innerHTML = "You are the RED player"
     }
     else {
-        blueWhoAreYou.innerHTML = "You are the BLUE PLAYER"
-        redWhoAreYou.innerHTML = "This is your OPPONENT"
+        WhoAreYou.innerHTML = "You are the BLUE player"
     }
 
-    // prints whose go it is and what stage they're on, visible at all times
-    var redcon = document.getElementById("redcon")
-    var bluecon = document.getElementById('bluecon')
-    if (risk.currentPlayer == risk.player1){
-        redcon.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
-        bluecon.innerHTML = 'Your orders are to wait for your next turn.'
+    // prints whether it's your go or not
+    var con = document.getElementById('con')
+    if (risk.currentPlayer == risk.myID){
+        con.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
     }
     else {
-        redcon.innerHTML = 'Your orders are to wait for your next turn.'
-        bluecon.innerHTML = 'It is your turn. Stage: <b>' + risk['stage'] + '</b>'
+        con.innerHTML = 'Your orders are to wait for your next turn.'
     }
 
-    // prints instructions for attack stage, only shows up at the attack stage
+    // prints instructions for attack stage, only visible at the attack stage
     drawDeploymentInstructions()
     drawAttackInstructions()
     drawReinforceInstructions()
@@ -43,45 +35,31 @@ function drawInstruction(){
 
 function drawDeploymentInstructions(){
     // prints how many troops the player has to reinforce with, only shows up at deployment stage
-    var reinNo = risk['reinNo']
-    var blueren = document.getElementById('bluereinforceno')
-    var redren = document.getElementById("redreinforceno")
+    // else cleans up when not deployment stage
+    var ren = document.getElementById('reinforceno')
 
-    if (risk['stage'] == 'DEPLOYMENT'){
-        if (risk['currentPlayer'] == risk.player1 ){
-            redren.innerHTML = 'You have <b>' + reinNo + '</b> troops to deploy.'
-            blueren.innerHTML = ''
+    if (risk.stage == 'DEPLOYMENT'){
+        if (risk.currentPlayer == risk.myID ){
+            ren.innerHTML = 'You have <b>' + risk.reinNo + '</b> troops to deploy.'
         }
         else {
-            blueren.innerHTML = 'You have <b>' + reinNo  + '</b> troops to deploy.'
-            redren.innerHTML = ''
+            ren.innerHTML = ''
         }
-    }
-    else{
-        redren.innerHTML = ''
-        blueren.innerHTML = ''
     }
 }
 
 function drawAttackInstructions(){
-    // Draws Attack instruction during the attack stage
+    // Draws attack instructions during the attack stage
     // but during every other stage, cleans up attack instructions
-    var reinNo = risk['reinNo']
-    var redops = document.getElementById("redops")
-    var redatt = document.getElementById("redatt")
-    var redend = document.getElementById("redend")
+    var ops = document.getElementById("ops")
+    var att = document.getElementById("att")
+    var end = document.getElementById("end")
 
-    var blueops = document.getElementById('blueops')
-    var blueatt = document.getElementById("blueatt")
-    var blueend = document.getElementById("blueend")
+    if (risk.stage == 'ATTACK'){
+        if (risk.currentPlayer == risk.myID) {
+            end.style.display = "inline"
+        }
 
-    if (risk['stage'] == 'ATTACK'){
-        if (risk["currentPlayer"] == risk.player1) {
-            redend.style.display = "inline"
-        }
-        if (risk["currentPlayer"] == risk.player2) {
-            blueend.style.display = "inline"
-        }
         // attacker territory selected
         if (local_risk['selOwnTer'] != undefined){
             // check if the neighbour opponent territory is selected
@@ -89,179 +67,121 @@ function drawAttackInstructions(){
             selOwnTer = local_risk['selOwnTer']
 
             if (attackable.indexOf(local_risk['selOppTer']) != -1 && risk['territories'][selOwnTer]['troopNo'] >= 2){
-                // time to attack, show attack button
-                if (risk["currentPlayer"] == risk.player1){
-                    redatt.style.display = "inline"
-                }
-                else {
-                    blueatt.style.display = "inline"
+                // if time to attack, show attack button
+                if (risk.currentPlayer == risk.myID){
+                    att.style.display = "inline"
                 }
             }
             else {
                 // not time to attack, hide attack button
-                redatt.style.display = "none"
-                blueatt.style.display = "none"
+                att.style.display = "none"
 
                 // print which territories one can attack, only visible when appropriate ters selected
-                if (risk['currentPlayer'] == risk.player1){
-                    redops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
-                }
-                else {
-                    blueops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
+                if (risk.currentPlayer == risk.myID){
+                    ops.innerHTML = 'From ' + local_risk['selOwnTer'] + ' you can attack: ' + attackable
                 }
             }
         }
     }
     else{
         // clean up the attack instruction
-        redend.style.display = "none"
-        blueend.style.display = "none"
-        redatt.style.display = "none"
-        blueatt.style.display = "none"
+        end.style.display = "none"
+        att.style.display = "none"
     }
 
 }
 
 
 function drawReinforceInstructions(){
-    var reinNo = risk['reinNo']
+    var ops = document.getElementById('ops')
+    var result = document.getElementById("result")
+    var boxdiv = document.getElementById("boxdiv")
 
-    var redops = document.getElementById("redops")
-    var redresult = document.getElementById("redresult")
-    var redboxdiv = document.getElementById("redboxdiv")
-
-    var blueops = document.getElementById('blueops')
-    var blueresult = document.getElementById("blueresult")
-    var blueboxdiv = document.getElementById("blueboxdiv")
-
-    if (risk['stage'] == "REINFORCE") {
+    if (risk.stage == "REINFORCE") {
         var terFrom = local_risk['selOwnTer']
         var terTo = local_risk['selOppTer']
         var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-        if (risk["currentPlayer"] == risk.player1) {
-            redops.innerHTML = ""
-            redresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce <b>" + terTo + "</b> with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
-            blueresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
-            redboxdiv.style.display = "inline"
+        if (risk.currentPlayer == risk.myID) {
+            ops.innerHTML = ""
+            result.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce <b>" + terTo + "</b> with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
+            boxdiv.style.display = "inline"
         }
-        else {
-            blueops.innerHTML = ""
-            blueresult.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce <b>" + terTo + "</b> with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
-            redresult.innerHTML = "Sadly, you have lost <b>" + terTo + "</b>"
-            blueboxdiv.style.display = "inline"
-        }
+
     }
+    // clean up uneeded instructions
     else {
-        redboxdiv.style.display = "none"
-        blueboxdiv.style.display = "none"
-        redresult.innerHTML = ""
-        blueresult.innerHTML = ""
+        boxdiv.style.display = "none"
+        result.innerHTML = ""
     }
 }
 
 function drawManInstructions(){
-    var redops = document.getElementById("redops")
-    var redman = document.getElementById("redman")
-    var redendturn = document.getElementById("redendturn")
-
-    var blueops = document.getElementById('blueops')
-    var blueman = document.getElementById("blueman")
-    var blueendturn = document.getElementById("blueendturn")
+    var ops = document.getElementById("ops")
+    var man = document.getElementById("man")
+    var endturn = document.getElementById("endturn")
 
     if (risk["stage"] == "MANOEUVRE") {
 
-        if (risk["currentPlayer"] == risk.player1) {
-            redendturn.style.display = "inline"
-        }
-        else {
-            blueendturn.style.display = "inline"
+        if (risk.currentPlayer == risk.myID) {
+            endturn.style.display = "inline"
         }
 
         var terFrom = local_risk["selOwnTer"]
         var terTo = local_risk["selOwnTer2"]
 
         if (terFrom == undefined && terTo == undefined) {
-            if (risk["currentPlayer"] == risk.player1) {
-                redman.style.display = "none"
-                redops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
-            }
-            else {
-                blueman.style.display = "none"
-                blueops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
+            if (risk.currentPlayer == risk.myID) {
+                man.style.display = "none"
+                ops.innerHTML = "Please choose which troops you would like to manoeuvre into an <b> adjacent </b> territory."
             }
         }
         else if (terFrom != undefined && terTo != undefined) {
             var neighs = neighManOps(terFrom)
             var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-            if (risk["currentPlayer"] == risk.player1) {
-                redman.style.display = "inline"
+            if (risk.currentPlayer == risk.myID) {
+                man.style.display = "inline"
                 if (neighs.length >= 1 && maxTroopNo >= 1) {
-                    redops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
+                    ops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
                 }
                 else {
-                    redops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
-                }
-            }
-            else {
-                blueman.style.display = "inline"
-                if (neighs.length >= 1 && maxTroopNo >= 1) {
-                    blueops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
-                }
-                else {
-                    blueops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
+                    ops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
                 }
             }
         }
 
         else if (terFrom != undefined && terTo == undefined) {
-            redman.style.display = "none"
-            blueman.style.display = "none"
+            man.style.display = "none"
             var neighs = neighManOps(terFrom)
             var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-            if (risk["currentPlayer"] == risk.player1) {
+            if (risk.currentPlayer == risk.myID) {
                 if (neighs.length >= 1 && maxTroopNo >= 1) {
-                    redops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
+                    ops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
                 }
                 else {
-                    redops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
-                }
-            }
-            else {
-                if (neighs.length >= 1 && maxTroopNo >= 1) {
-                    blueops.innerHTML = "From <b>" + terFrom + "</b> you can move up to <b>" + maxTroopNo + "</b> troops to: " + neighs
-                }
-                else {
-                    blueops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
+                    ops.innerHTML = "Sadly, you cannot manoeuvre any troops from <b>" + terFrom + "</b>"
                 }
             }
         }
     }
     else{
         // clean up
-        redendturn.style.display = "none"
-        blueendturn.style.display = "none"
-        redops.innerHTML = ''
-        blueops.innerHTML = ''
-        redman.style.display = 'none'
-        blueman.style.display = 'none'
+        endturn.style.display = "none"
+        ops.innerHTML = ''
+        man.style.display = "none"
     }
 }
 
 function drawWinInstructions() {
-    redWin = document.getElementById("redwin")
-    blueWin = document.getElementById("bluewin")
+    Win = document.getElementById("win")
 
     if (risk["stage"] == "WIN!") {
-        winner = risk["currentPlayer"]
+        winner = risk.currentPlayer
 
-        if (winner == risk.player1) {
-            redWin.innerHTML = "You Have Won!"
-            blueWin.innerHTML = "Sorry, You Have Lost"
+        if (winner == risk.myID) {
+            Win.innerHTML = "YOU HAVE WON"
         }
-
         else {
-            blueWin.innerHTML = "You Have Won!"
-            redWin.innerHTML = "Sorry, You Have Lost"
+            Win.innerHTML = "Sorry, You Have Lost"
         }
     }
 

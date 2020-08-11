@@ -88,40 +88,21 @@ function reinPressed() {
     if (maxTroopNo == 0) {
         return updateInput(0)
     }
-    if (risk['currentPlayer'] == risk.player1) {
+    if (risk.currentPlayer == risk.myID) {
         // serve the player with the left column (red) -
         // checks player has entered appropriate no and updates the instructions writen on the screen
-        input = document.getElementById("redbox").value
+        input = document.getElementById("box").value
         if (input == "") {
             input = "0"
             return updateInput(input)
         }
         else if (input < 0) {
-            document.getElementById("redresult").innerHTML =  "<p> You can't move negative troops! </p>"
-            redboxdiv.style.display = "inline"
+            document.getElementById("result").innerHTML =  "<p> You can't move negative troops! </p>"
+            boxdiv.style.display = "inline"
         }
         else if (input > maxTroopNo) {
-            document.getElementById("redresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
-            redboxdiv.style.display = "inline"
-        }
-        else {
-            return updateInput(input)
-        }
-    }
-    else {
-        // does the same for player 2 on the right column (blue)
-        input = document.getElementById("bluebox").value
-        if (input == "") {
-            input = "0"
-            return updateInput(input)
-        }
-        else if (input < 0) {
-            document.getElementById("blueresult").innerHTML =  "<p> You can't move negative troops! </p>"
-            blueboxdiv.style.display = "inline"
-        }
-        else if (input > maxTroopNo) {
-            document.getElementById("blueresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
-            blueboxdiv.style.display = "inline"
+            document.getElementById("result").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+            boxdiv.style.display = "inline"
         }
         else {
             return updateInput(input)
@@ -164,38 +145,19 @@ function manPressed() {
     var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
 
     // checks the red player has put in an appropriate number and writes instructions on the screen
-    if (risk['currentPlayer'] == risk.player1) {
-        input = document.getElementById("redmanbox").value
+    if (risk.currentPlayer == risk.myID) {
+        input = document.getElementById("manbox").value
         if (input == "") {
             input = "0"
             return updateManInput(input)
         }
         else if (input < 0) {
-            document.getElementById("redresult").innerHTML =  "<p> You can't move negative troops! </p>"
-            redmanbox.style.display = "inline"
+            document.getElementById("result").innerHTML =  "<p> You can't move negative troops! </p>"
+            manbox.style.display = "inline"
         }
         else if (input > maxTroopNo) {
-            document.getElementById("redresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
-            redmanbox.style.display = "inline"
-        }
-        else {
-            return updateManInput(input)
-        }
-    }
-    else {
-        // does the same for the blue player
-        input = document.getElementById("bluemanbox").value
-        if (input == "") {
-            input = "0"
-            return updateManInput(input)
-        }
-        else if (input < 0) {
-            document.getElementById("blueresult").innerHTML =  "<p> You can't move negative troops! </p>"
-            bluemanbox.style.display = "inline"
-        }
-        else if (input > maxTroopNo) {
-            document.getElementById("blueresult").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
-            bluemanbox.style.display = "inline"
+            document.getElementById("result").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+            manbox.style.display = "inline"
         }
         else {
             return updateManInput(input)
@@ -451,8 +413,8 @@ function mapPressed(canvas, event) {
 
         // if there are still rein troops left and if the player clicks on a territory they own and its their turn
         // then add 1 troop
-        if (risk['reinNo'] > 0 &&
-            risk['currentPlayer'] == risk['territories'][name]['owner'] &&
+        if (risk.reinNo > 0 &&
+            risk.currentPlayer == risk['territories'][name]['owner'] &&
             risk.currentPlayer == risk.myID){
                 updateServerDeployment(name)
         }

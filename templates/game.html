@@ -3,101 +3,53 @@
 {% block maincontent %}
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-2">
-        <strong>
-            Red Player:
-        </strong>
-        <div id="redWhoAreYou">
-        </div>
-        <div id='redstatstable'>
-            <table>
-                <tr>
-                    <th> No of troops </th>
-                    <th> No of territories </th>
-                </tr>
-                <tr>
-                    <td id="redTroopNo"> </td>
-                    <td id="redTerNo"> </td>
-            </table>
-        </div>
-        <div id="redcon" >
-        </div>
-        <div id="redreinforceno">
-        </div>
-        <div id="redops" >
-        </div>
-        <div id="redatt" style='display:none;'>
-            <button type="button" class="btn btn-danger" onclick="attackPressed()">ATTACK!</button>
-        </div>
-        <div id="redresult" >
-        </div>
-        <div id="redboxdiv" style="display:none">
-            <input type="text" class="form-control" id="redbox" min="0" placeholder="0">
-            <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
-        </div>
-        <div id="redend" style="display:none">
-            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
-        </div>
-        <div id="redman" style="display:none">
-            <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
-            <input type="text" class="form-control" id="redmanbox" min="0" placeholder="0">
-            <button type="button" class="btn btn-info" onclick="manPressed()">MANOEUVRE</button>
-        </div>
-        <div id="redendturn" style="display:none">
-            <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
-        </div>
-        <div id="redwin">
-        </div>
-    </div>
-
     <div class="col-md-8", id='mapcol'>
         <img id='Map' src='{{url_for('static', filename = 'riskMap.jpeg')}}' alt='Map' style='display:none;' >
         <canvas id='myCanvas'></canvas>
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-4">
         <strong>
-        Blue Player:
+            <div id="WhoAreYou">
+            </div>
         </strong>
-        <div id="blueWhoAreYou">
-        </div>
-        <div id='bluestatstable'>
+        <div id='statstable'>
             <table>
                 <tr>
                     <th> No of troops </th>
                     <th> No of territories </th>
                 </tr>
                 <tr>
-                    <td id="blueTroopNo"> </td>
-                    <td id="blueTerNo"> </td>
+                    <td id="TroopNo"> </td>
+                    <td id="TerNo"> </td>
             </table>
-        <div id="bluecon">
+        <div id="con">
         </div>
-        <div id="bluereinforceno">
+        <div id="reinforceno">
         </div>
-        <div id="blueops" >
+        <div id="ops" >
         </div>
-        <div id="blueatt" style='display:none;'>
+        <div id="att" style='display:none;'>
             <button type="button" class="btn btn-danger" onclick="attackPressed()">ATTACK!</button>
         </div>
-        <div id="blueresult" >
+        <div id="result" >
         </div>
-        <div id="blueboxdiv" style="display:none">
-            <input type="text" class="form-control" id="bluebox" min="0" placeholder="0">
+        <div id="boxdiv" style="display:none">
+            <input type="text" class="form-control" id="box" min="0" placeholder="0">
             <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
         </div>
-        <div id="blueend" style="display:none">
+        <div id="end" style="display:none">
             <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
         </div>
-        <div id="blueman" style="display:none">
+        <div id="man" style="display:none">
             <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
-            <input type="text" class="form-control" id="bluemanbox" min="0" placeholder="0">
+            <input type="text" class="form-control" id="manbox" min="0" placeholder="0">
             <button type="button" class="btn btn-info" onclick="manPressed()">MANOEUVRE</button>
         </div>
-        <div id="blueendturn" style="display:none">
+        <div id="endturn" style="display:none">
             <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
         </div>
-        <div id="bluewin">
+        <div id="win">
         </div>
     </div>
   </div>
