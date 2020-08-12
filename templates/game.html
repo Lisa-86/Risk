@@ -23,23 +23,22 @@
                     <td id="TroopNo"> </td>
                     <td id="TerNo"> </td>
             </table>
+        </div>
         <div id="con">
+            <!--  General info about your turn and what stage the game is at -->
         </div>
-        <div id="reinforceno">
-        </div>
-        <div id="ops" >
+        <div id="ops">
+            <!-- Info about reinforcements and options for attacking and manoeuvring and displays attack results -->
         </div>
         <div id="att" style='display:none;'>
             <button type="button" class="btn btn-danger" onclick="attackPressed()">ATTACK!</button>
-        </div>
-        <div id="result" >
         </div>
         <div id="boxdiv" style="display:none">
             <input type="text" class="form-control" id="box" min="0" placeholder="0">
             <button type="button" class="btn btn-warning" onclick="reinPressed()">REINFORCE</button>
         </div>
         <div id="end" style="display:none">
-            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK</button>
+            <button type="button" class="btn btn-success" onclick="endMovePressed()">END ATTACK STAGE</button>
         </div>
         <div id="man" style="display:none">
             <p> Please specify how many troops you want to move to an <b> adjacent </b> territory. </p>
@@ -48,8 +47,6 @@
         </div>
         <div id="endturn" style="display:none">
             <button type="button" class="btn btn-primary" onclick="endTurnPressed()">END TURN</button>
-        </div>
-        <div id="win">
         </div>
     </div>
   </div>

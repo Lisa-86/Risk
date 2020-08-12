@@ -97,11 +97,11 @@ function reinPressed() {
             return updateInput(input)
         }
         else if (input < 0) {
-            document.getElementById("result").innerHTML =  "<p> You can't move negative troops! </p>"
+            document.getElementById("ops").innerHTML =  "<p> You can't move negative troops! </p>"
             boxdiv.style.display = "inline"
         }
         else if (input > maxTroopNo) {
-            document.getElementById("result").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+            document.getElementById("ops").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
             boxdiv.style.display = "inline"
         }
         else {
