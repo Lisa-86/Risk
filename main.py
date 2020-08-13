@@ -21,7 +21,7 @@ def create_app(db_path, app_root):
     logger.setLevel(logging.INFO)
 
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'gcfgxdfszrt2'
+    app.config['SECRET_KEY'] = b'\xe5D\xf9\x90\t\x89\xf9\xaf\x87\x03\xf5$\t\xc4\xd3\xa0'
     app.config['APPLICATION_ROOT'] = app_root
     app.config['SQLALCHEMY_DATABASE_URI'] = db_path
     db.init_app(app)
