@@ -77,48 +77,45 @@ function attackPressed() {
 
 // check the input is valid
 function reinPressed() {
+    // check if you are the current player, if not alert
     if (risk.currentPlayer != risk.myID){
         alert('no, no, no')
         return
     }
 
-    var terFrom = local_risk['selOwnTer']
-    var terTo = local_risk['selOppTer']
-    var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
-    if (maxTroopNo == 0) {
-        return updateInput(0)
+    var terFrom = local_risk.selOwnTer
+    var terTo = local_risk.selOppTer
+    var maxMovableTroopNo = risk.territories.terFrom.troopNo - 1
+    if (maxMovableTroopNo == 0) {
+        return reinforceTroops(0)
     }
-    if (risk.currentPlayer == risk.myID) {
-        // serve the player with the left column (red) -
-        // checks player has entered appropriate no and updates the instructions writen on the screen
-        input = document.getElementById("box").value
-        if (input == "") {
-            input = "0"
-            return updateInput(input)
-        }
-        else if (input < 0) {
-            document.getElementById("ops").innerHTML =  "<p> You can't move negative troops! </p>"
-            boxdiv.style.display = "inline"
-        }
-        else if (input > maxTroopNo) {
-            document.getElementById("ops").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
-            boxdiv.style.display = "inline"
-        }
-        else {
-            return updateInput(input)
-        }
+
+    // checks player has entered appropriate num and updates the instructions writen on the screen
+    input = document.getElementById("box").value
+    if (input == "") {
+        // if nothing is typed, assume troop num is 0
+        return reinforceTroops(0)
+    }
+    else if (input < 0) {
+        document.getElementById("ops").innerHTML =  "<p> You can't move negative troops! </p>"
+        boxdiv.style.display = "inline"
+    }
+    else if (input > maxTroopNo) {
+        document.getElementById("ops").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+        boxdiv.style.display = "inline"
+    }
+    else {
+        return reinforceTroops(input)
     }
 }
 
-
-function updateInput(validInput) {
+function reinforceTroops(validTroopNo) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", getThisBaseUrl() + "/REST/reinforcement/" + risk["id"] + "/" + validInput, true);
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/reinforcement/" + risk["id"] + "/" + validTroopNo, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
 }
-
 
 function endMovePressed() {
     if (risk.currentPlayer != risk.myID){
