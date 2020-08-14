@@ -103,7 +103,13 @@ function drawReinforceInstructions(){
     if (risk.stage == "REINFORCE") {
         var terFrom = local_risk['selOwnTer']
         var terTo = local_risk['selOppTer']
-        var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
+
+        // fallback value,
+        var maxTroopNo = 0
+        if (terFrom !== undefined && terTo !== undefined){
+            maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
+        }
+
         if (risk.currentPlayer == risk.myID) {
             ops.innerHTML = "<p> You have <b> won </b> this battle! </p> <p> You can reinforce <b>" + terTo + "</b> with up to <b>" + maxTroopNo + "</b> troops. <p> How many troops would you like to move? </p>"
             boxdiv.style.display = "inline"

@@ -106,8 +106,12 @@ function endTurnPressed() {
 // -------------------------------------------
 // ----------- REST CALLBACKS ----------------
 function updateGameState(){
-    if (this.readyState != 4 || this.status != 200) {
+    if (this.readyState != 4){
+        return
+    }
+    if (this.status != 200) {
         alert('There was a problem with the server? contact the admins? good luck')
+        return
     }
 
     risk = JSON.parse(this.responseText)
@@ -147,7 +151,11 @@ function reinPressed() {
 
     var terFrom = local_risk.selOwnTer
     var terTo = local_risk.selOppTer
-    var maxMovableTroopNo = risk.territories.terFrom.troopNo - 1
+    var maxMovableTroopNo = 0
+    if (terFrom != undefined){
+        maxMovableTroopNo = risk.territories[terFrom].troopNo - 1
+    }
+
     if (maxMovableTroopNo == 0) {
         return reinforceTroops(0)
     }
@@ -162,7 +170,7 @@ function reinPressed() {
         document.getElementById("ops").innerHTML =  "<p> You can't move negative troops! </p>"
         boxdiv.style.display = "inline"
     }
-    else if (input > maxTroopNo) {
+    else if (input > maxMovableTroopNo) {
         document.getElementById("ops").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
         boxdiv.style.display = "inline"
     }
