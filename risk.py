@@ -1,8 +1,7 @@
 import random
-from territories import territories, teralloc
 
 
-def reinforcements_db(territories, player_id):
+def reinforcements(territories, player_id):
     # Will calculate how many troops a player receives at the beginning of their turn (only based on ters held)
     count = 0
     for ter in territories:
@@ -16,85 +15,43 @@ def reinforcements_db(territories, player_id):
         return reinforcements
 
 
-def diceroll(p1troops, p2troops):
-    player_1 = []
-    player_2 = []
+def diceroll(attackerTroops, defenderTroops):
+    # simulates a single attack and updates the number of troops accordingly
+    # uses the maximum number of troops for attack/defense
+    # troop nos are ints
 
-    if p1troops < 2:
+    # checks the attacker has enough men to attack with
+    if attackerTroops < 2:
         raise ValueError
-    if p1troops == 2:
-        p1dice = 1
-    if p1troops == 3:
-        p1dice = 2
-    if p1troops > 3:
-        p1dice = 3
 
-    if p2troops == 1:
-        p2dice = 1
-    if p2troops > 1:
-        p2dice = 2
+    # checks how many dice the attacker gets
+    attackerDiceNo = min(attackerTroops, 4) - 1
 
-    for dice in range(p1dice):
-        randomno = int(random.uniform(1, 6))
-        player_1.append(randomno)
-
-    for dice in range(p2dice):
-        randomno = int(random.uniform(1, 6))
-        player_2.append(randomno)
-
-    player_1.sort(reverse=True)
-    player_2.sort(reverse=True)
-
-    #print("player 1", player_1)
-    #print("player 2", player_2)
-
-    if len(player_1) < len(player_2):
-        shorterlist = player_1
-
+    # checks how many dice the defender has
+    if defenderTroops == 1:
+        defenderDiceNo = 1
     else:
-        shorterlist = player_2
+        defenderDiceNo = 2
 
-    #print("the shorter list is", shorterlist)
+    # simulates diceroll results for attacker and defender
+    attackerResults = [random.randint(1, 6) for dice in range(attackerDiceNo)]
+    defenderResults = [random.randint(1, 6) for dice in range(defenderDiceNo)]
 
-    if len(shorterlist) == 1:
+    # put the results in descending order
+    attackerResults.sort(reverse=True)
+    defenderResults.sort(reverse=True)
 
-        if player_1[0] > player_2[0]:
-            p2troops -= 1
-            #print("player 2 loses a troop, now has", p2troops)
+    for attacker_dice, defender_dice in zip(attackerResults, defenderResults):
+        # fight!
+        if attacker_dice > defender_dice:
+            # take one from defender
+            defenderTroops -= 1
         else:
-            p1troops -= 1
-            #print("player 1 loses a troop, now has", p1troops)
+            # take one from attacker
+            attackerTroops -= 1
 
-        if p2troops == 0:
-            print("player 1 has won this territory from player 2")
+    return attackerTroops, defenderTroops
 
-        return p1troops, p2troops
-
-    if len(shorterlist) == 2:
-
-        if player_1[0] > player_2[0]:
-            p2troops -= 1
-            #print("player 2 loses a troop, now has", p2troops)
-
-        if player_1[0] <= player_2[0]:
-            p1troops -= 1
-            #print("player 1 loses a troop, now has", p1troops)
-
-        if player_1[1] > player_2[1]:
-            p2troops -= 1
-            #print("player 2 loses a troop, now has", p2troops)
-
-        if player_1[1] <= player_2[1]:
-            p1troops -= 1
-            #print("player 1 loses a troop, now has", p1troops)
-
-        if p2troops == 0:
-            print("player 1 has won this territory from player 2")
-
-        return p1troops, p2troops
-
-#if p1troops == 0:
-#    print("not enough troops to attack")
 
 def winGame(game_states, playerID):
     # first calculate no of ters the player has

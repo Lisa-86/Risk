@@ -72,9 +72,6 @@ for ter in territories:
     pointHScaler = pointHeight / imgnaturalHeight
     territories[ter]['loc'][1] = pointHScaler
 
-#print("this is ters", territories)
-
-
 
 def teralloc(territories, troopNo=3, testWin=False):
     playerno = 2
@@ -112,12 +109,3 @@ def teralloc_db(territories, players, troopNo=3, test_winning=False):
             ter.owner = players[0].id
         else:
             ter.owner = players[1].id
-
-
-#test = teralloc(territories)
-#
-# for ter in territories:
-#     if ter in p1ters:
-#         territories[ter]
-
-

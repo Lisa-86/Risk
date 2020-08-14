@@ -4,7 +4,7 @@ from flask_login import current_user
 from flask_restful import Resource, Api
 
 from territories import teralloc, teralloc_db, territories
-from risk import reinforcements_db, diceroll, winGame
+from risk import reinforcements, diceroll, winGame
 from db import db
 from models import *
 
@@ -32,7 +32,7 @@ def create_game(user1, user2):
     teralloc_db(game_states, [user1, user2])
 
     # compute the reinforcement number
-    game.reinNo = reinforcements_db(game_states, current_player.id)
+    game.reinNo = reinforcements(game_states, current_player.id)
 
     db.session.add(game)
     [db.session.add(gs) for gs in game_states]
@@ -193,7 +193,7 @@ class Man(Resource):
 
         # calculate the no of troops the next player can deploy at the beginning of their turn
         all_game_states = GameState.query.filter_by(game_id=game.id).all()
-        game.reinNo = reinforcements_db(all_game_states, game.currentPlayer)
+        game.reinNo = reinforcements(all_game_states, game.currentPlayer)
 
         # update the dbs and stuff
         db.session.add(game_state_from)
@@ -221,7 +221,7 @@ class EndTurn(Resource):
                 game.currentPlayer = game.player1
 
             game.stage = "DEPLOYMENT"
-            game.reinNo = reinforcements_db(all_game_states, game.currentPlayer)
+            game.reinNo = reinforcements(all_game_states, game.currentPlayer)
             db.session.add(game)
             db.session.commit()
 
