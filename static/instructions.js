@@ -4,8 +4,8 @@ function drawInstruction(){
     var TroopNo = document.getElementById("TroopNo")
     var TerNo = document.getElementById("TerNo")
 
-    TroopNo.innerHTML = calcTroopNo(risk.currentPlayer)
-    TerNo.innerHTML = getTerNo(risk.currentPlayer)
+    TroopNo.innerHTML = getTotalTroopNo(risk.currentPlayer)
+    TerNo.innerHTML = getTotalTerNo(risk.currentPlayer)
 
     // prints at the top of the screen which colour player you are
     var WhoAreYou = document.getElementById("WhoAreYou")
@@ -66,7 +66,7 @@ function drawAttackInstructions(){
         // attacker territory selected
         if (local_risk['selOwnTer'] != undefined){
             // check if the neighbour opponent territory is selected
-            attackable = neighAttackOps(local_risk['selOwnTer'])
+            attackable = getAttackableNeighbours(local_risk['selOwnTer'])
             selOwnTer = local_risk['selOwnTer']
 
             if (attackable.indexOf(local_risk['selOppTer']) != -1 && risk['territories'][selOwnTer]['troopNo'] >= 2){
@@ -139,7 +139,7 @@ function drawManInstructions(){
             }
         }
         else if (terFrom != undefined && terTo != undefined) {
-            var neighs = neighManOps(terFrom)
+            var neighs = getNeighManOptions(terFrom)
             var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
             if (risk.currentPlayer == risk.myID) {
                 man.style.display = "inline"
@@ -154,7 +154,7 @@ function drawManInstructions(){
 
         else if (terFrom != undefined && terTo == undefined) {
             man.style.display = "none"
-            var neighs = neighManOps(terFrom)
+            var neighs = getNeighManOptions(terFrom)
             var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
             if (risk.currentPlayer == risk.myID) {
                 if (neighs.length >= 1 && maxTroopNo >= 1) {

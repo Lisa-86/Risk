@@ -1,11 +1,4 @@
-
-
-function acceptGame(email){
-    console.log('Accepting a game with ' + email)
-    // notify the server that we want to accept this game using REST protocol.
-    acceptGameREST(email, acceptGameCallback)
-}
-
+// ---------- REST GAME ----------
 function acceptGameREST(email, callback) {
   // note that this part is hardcoded
   var baseUrl = getBaseUrl('/')
@@ -17,15 +10,6 @@ function acceptGameREST(email, callback) {
   xhttp.send("Your JSON Data Here");
 }
 
-function acceptGameCallback(){
-    if (this.readyState == 4 && this.status == 200) {
-        var acceptedGame = JSON.parse(this.responseText)
-        console.log('We received :' + acceptedGame['email'] + acceptedGame["game_id"])
-
-        // reload the page to update the information
-        location.reload();
-    }
-}
 
 function rejectGameREST(email, callback) {
   // note that this part is hardcoded
@@ -37,6 +21,26 @@ function rejectGameREST(email, callback) {
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }
+
+
+// ---------- REST CALLBACKS ----------
+function acceptGame(email){
+    console.log('Accepting a game with ' + email)
+    // notify the server that we want to accept this game using REST protocol.
+    acceptGameREST(email, acceptGameCallback)
+}
+
+
+function acceptGameCallback(){
+    if (this.readyState == 4 && this.status == 200) {
+        var acceptedGame = JSON.parse(this.responseText)
+        console.log('We received :' + acceptedGame['email'] + acceptedGame["game_id"])
+
+        // reload the page to update the information
+        location.reload();
+    }
+}
+
 
 function rejectGameCallback(){
     if (this.readyState == 4 && this.status == 200) {
@@ -55,6 +59,8 @@ function rejectGameCallback(){
     }
 }
 
+
+// ---------- OTHER  ----------
 function rejectGame(email){
     rejectGameREST(email, rejectGameCallback)
 }

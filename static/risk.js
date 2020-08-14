@@ -1,51 +1,9 @@
+// -------------------------------------------
+// ----------- GAME REST interface -----------
+
+// Format of the risk game structure
 // risk = {'territories': ter: {'location': [x, y], 'neighbours': [a, b, c], 'owner': ownerNo, 'troopNo': troopNo},
 //          'currentPlayer': currentPlayer, 'reinNo': reinNo, 'selOwnTer':'ter', 'selOppTer':ter, 'tolerance':tolerance}
-
-
-function updateGameState(){
-    if (this.readyState == 4 && this.status == 200) {
-        risk = JSON.parse(this.responseText)
-
-        if (risk == undefined){
-            // long polling does not return an update
-            // ignore
-            return
-        }
-
-        if (risk.currentPlayer != risk.myID) {
-            refreshPage(risk.id)
-            console.log("refresh page check sent: current player ", risk.currentPlayer, "current user", risk.myID)
-        }
-
-        if (risk['stage'] == 'MANOEUVRE'){
-            // deselect territories
-            console.log('Manoeuvre: deselect territories')
-            local_risk['selOwnTer'] = undefined
-            local_risk['selOwnTer2'] = undefined
-            local_risk['selOppTer'] = undefined
-        }
-
-        drawMap()
-        drawTroops()
-        drawInstruction()
-    }
-}
-
-
-function getThisBaseUrl(){
-    // adapter function to avoid hardcoding "/game" everywhere
-    var baseUrl = getBaseUrl('/game')
-    return baseUrl
-}
-
-// updates the server after reincforcement click
-function updateServerDeployment(country) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = updateGameState;
-  xhttp.open("PUT", getThisBaseUrl() + "/REST/deployment/" + risk['id'] + "/" + country, true);
-  xhttp.setRequestHeader("Content-type", "application/json");
-  xhttp.send("Your JSON Data Here");
-}
 
 
 function fetchGame(responseSuccessF) {
@@ -54,6 +12,16 @@ function fetchGame(responseSuccessF) {
   // get the current url and extract from it the game ID no
   var gameNo = window.location.href.split("/").pop()
   xhttp.open("GET", getThisBaseUrl() + "/REST/game/" +  gameNo, true);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send("Your JSON Data Here");
+}
+
+
+// updates the server after reinforcement button pressed
+function updateServerDeployment(country) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = updateGameState;
+  xhttp.open("PUT", getThisBaseUrl() + "/REST/deployment/" + risk['id'] + "/" + country, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send("Your JSON Data Here");
 }
@@ -72,6 +40,100 @@ function attackPressed() {
     xhttp.open("PUT", getThisBaseUrl() + "/REST/diceroll/" + risk["id"] + "/" + terFrom + "/" + terTo, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send("Your JSON Data Here");
+}
+
+
+function reinforceTroops(validTroopNo) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/reinforcement/" + risk["id"] + "/" + validTroopNo, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
+function endMovePressed() {
+    if (risk.currentPlayer != risk.myID){
+        alert('I dont think so')
+        return
+    }
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/endmove/" + risk["id"], true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
+function updateManInput(troopNo) {
+    var terFrom = local_risk['selOwnTer']
+    var terTo = local_risk['selOwnTer2']
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/man/" + risk["id"] + "/" + terFrom + "/" + terTo + "/" + troopNo, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
+// refresh when your opponent makes a move
+function refreshLongPolling(gameID) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("GET", getThisBaseUrl() + "/REST/refresh/" + gameID);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    // timeout every minute
+    xhttp.timeout = 1000 * 60;
+    xhttp.send("Your JSON Data Here");
+}
+
+
+function endTurnPressed() {
+    if (risk.currentPlayer != risk.myID){
+        alert('are you trying to end your opponents turn?')
+        return
+    }
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = updateGameState;
+    xhttp.open("PUT", getThisBaseUrl() + "/REST/endTurn/" + risk["id"], true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send("Your JSON Data Here");
+}
+
+
+// -------------------------------------------
+// ----------- REST CALLBACKS ----------------
+function updateGameState(){
+    if (this.readyState != 4 || this.status != 200) {
+        alert('There was a problem with the server? contact the admins? good luck')
+    }
+
+    risk = JSON.parse(this.responseText)
+
+    if (risk == undefined){
+        // long polling does not return an update
+        // ignore
+        return
+    }
+
+    if (risk.currentPlayer != risk.myID) {
+        refreshLongPolling(risk.id)
+        console.log("refresh page check sent: current player ", risk.currentPlayer, "current user", risk.myID)
+    }
+
+    if (risk.stage == 'MANOEUVRE'){
+        // deselect territories
+        console.log('Manoeuvre: deselect territories')
+        local_risk['selOwnTer'] = undefined
+        local_risk['selOwnTer2'] = undefined
+        local_risk['selOppTer'] = undefined
+    }
+
+    drawMap()
+    drawTroops()
+    drawInstruction()
 }
 
 
@@ -109,27 +171,6 @@ function reinPressed() {
     }
 }
 
-function reinforceTroops(validTroopNo) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", getThisBaseUrl() + "/REST/reinforcement/" + risk["id"] + "/" + validTroopNo, true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send("Your JSON Data Here");
-}
-
-function endMovePressed() {
-    if (risk.currentPlayer != risk.myID){
-        alert('I dont think so')
-        return
-    }
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", getThisBaseUrl() + "/REST/endmove/" + risk["id"], true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send("Your JSON Data Here");
-}
-
 
 function manPressed() {
     if (risk.currentPlayer != risk.myID){
@@ -141,65 +182,26 @@ function manPressed() {
     var terTo = local_risk['selOwnTer2']
     var maxTroopNo = risk['territories'][terFrom]['troopNo'] - 1
 
-    // checks the red player has put in an appropriate number and writes instructions on the screen
-    if (risk.currentPlayer == risk.myID) {
-        input = document.getElementById("manbox").value
-        if (input == "") {
-            input = "0"
-            return updateManInput(input)
-        }
-        else if (input < 0) {
-            document.getElementById("result").innerHTML =  "<p> You can't move negative troops! </p>"
-            manbox.style.display = "inline"
-        }
-        else if (input > maxTroopNo) {
-            document.getElementById("result").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
-            manbox.style.display = "inline"
-        }
-        else {
-            return updateManInput(input)
-        }
+    // checks the player has put in an appropriate number and writes instructions on the screen
+    var input = document.getElementById("manbox").value
+    if (input == "") {
+        return updateManInput(0)
+    }
+    else if (input < 0) {
+        document.getElementById("result").innerHTML =  "<p> You can't move negative troops! </p>"
+        manbox.style.display = "inline"
+    }
+    else if (input > maxTroopNo) {
+        document.getElementById("result").innerHTML = "<p> You can only move up to <b>" + maxTroopNo + "</b> troops. </p>"
+        manbox.style.display = "inline"
+    }
+    else {
+        return updateManInput(input)
     }
 }
 
 
-function updateManInput(troopNo) {
-    var terFrom = local_risk['selOwnTer']
-    var terTo = local_risk['selOwnTer2']
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", getThisBaseUrl() + "/REST/man/" + risk["id"] + "/" + terFrom + "/" + terTo + "/" + troopNo, true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send("Your JSON Data Here");
-}
-
-
-// this is the long polling function
-function refreshPage(gameID) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = updateGameState;
-    xhttp.open("GET", getThisBaseUrl() + "/REST/refresh/" + gameID);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    // timeout every minute
-    xhttp.timeout = 1000 * 60;
-    xhttp.send("Your JSON Data Here");
-}
-
-
-function endTurnPressed() {
-    if (risk.currentPlayer != risk.myID){
-        alert('are you trying to end your opponents turn?')
-        return
-    }
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = updateGameState;
-    xhttp.open("PUT", getThisBaseUrl() + "/REST/endTurn/" + risk["id"], true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send("Your JSON Data Here");
-}
-
-function neighAttackOps(ter){
+function getAttackableNeighbours(ter){
     var neighbours = risk['territories'][ter]['neighbours']
     var attackable = []
     for (var i = 0; i < neighbours.length; i++){
@@ -212,7 +214,7 @@ function neighAttackOps(ter){
 }
 
 
-function neighManOps(ter){
+function getNeighManOptions(ter){
     var neighbours = risk['territories'][ter]['neighbours']
     var moveable = []
     for (var i = 0; i < neighbours.length; i++){
@@ -225,7 +227,7 @@ function neighManOps(ter){
 }
 
 
-function calcTroopNo(playerNo){
+function getTotalTroopNo(playerNo){
     var troopNo = 0
     var territories = risk['territories']
     for (i = 0; i < Object.keys(territories).length; i++){
@@ -238,7 +240,7 @@ function calcTroopNo(playerNo){
 }
 
 
-function getTerNo(playerNo){
+function getTotalTerNo(playerNo){
     var territories = risk['territories']
     var count = 0
     for (i = 0; i < Object.keys(territories).length; i++){
@@ -329,26 +331,6 @@ function drawTroops() {
 }
 
 
-window.onload = function() {
-  // our global data on state of play
-  risk = {}
-  local_risk = {
-    'tolerance': 0.02,
-    'factorX': 0.015,
-    'factorY': -0.015
-  }
-  fetchGame(updateGameState)
-};
-
-
-window.onresize = function() {
-  console.log('resize window')
-  drawMap()
-  drawTroops()
-  drawInstruction()
-};
-
-
 function mapPressed(canvas, event) {
   const rect = canvas.getBoundingClientRect()
   const click_x = event.clientX - rect.left
@@ -425,7 +407,34 @@ function mapPressed(canvas, event) {
 
 };
 
+function getThisBaseUrl(){
+    // helper function to avoid hardcoding "/game" everywhere
+    return getBaseUrl('/game')
+}
+
+
+window.onload = function() {
+  // our global data on state of play
+  risk = {}
+  local_risk = {
+    'tolerance': 0.02,
+    'factorX': 0.015,
+    'factorY': -0.015
+  }
+  fetchGame(updateGameState)
+};
+
+
+window.onresize = function() {
+  console.log('resize window')
+  drawMap()
+  drawTroops()
+  drawInstruction()
+};
+
+
 const canvas = document.getElementById('myCanvas')
 canvas.addEventListener('mousedown', function(e) {
     mapPressed(canvas, e)
 });
+
