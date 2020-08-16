@@ -1,19 +1,40 @@
 import random
 
+from territories import continents
+
 
 def reinforcements(territories, player_id):
-    # Will calculate how many troops a player receives at the beginning of their turn (only based on ters held)
+    # Will calculate how many troops a player receives to DEPLOY at the beginning of their turn
+    # first calcs depending on no of ters owned
     count = 0
     for ter in territories:
         if ter.owner == player_id:
             count += 1
 
     if count <= 11:
-        return 3
+        deployNo = 3
     else:
-        reinforcements = count // 3
-        return reinforcements
+        deployNo = count // 3
 
+    # convert quickly to a dictionary
+    dict_territories = {}
+    for ter in territories:
+        dict_territories[ter.territory.country] = ter.owner
+
+    # then calcs any continent bonuses
+    for continent in continents:
+            print (continent)
+            count = 0
+            for ter in continents[continent]['countries']:
+                if dict_territories[ter] == player_id:
+                    count += 1
+                    print ("Adding one")
+
+                    if count == len(continents[continent]['countries']):
+                        deployNo += continents[continent]['bonus']
+                        print ("assigning bonus: ", continents[continent]['bonus'])
+
+    return deployNo
 
 def diceroll(attackerTroops, defenderTroops):
     # simulates a single attack and updates the number of troops accordingly

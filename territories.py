@@ -51,6 +51,34 @@ territories = {
     'Madagascar':{'loc' : [950,826], 'neighbours': ['South Africa', 'East Africa']},
     }
 
+
+continents = {
+    'Oceania': {
+        'countries': ['Eastern Australia', 'Western Australia', 'New Guinea', 'Indonesia'],
+        'bonus': 2
+        },
+    'Asia': {
+        'countries': ['Siam', 'India', 'China', 'Middle East', 'Afghanistan', 'Mongolia', 'Irkutsk', 'Ural', 'Siberia', 'Yakutsk', 'Kamchatka', 'Japan'],
+        'bonus': 7
+        },
+    'Europe': {
+        'countries': ['Ukraine', 'Scandinavia', 'Northern Europe', 'Southern Europe', 'Western Europe', 'Great Britain', 'Iceland'],
+        'bonus':  5
+        },
+    'North America': {
+        'countries': ['Alaska', 'Northwest Territory', 'Alberta', 'Ontario', 'Greenland', 'Quebec', 'Western United States', 'Eastern United States', 'Central America'],
+        'bonus': 5
+        },
+    'South America': {
+        'countries': ['Venezuela', 'Brazil', 'Peru', 'Argentina'],
+        'bonus': 2
+        },
+    'Africa': {
+        'countries': ['North Africa', 'Egypt', 'East Africa', 'Congo', 'South Africa', 'Madagascar'],
+        'bonus': 3
+        },
+}
+
 # This checks that all the territories are correctly included
 for ter in territories:
     for n in territories[ter]['neighbours']:
