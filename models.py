@@ -26,12 +26,12 @@ class Game(db.Model):
     reinFrom = db.Column(db.Integer, db.ForeignKey('territory.id'), nullable = True)
     reinTo = db.Column(db.Integer, db.ForeignKey('territory.id'), nullable = True)
 
-    def get_risk_json(self):
+    def get_simple_structure(self):
         # prepare the game json for the client
         # gather the territories information
         risk_territories = {}
         for ter in self.territories:
-            tername, tervalues = ter.get_risk_structure()
+            tername, tervalues = ter.get_simple_structure()
             risk_territories[tername] = tervalues
 
         # create a simple game dictionary
@@ -93,7 +93,7 @@ class GameState(db.Model):
     owner = db.Column(db.Integer, db.ForeignKey('user.id'))
     game_id = db.Column(db.Integer, db.ForeignKey('game.id', ondelete="cascade"), nullable=False)
 
-    def get_risk_structure(self):
+    def get_simple_structure(self):
         # prepare the risk structure for the client json
         country_name = self.territory.country
         country_info = {

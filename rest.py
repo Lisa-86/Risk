@@ -1,4 +1,5 @@
 import random, time
+import json
 
 from flask_login import current_user
 from flask_restful import Resource, Api
@@ -10,6 +11,38 @@ from models import *
 
 
 # stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN, WIN!
+
+class RiskEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Game):
+            # prepare the game json for the client
+            game = {
+                'id': obj.id,
+                'player1': obj.player1,
+                'player2': obj.player2,
+                'currentPlayer': obj.currentPlayer,
+                'stage': obj.stage,
+                'territories': {ter.territory.country:ter for ter in obj.territories},
+                'reinNo': obj.reinNo,
+                'myID': current_user.id,
+            }
+            return game
+        elif isinstance(obj, GameState):
+            # the gamestate json
+            country_info = {
+                # map info, loc x y, name, neighbours
+                'locx': obj.territory.locx,
+                'locy': obj.territory.locy,
+                'neighbours': [neigh.country for neigh in obj.territory.neighbours],
+                # user/game data (who it belongs to etc)
+                'troopNo': obj.troopNo,
+                'owner': obj.owner,
+                # to identify the game state internally
+                'id': obj.id
+            }
+            return country_info
+        raise Exception('Not recognized structure for jsonifying:', obj)
+
 
 def create_game(user1, user2):
     # A NEW GAME
@@ -45,7 +78,9 @@ class GetGame(Resource):
     def get(self, gameID):
         # fetch the right game and return it to the user
         game = Game.query.filter_by(id = gameID).first()
-        return game.get_risk_json()
+        # json_risk = json.dumps(game, cls=RiskEncoder)
+        # return json_risk
+        return game.get_simple_structure()
 
 
 class Deployment(Resource):
@@ -72,7 +107,7 @@ class Deployment(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_risk_json()
+        return game.get_simple_structure()
 
 
 class Diceroll(Resource):
@@ -119,7 +154,7 @@ class Diceroll(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_risk_json()
+        return game.get_simple_structure()
 
 
 class Reinforcement(Resource):
@@ -147,7 +182,7 @@ class Reinforcement(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_risk_json()
+        return game.get_simple_structure()
 
 
 class EndMove(Resource):
@@ -162,7 +197,7 @@ class EndMove(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_risk_json()
+        return game.get_simple_structure()
 
 
 class Man(Resource):
@@ -201,7 +236,7 @@ class Man(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_risk_json()
+        return game.get_simple_structure()
 
 
 class EndTurn(Resource):
@@ -213,7 +248,7 @@ class EndTurn(Resource):
             game.stage = 'WIN!'
             db.session.add(game)
             db.session.commit()
-            return game.get_risk_json()
+            return game.get_simple_structure()
         else:
             if game.currentPlayer == game.player1:
                 game.currentPlayer = game.player2
@@ -225,7 +260,7 @@ class EndTurn(Resource):
             db.session.add(game)
             db.session.commit()
 
-            return game.get_risk_json()
+            return game.get_simple_structure()
 
 
 
@@ -280,14 +315,14 @@ class Refresh(Resource):
 
             # if it has returned to the current users turn then it refreshes the game
             if current_user.id == game.currentPlayer:
-                return game.get_risk_json()
+                return game.get_simple_structure()
 
             # otherwise makes it sleep so it's not checking too many times
             time.sleep(3)
 
         # make sure the query is up to date
         db.session.refresh(game)
-        return game.get_risk_json()
+        return game.get_simple_structure()
 
 
 def register_rest_api(app):
