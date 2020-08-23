@@ -5,7 +5,7 @@ from flask_login import current_user
 from flask_restful import Resource, Api
 
 from territories import teralloc, teralloc_db, territories
-from risk import reinforcements, diceroll, winGame
+from risk_utils import reinforcements, diceroll, winGame
 from db import db
 from models import *
 

@@ -28,11 +28,9 @@ def reinforcements(territories, player_id):
             for ter in continents[continent]['countries']:
                 if dict_territories[ter] == player_id:
                     count += 1
-                    print ("Adding one")
 
                     if count == len(continents[continent]['countries']):
                         deployNo += continents[continent]['bonus']
-                        print ("assigning bonus: ", continents[continent]['bonus'])
 
     return deployNo
 
@@ -42,7 +40,7 @@ def diceroll(attackerTroops, defenderTroops):
     # troop nos are ints
 
     # checks the attacker has enough men to attack with
-    if attackerTroops < 2:
+    if attackerTroops < 2 or defenderTroops < 1:
         raise ValueError
 
     # checks how many dice the attacker gets
