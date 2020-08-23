@@ -12,36 +12,40 @@ from models import *
 
 # stages: DEPLOY, REINFORCE, ATTACK, MANOEUVRE, FINAL_MAN, WIN!
 
-class RiskEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Game):
-            # prepare the game json for the client
-            game = {
-                'id': obj.id,
-                'player1': obj.player1,
-                'player2': obj.player2,
-                'currentPlayer': obj.currentPlayer,
-                'stage': obj.stage,
-                'territories': {ter.territory.country:ter for ter in obj.territories},
-                'reinNo': obj.reinNo,
-                'myID': current_user.id,
-            }
-            return game
-        elif isinstance(obj, GameState):
-            # the gamestate json
-            country_info = {
-                # map info, loc x y, name, neighbours
-                'locx': obj.territory.locx,
-                'locy': obj.territory.locy,
-                'neighbours': [neigh.country for neigh in obj.territory.neighbours],
-                # user/game data (who it belongs to etc)
-                'troopNo': obj.troopNo,
-                'owner': obj.owner,
-                # to identify the game state internally
-                'id': obj.id
-            }
-            return country_info
-        raise Exception('Not recognized structure for jsonifying:', obj)
+def gameModelToDict(game):
+    """
+    :param game: The database Game object
+    :return: A simple dictionary structure that can be converted into json by Flask
+    """
+
+    # get all the territories
+    risk_territories = {}
+    for ter in game.territories:
+        country_info = {
+            # map info, loc x y, name, neighbours
+            'locx': ter.territory.locx,
+            'locy': ter.territory.locy,
+            'neighbours': [neigh.country for neigh in ter.territory.neighbours],
+            # user/game data (who it belongs to etc)
+            'troopNo': ter.troopNo,
+            'owner': ter.owner,
+            # to identify the game state internally
+            'id': ter.id
+        }
+        risk_territories[ter.territory.country] = country_info
+
+    game_dict = {
+        'id': game.id,
+        'player1': game.player1,
+        'player2': game.player2,
+        'currentPlayer': game.currentPlayer,
+        'stage': game.stage,
+        'territories': risk_territories,
+        'reinNo': game.reinNo,
+        'myID': current_user.id,
+    }
+
+    return game_dict
 
 
 def create_game(user1, user2):
@@ -78,9 +82,7 @@ class GetGame(Resource):
     def get(self, gameID):
         # fetch the right game and return it to the user
         game = Game.query.filter_by(id = gameID).first()
-        # json_risk = json.dumps(game, cls=RiskEncoder)
-        # return json_risk
-        return game.get_simple_structure()
+        return gameModelToDict(game)
 
 
 class Deployment(Resource):
@@ -107,7 +109,7 @@ class Deployment(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_simple_structure()
+        return gameModelToDict(game)
 
 
 class Diceroll(Resource):
@@ -154,7 +156,7 @@ class Diceroll(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_simple_structure()
+        return gameModelToDict(game)
 
 
 class Reinforcement(Resource):
@@ -182,7 +184,7 @@ class Reinforcement(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_simple_structure()
+        return gameModelToDict(game)
 
 
 class EndMove(Resource):
@@ -197,7 +199,7 @@ class EndMove(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_simple_structure()
+        return gameModelToDict(game)
 
 
 class Man(Resource):
@@ -236,7 +238,7 @@ class Man(Resource):
         db.session.add(game)
         db.session.commit()
 
-        return game.get_simple_structure()
+        return gameModelToDict(game)
 
 
 class EndTurn(Resource):
@@ -248,7 +250,7 @@ class EndTurn(Resource):
             game.stage = 'WIN!'
             db.session.add(game)
             db.session.commit()
-            return game.get_simple_structure()
+            return gameModelToDict(game)
         else:
             if game.currentPlayer == game.player1:
                 game.currentPlayer = game.player2
@@ -260,7 +262,7 @@ class EndTurn(Resource):
             db.session.add(game)
             db.session.commit()
 
-            return game.get_simple_structure()
+            return gameModelToDict(game)
 
 
 
@@ -315,14 +317,14 @@ class Refresh(Resource):
 
             # if it has returned to the current users turn then it refreshes the game
             if current_user.id == game.currentPlayer:
-                return game.get_simple_structure()
+                return gameModelToDict(game)
 
             # otherwise makes it sleep so it's not checking too many times
             time.sleep(3)
 
         # make sure the query is up to date
         db.session.refresh(game)
-        return game.get_simple_structure()
+        return gameModelToDict(game)
 
 
 def register_rest_api(app):

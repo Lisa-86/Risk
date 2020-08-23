@@ -26,27 +26,6 @@ class Game(db.Model):
     reinFrom = db.Column(db.Integer, db.ForeignKey('territory.id'), nullable = True)
     reinTo = db.Column(db.Integer, db.ForeignKey('territory.id'), nullable = True)
 
-    def get_simple_structure(self):
-        # prepare the game json for the client
-        # gather the territories information
-        risk_territories = {}
-        for ter in self.territories:
-            tername, tervalues = ter.get_simple_structure()
-            risk_territories[tername] = tervalues
-
-        # create a simple game dictionary
-        game = {
-            'id': self.id,
-            'player1': self.player1,
-            'player2': self.player2,
-            'currentPlayer': self.currentPlayer,
-            'stage': self.stage,
-            'territories': risk_territories,
-            'reinNo': self.reinNo,
-            'myID': current_user.id,
-        }
-        return game
-
 
 class GameInvitation(db.Model):
     """
@@ -92,19 +71,3 @@ class GameState(db.Model):
     troopNo = db.Column(db.Integer)
     owner = db.Column(db.Integer, db.ForeignKey('user.id'))
     game_id = db.Column(db.Integer, db.ForeignKey('game.id', ondelete="cascade"), nullable=False)
-
-    def get_simple_structure(self):
-        # prepare the risk structure for the client json
-        country_name = self.territory.country
-        country_info = {
-            # map info, loc x y, name, neighbours
-            'locx': self.territory.locx,
-            'locy': self.territory.locy,
-            'neighbours': [neigh.country for neigh in self.territory.neighbours],
-            # user/game data (who it belongs to etc)
-            'troopNo': self.troopNo,
-            'owner': self.owner,
-            # to identify the game state internally
-            'id': self.id
-        }
-        return country_name, country_info
