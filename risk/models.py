@@ -23,7 +23,7 @@ class Game(db.Model):
     player2 = db.relationship('User', backref=db.backref("games2", uselist=True), uselist=False,
                               primaryjoin=player2_id == User.id)
 
-    currentPlayer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    currentPlayerId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     stage = db.Column(db.String(20))
     territories = db.relationship('GameState', backref='game', lazy=False)
     # reinforcement information, number, terFrom and terTo

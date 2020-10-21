@@ -36,9 +36,9 @@ def gameModelToDict(game):
 
     game_dict = {
         'id': game.id,
-        'player1': game.player1,
-        'player2': game.player2,
-        'currentPlayer': game.currentPlayer,
+        'player1': game.player1.id,
+        'player2': game.player2.id,
+        'currentPlayer': game.currentPlayerId,
         'stage': game.stage,
         'territories': risk_territories,
         'reinNo': game.reinNo,
@@ -55,14 +55,14 @@ def create_game(user1, user2):
     current_player = random.sample([user1, user2], 1)[0]
     other_player = user1 if current_player == user2 else user2
     # create a game in the database
-    game = Game(player1=current_player, player2=other_player, currentPlayer=current_player.id, stage='DEPLOYMENT')
+    game = Game(player1=current_player, player2=other_player, currentPlayerId=current_player.id, stage='DEPLOYMENT')
     db.session.add(game)
     db.session.commit()
 
     # for each territory, create a gamestate
     game_states = []
     for ter in Territory.query.all():
-        game_state = GameState(territoryId=ter.id, game_id=game.id)
+        game_state = GameState(territoryId=ter.id, territory=ter, game_id=game.id)
         game_states.append(game_state)
 
     # allocate territories and initial troops to players
@@ -220,17 +220,17 @@ class Man(Resource):
         game_state_to.troopNo += troopNo
 
         # change the player so it's the next players turn
-        if game.currentPlayer == game.player1:
-            game.currentPlayer = game.player2
+        if game.currentPlayerId == game.player1:
+            game.currentPlayerId = game.player2
         else:
-            game.currentPlayer = game.player1
+            game.currentPlayerId = game.player1
 
         # update the game stage
         game.stage = "DEPLOYMENT"
 
         # calculate the no of troops the next player can deploy at the beginning of their turn
         all_game_states = GameState.query.filter_by(game_id=game.id).all()
-        game.reinNo = reinforcements(all_game_states, game.currentPlayer)
+        game.reinNo = reinforcements(all_game_states, game.currentPlayerId)
 
         # update the dbs and stuff
         db.session.add(game_state_from)
@@ -246,19 +246,19 @@ class EndTurn(Resource):
         game = Game.query.filter_by(id=gameID).first()
         all_game_states = GameState.query.filter_by(game_id=game.id).all()
 
-        if winGame(all_game_states, game.currentPlayer):
+        if winGame(all_game_states, game.currentPlayerId):
             game.stage = 'WIN!'
             db.session.add(game)
             db.session.commit()
             return gameModelToDict(game)
         else:
-            if game.currentPlayer == game.player1:
-                game.currentPlayer = game.player2
+            if game.currentPlayerId == game.player1.id:
+                game.currentPlayerId = game.player2.id
             else:
-                game.currentPlayer = game.player1
+                game.currentPlayerId = game.player1.id
 
             game.stage = "DEPLOYMENT"
-            game.reinNo = reinforcements(all_game_states, game.currentPlayer)
+            game.reinNo = reinforcements(all_game_states, game.currentPlayerId)
             db.session.add(game)
             db.session.commit()
 
@@ -316,7 +316,7 @@ class Refresh(Resource):
             db.session.refresh(game)
 
             # if it has returned to the current users turn then it refreshes the game
-            if current_user.id == game.currentPlayer:
+            if current_user.id == game.currentPlayerId:
                 return gameModelToDict(game)
 
             # otherwise makes it sleep so it's not checking too many times
