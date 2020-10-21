@@ -14,7 +14,7 @@
         </strong>
         {% for game in games_ongoing %}
         <div>
-            <a href="{{ url_for('web.getGame', gameID=game.id) }}">Game {{game.player1}} vs {{game.player2}}</a>
+            <a href="{{ url_for('web.getGame', gameID=game.id) }}">Game {{game.player1.name}} vs {{game.player2.name}}</a>
         </div>
         {% endfor %}
     </div>

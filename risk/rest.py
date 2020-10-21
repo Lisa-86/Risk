@@ -55,7 +55,7 @@ def create_game(user1, user2):
     current_player = random.sample([user1, user2], 1)[0]
     other_player = user1 if current_player == user2 else user2
     # create a game in the database
-    game = Game(player1=current_player.id, player2=other_player.id, currentPlayer=current_player.id, stage='DEPLOYMENT')
+    game = Game(player1=current_player, player2=other_player, currentPlayer=current_player.id, stage='DEPLOYMENT')
     db.session.add(game)
     db.session.commit()
 

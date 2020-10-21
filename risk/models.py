@@ -16,8 +16,13 @@ class Game(db.Model):
     Metadata about the game.
     """
     id = db.Column(db.Integer, primary_key=True)
-    player1 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
-    player2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    player1_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    player1 = db.relationship('User', backref=db.backref("games1", uselist=True), uselist=False,
+                              primaryjoin=player1_id == User.id)
+    player2_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    player2 = db.relationship('User', backref=db.backref("games2", uselist=True), uselist=False,
+                              primaryjoin=player2_id == User.id)
+
     currentPlayer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     stage = db.Column(db.String(20))
     territories = db.relationship('GameState', backref='game', lazy=False)
@@ -67,7 +72,7 @@ class GameState(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     territoryId = db.Column(db.Integer, db.ForeignKey('territory.id'))
-    territory = db.relationship('Territory', uselist=False)
+    territory = db.relationship('Territory', uselist=False, primaryjoin=territoryId==Territory.id)
     troopNo = db.Column(db.Integer)
     owner = db.Column(db.Integer, db.ForeignKey('user.id'))
     game_id = db.Column(db.Integer, db.ForeignKey('game.id', ondelete="cascade"), nullable=False)

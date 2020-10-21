@@ -14,8 +14,8 @@ web = Blueprint('web', __name__)
 @login_required
 def home():
     # get all the ongoing games
-    games_ongoing_first = Game.query.filter_by(player1 = current_user.id)
-    games_ongoing_second = Game.query.filter_by(player2 = current_user.id)
+    games_ongoing_first = Game.query.filter_by(player1 = current_user)
+    games_ongoing_second = Game.query.filter_by(player2 = current_user)
     games_ongoing = set(list(games_ongoing_first) + list(games_ongoing_second))
 
     # get all games that you are invited for
