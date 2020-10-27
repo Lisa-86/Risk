@@ -2,6 +2,7 @@ from flask_login import UserMixin, current_user
 import sqlalchemy
 
 from db import db
+from sqlalchemy import func
 
 
 class User(UserMixin, db.Model):
@@ -16,7 +17,8 @@ class Game(db.Model):
     Metadata about the game.
     """
     id = db.Column(db.Integer, primary_key=True)
-    player1_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    startDate = db.Column(db.DateTime, nullable=False)
+    player1_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     player1 = db.relationship('User', backref=db.backref("games1", uselist=True), uselist=False,
                               primaryjoin=player1_id == User.id)
     player2_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)

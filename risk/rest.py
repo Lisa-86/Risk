@@ -1,5 +1,4 @@
-import random, time
-import json
+import random, time, datetime
 
 from flask_login import current_user
 from flask_restful import Resource, Api
@@ -49,13 +48,12 @@ def gameModelToDict(game):
 
 
 def create_game(user1, user2):
-    # A NEW GAME
     # create a new game
     # decide who goes first
     current_player = random.sample([user1, user2], 1)[0]
     other_player = user1 if current_player == user2 else user2
     # create a game in the database
-    game = Game(player1=current_player, player2=other_player, currentPlayerId=current_player.id, stage='DEPLOYMENT')
+    game = Game(startDate=datetime.datetime.now(), player1=current_player, player2=other_player, currentPlayerId=current_player.id, stage='DEPLOYMENT')
     db.session.add(game)
     db.session.commit()
 
