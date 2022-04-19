@@ -2,3 +2,4 @@ flask
 pytest
 numpy
 gunicorn
+flask_login
