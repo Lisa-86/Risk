@@ -1,6 +1,6 @@
 import random
 
-from territories import continents
+from .territories import continents
 
 
 def reinforcements(territories, player_id):
