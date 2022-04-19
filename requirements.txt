@@ -3,3 +3,4 @@ pytest
 numpy
 gunicorn
 flask_login
+flask_restful
