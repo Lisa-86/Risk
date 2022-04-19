@@ -8,11 +8,11 @@ from flask_restful import Resource, Api
 
 from .territories import teralloc, teralloc_db, territories
 from .risk_utils import reinforcements, diceroll, winGame
-from db import db
-from models import *
-from auth import auth as auth_blueprint
-from web import web as main_blueprint
-from rest import register_rest_api
+from .db import db
+from .models import *
+from .auth import auth as auth_blueprint
+from .web import web as main_blueprint
+from .rest import register_rest_api
 
 
 def create_app(db_path, app_root):
