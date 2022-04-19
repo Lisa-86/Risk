@@ -1,7 +1,7 @@
 from flask_login import UserMixin, current_user
 import sqlalchemy
 
-from db import db
+from .db import db
 from sqlalchemy import func
 
 
