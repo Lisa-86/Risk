@@ -1,1 +1,1 @@
-web: gunicorn wsgi:risk
+web: gunicorn wsgi:risk_app
