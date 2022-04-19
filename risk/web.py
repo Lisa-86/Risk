@@ -3,9 +3,9 @@ from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from sqlalchemy import or_
 
-from models import *
-from db import db
-from territories import territories
+from .models import *
+from .db import db
+from .territories import territories
 
 web = Blueprint('web', __name__)
 
